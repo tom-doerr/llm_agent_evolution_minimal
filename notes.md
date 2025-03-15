@@ -39,19 +39,16 @@ Code Quality Improvements & Fixes:
 38. Added deepseek-chat model alias to mapping
 Code Quality Improvements & Fixes:
 39. Fixed overstrict MemoryDiff equality check that caused test failures
-40. Improved XML command error handling with detailed error messages
-41. Removed redundant type checks in MemoryDiff equality comparison  
+40. Improved XML command error handling with detailed error messages  
+41. Removed redundant type checks in MemoryDiff equality comparison
 42. Fixed __all__ exports formatting and removed duplicate entries
 43. Added proper error propagation for shell command handling
-Code Quality Improvements & Fixes:
 44. Fixed MemoryDiff equality check type comparison
-45. Fixed model name mapping validation in create_agent()
-46. Cleaned up __all__ exports formatting and ordering
-47. Fixed test_mode propagation in mate() method
-48. Added proper test_mode handling in agent creation
+45. Standardized model name mapping in create_agent()
+46. Cleaned up __all__ exports and removed redundant env configs
+47. Fixed test_mode propagation in mate() to require both parents
+48. Removed redundant code comments
 49. Fixed XML response validation edge cases
 50. Improved MemoryDiff hash and equality consistency
-51. Fixed __all__ exports to include parse_xml_to_dict
-52. Corrected deepseek-reasoner OpenRouter model path
-53. Removed duplicate entries from __all__ exports
-54. Fixed test_mode propagation in mate() method
+51. Corrected deepseek-coder model mapping
+52. Fixed test_mode initialization in Agent class
