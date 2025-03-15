@@ -240,6 +240,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], List[Any]]]:
+    """Parse XML string into a nested dictionary structure with type hints."""
     """Parse XML string into a nested dictionary structure.
     
     Args:
@@ -285,7 +286,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}", "xml_input": xml_string}
 
-def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
+def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     """Parse XML element recursively into dict or string"""
     if not is_valid_xml_tag(element.tag):
         raise ValueError(f"Invalid XML tag: {element.tag}")
@@ -787,5 +788,8 @@ __all__ = [
     
     # Environment configs
     'base_env_manager',
-    'envs'
+    'envs',
+    
+    # XML parsing functions
+    'parse_xml_element'
 ]
