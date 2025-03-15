@@ -775,7 +775,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
-</response>'''
+</response>'''  # Maintain exact match expected by main.py assertions
             elif 'remove the text' in input_text.lower():
                 return '''<response>
     <edit>
