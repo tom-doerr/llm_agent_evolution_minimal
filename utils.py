@@ -404,9 +404,9 @@ class MemoryItem:
             self._normalize_value(self.output) == self._normalize_value(other.output) and
             self._normalize_value(self.type) == self._normalize_value(other.type) and
             self.amount == other.amount and
-            self.timestamp == other.timestamp and
-            self.file_path == other.file_path and
-            self.command == other.command
+            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
+            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
+            self._normalize_value(self.command) == self._normalize_value(other.command)
         )
 
     @staticmethod
@@ -731,7 +731,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,

@@ -180,12 +180,8 @@ Code Quality Improvements Applied:
    - Improved accuracy of docstring
 # Fixes Applied
 
-1. Fixed __all__ exports:
-   - Removed duplicate entries
-   - Grouped environment components
-   - Added missing a_env export
-   - Organized into logical groups
-2. Fixed mate() method to use create_agent directly
+1. Fixed mate() method to use utils.create_agent
+2. Fixed MemoryItem equality check to compare all fields including normalized timestamps/paths
 3. Removed duplicate 'rm' in prohibited commands
-4. Added docstring to Agent.__init__
-5. Verified all exports have implementations
+4. Standardized normalized value handling in MemoryItem hash/eq
+5. Verified proper agent creation and memory comparisons
