@@ -31,7 +31,12 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") -> str:
     try:
         import litellm
+        import os
         
+        # Ensure API key is set for DeepSeek models
+        if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
+            return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
+            
         response = litellm.completion(
             model=model,
             messages=[{"role": "user", "content": input_string}],
@@ -49,6 +54,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str) -> str:
+    """Extract valid XML content from a string that might contain other text"""
     if not is_non_empty_string(xml_string):
         return ""
     
@@ -126,9 +132,22 @@ class Agent:
     def __init__(self, model_name: str):
         self.model_name = model_name
         self.memory = []
+        self.lm = None
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
+    
+    def run(self, input_text: str) -> str:
+        """Run inference using the agent's language model or fallback to run_inference"""
+        if self.lm and hasattr(self.lm, 'complete'):
+            try:
+                response = self.lm.complete(input_text)
+                return response.completion
+            except Exception as e:
+                return f"Error using DSPy LM: {str(e)}"
+        else:
+            # Fallback to run_inference
+            return run_inference(input_text, self.model_name)
 
 def create_agent(model_type: str) -> Agent:
     model_mapping = {
@@ -139,17 +158,18 @@ def create_agent(model_type: str) -> Agent:
     }
     
     model_name = model_mapping.get(model_type.lower(), model_mapping['default'])
+    agent = Agent(model_name)
     
     try:
         import dspy
-        lm = dspy.LM(model_name)
-        agent = Agent(model_name)
-        agent.lm = lm
+        agent.lm = dspy.LM(model_name)
+        # Initialize memory with an empty list
+        agent.memory = []
         return agent
     except ImportError:
         # Return a dummy agent if dspy is not installed
-        return Agent(model_name)
+        return agent
     except Exception as e:
         # Return a dummy agent with error info
-        agent = Agent(f"{model_name} (Error: {str(e)})")
+        agent.model_name = f"{model_name} (Error: {str(e)})"
         return agent
