@@ -50,14 +50,14 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        # Compare memory diffs with whitespace normalization
-        if not isinstance(other, MemoryDiff):
+        if not isinstance(other, MemoryItem):
             return False
-            
-        return (self.type == other.type and
-                self.key == other.key and
-                self._normalize_value(self.old_value) == self._normalize_value(other.old_value) and
-                self._normalize_value(self.new_value) == self._normalize_value(other.new_value))
+        return (
+            (self._normalize_value(self.input), self._normalize_value(self.output),
+             self.type, self.amount, self.timestamp, self.file_path, self.command) == 
+            (self._normalize_value(other.input), self._normalize_value(other.output),
+             other.type, other.amount, other.timestamp, other.file_path, other.command)
+        )
 
     @staticmethod
     def _normalize_value(value: Any) -> Any:
@@ -719,7 +719,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=new_test_mode
+            test_mode=new_test_mode,
+            load=None
         )
         
         # Combine memories from both parents (using copies to prevent reference issues)
