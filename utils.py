@@ -42,19 +42,7 @@ __all__ = [
     'MemoryDiff',
     'Action',
     'DiffType',
-    'process_observation',  # Added missing function
-    '_validate_inputs',     # Added missing function
-    '_create_prompt_header',# Added missing function
-    '_create_prompt_body',  # Added missing function
-    '_create_prompt_examples', # Added missing function
-    '_prepare_prompt',      # Added missing function
-    '_process_chunk',       # Added missing function
-    '_get_litellm_response',# Added missing function
-    '_extract_file_diffs',  # Added missing function
-    '_parse_memory_diffs',  # Added missing function
-    '_parse_action_params', # Added missing function
-    '_parse_action',        # Added missing function
-    '_validate_xml_response' # Added missing function
+    'process_observation'
 ]
 
 def is_non_empty_string(value: Any) -> bool:
@@ -452,9 +440,8 @@ class Agent:
         """
         if not is_valid_number(amount) or amount < 0:
             raise ValueError("Reward amount must be a positive number")
-        # In a real implementation this would modify some internal state
-        # For now just log the reward
-        self.memory.append(MemoryItem(
+        # Append to the internal memory list directly
+        self._memory.append(MemoryItem(
             input="reward",
             output=str(amount),
             type="reward",
