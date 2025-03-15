@@ -20,6 +20,8 @@ class DiffType(Enum):
     ADD = auto()
     REMOVE = auto()
     MODIFY = auto()
+    REPLACE = auto()
+    UPDATE = auto()
 
 @dataclass(frozen=True)
 class MemoryDiff:
@@ -333,6 +335,8 @@ class MemoryItem:
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
+    file_path: Optional[str] = field(default=None)  # For file edit operations
+    command: Optional[str] = field(default=None)   # For shell commands
     
     def __post_init__(self):
         """Validate and normalize fields after initialization"""
