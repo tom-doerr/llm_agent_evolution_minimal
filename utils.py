@@ -667,10 +667,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # New agent inherits test mode only if both parents are in test mode
-        new_test_mode = bool(self._test_mode and other._test_mode)  # Logical AND ensures strict test mode inheritance
-        if not isinstance(new_test_mode, bool):
-            new_test_mode = False
+        # Inherit test mode only if both parents are in test mode
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -850,7 +848,7 @@ def _parse_action(xml_content: str) -> Optional[Action]:
 def process_observation(
     current_memory: str,
     observation: str,
-    model: str = "openrouter/deepseek/deepseek-chat"
+    model: str = "openrouter/deepseek/deepseek-chat"  # Default to DeepSeek Chat model
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
     """Process observation and return memory diffs with optional action
     
@@ -940,8 +938,9 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     """Create an agent with specified model.
 
     Args:
-        model: Model to use - 'flash' (gemini-2.0-flash), 'pro' (gemini-2.0-pro), 
-               'deepseek-chat' or 'deepseek-coder'
+        model: Model to use - 'flash' (gemini-2.0-flash), 'pro' (gemini-2.0-pro),
+               'deepseek-chat' (openrouter/deepseek/deepseek-chat) or 
+               'deepseek-coder' (openrouter/deepseek/deepseek-coder-33b-instruct)
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -993,16 +992,16 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType',
+    'DiffType', 
     'MemoryDiff',
     'MemoryItem',
     'a_env',
-    'base_env_manager', 
+    'base_env_manager',
     'create_agent',
     'envs',
     'extract_xml',
     'print_datetime',
-    'process_observation',
+    'process_observation', 
     'run_inference'
 ]
 
