@@ -183,9 +183,8 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     Raises:
         ValueError: If xml_string is not a string
     """
-    # Handle common XML declaration issues
-    xml_string = xml_string.replace('<?xml version="1.0"?>', '')
-    xml_string = xml_string.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+    # Remove any XML declaration
+    xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string, flags=re.DOTALL)
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -834,16 +833,10 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     if not isinstance(max_tokens, int) or max_tokens <= 0:
         raise ValueError("max_tokens must be a positive integer")
         
-    model_mapping = {
-        'flash': 'deepseek/deepseek-reasoner',
-        'pro': 'deepseek/deepseek-reasoner', 
-        'deepseek': 'deepseek/deepseek-reasoner',
-    }
-    
     # Get model name with default fallback
     model_mapping = {
-        'flash': 'deepseek/deepseek-reasoner',
-        'pro': 'deepseek/deepseek-reasoner', 
+        'flash': 'openrouter/google/gemini-2.0-flash-001',
+        'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'deepseek/deepseek-reasoner',
     }
     model_name = model_mapping.get(model.lower(), model)
@@ -856,10 +849,11 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
 __all__ = [
     # Functions
     'is_non_empty_string',
-    'is_valid_xml_tag',
+    'is_valid_xml_tag', 
     'is_valid_model_name',
     'is_valid_xml',
     'parse_xml_to_dict',
+    'parse_xml_element',
     'safe_int_conversion',
     'safe_float_conversion',
     'is_valid_number',
