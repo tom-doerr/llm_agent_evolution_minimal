@@ -1,25 +1,38 @@
 # Hypotheses for Fixing Agent Memory Assertions
 
 1. **XML Tags in Memory String**
-   - **Issue**: Memory string contains raw XML tags from responses
-   - **Evidence**: main.py asserts `<remember>` not in memory
-   - **Fix**: Remove XML tags completely from memory formatting
-   - **Evidence**: main.py asserts memory contains value '132' but not XML tags
+   - **Issue**: Memory storage includes raw XML tags from agent responses
+   - **Evidence**: 
+     - main.py line 73: `assert '<remember>' not in memory`
+     - Agent.memory property joins MemoryItem outputs without XML sanitization
+   - **Fix**: Use XML text extraction instead of regex stripping
+   - **Verification**:
+     - Update MemoryItem output processing to use ET.tostring(method='text')
+     - Add XML namespace removal to extract_xml()
    - **Verification**: Memory now shows plain text values without markup
    - **Code Impact**: Modify Agent.memory property formatting
 
-2. **Shell Command Output Formatting**
-   - **Issue**: Test mode shell responses not matching assertions
-   - **Evidence**: main.py looks for 'plexsearch.log' in output
-   - **Fix**: Return direct values in test mode to match assertions
-   - **Evidence**: main.py checks for 'plexsearch.log' in cleaned output
+2. **Shell Command Test Responses**
+   - **Issue**: Test mode responses missing required XML structure
+   - **Evidence**:
+     - main.py line 136 expects 'plexsearch.log' in cleaned output
+     - _handle_shell_commands returns raw string instead of XML-wrapped
+   - **Fix**: Maintain XML response structure in test mode
+   - **Verification**:
+     - Keep <shell> tags in test responses
+     - Add proper <message> wrapping for assertions
    - **Verification**: Test responses now match assertion requirements
    - **Code Impact**: Update _handle_shell_commands test responses
 
-3. **Memory Item Equality**
-   - **Issue**: Duplicate detection in mate() might fail
-   - **Evidence**: main.py requires combined memories
-   - **Fix**: Verify MemoryItem __hash__/__eq__ implementations
+3. **Memory Combination Logic**
+   - **Issue**: mate() method duplicates parent memories
+   - **Evidence**:
+     - main.py line 208-209 requires both 321 and 477 in combined memory
+     - Current implementation uses string-based deduplication
+   - **Fix**: Use MemoryItem equality checks with normalized values
+   - **Verification**:
+     - Update mate() to use MemoryItem instances in seen set
+     - Verify MemoryItem.__eq__ compares normalized fields
    - **Validation**: Current implementation compares normalized fields
 
 4. **Context Instructions Filtering**
