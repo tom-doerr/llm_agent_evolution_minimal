@@ -645,7 +645,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # New agent only in test mode if both parents are in test mode (logical AND)
-        new_test_mode = self._test_mode and other._test_mode
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -922,10 +922,11 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat',
-        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-pro': 'openrouter/google/gemini-2.0-pro'
     }
+    # Add full model name as alias
+    model_mapping[model] = model
     model_name = model_mapping.get(model.lower(), model)
     
     if not is_valid_model_name(model_name):
@@ -963,6 +964,7 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'a_env'
 ]
 
