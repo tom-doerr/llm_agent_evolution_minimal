@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 from typing import Optional, Dict, List, Tuple
+import xml.etree.ElementTree as ET
 import litellm
 
 class DiffType(Enum):
@@ -69,7 +70,7 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
             xml_update, reasoning_update = _process_chunk(chunk)
             xml_content += xml_update
             reasoning_content += reasoning_update
-        return xml_content, reasoning_content
+        return xml_content.strip(), reasoning_content.strip()
     except Exception as e:
         raise ValueError(f"Error during litellm completion: {e}") from e
 
@@ -111,19 +112,25 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         return Action(name=action_name, params=params)
     return None
 
+def _validate_xml_response(xml_content: str) -> None:
+    if not xml_content.strip().startswith("<response>"):
+        raise ValueError("Invalid XML response format - missing root <response> tag")
+    try:
+        ET.fromstring(xml_content)
+    except ET.ParseError as e:
+        raise ValueError(f"Invalid XML content: {e}") from e
+
 def process_observation(
     current_memory: str, 
     observation: str,
     model: str = "deepseek/deepseek-reasoner"
 ) -> Tuple[List[MemoryDiff], Optional[Action], str]:
     _validate_inputs(current_memory, observation, model)
+
     prompt = _prepare_prompt(current_memory, observation)
     xml_content, reasoning_content = _get_litellm_response(model, prompt)
 
-    if not xml_content.strip().startswith("<response>"):
-        raise ValueError("Invalid XML response format - missing root <response> tag")
-
+    _validate_xml_response(xml_content)
     memory_diffs = _parse_memory_diffs(xml_content)
     action = _parse_action(xml_content)
-
     return memory_diffs, action, reasoning_content
