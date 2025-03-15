@@ -308,7 +308,15 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     if not is_valid_xml_tag(element.tag):
-        raise ValueError(f"Invalid XML tag: {element.tag}. Must match [a-zA-Z][a-zA-Z0-9_.-]*")
+        raise ValueError(
+            f"Invalid XML tag: {element.tag}. Tags must:\n"
+            f"1. Start with a letter\n"
+            f"2. Contain only a-z, 0-9, -, _, or .\n" 
+            f"3. Not contain spaces or colons\n"
+            f"4. Not start with 'xml' (case-insensitive)\n"
+            f"5. Not end with hyphen\n"
+            f"6. Be between 1-255 characters"
+        )
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -353,8 +361,6 @@ class MemoryItem:
         return (isinstance(other, MemoryItem) and 
                self.input == other.input and
                self.output == other.output and
-               self.type == other.type and
-               self.amount == other.amount and
                self.timestamp == other.timestamp and
                self.file_path == other.file_path and
                self.command == other.command)
@@ -1033,20 +1039,29 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default to
 
 # Control exported symbols for from utils import *
 __all__ = [
+    # Core classes
     'Action',
     'Agent',
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    
+    # Environment components
     'a_env',
     'base_env_manager',
     'envs',
+    
+    # Core functions
     'create_agent',
-    'extract_xml',
-    'parse_xml_element',
-    'parse_xml_to_dict',
     'process_observation',
-    'print_datetime',
-    'run_inference'
+    'run_inference',
+    
+    # XML utilities
+    'extract_xml',
+    'parse_xml_to_dict',
+    'parse_xml_element',
+    
+    # Miscellaneous
+    'print_datetime'
 ]
 
