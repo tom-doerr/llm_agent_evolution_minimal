@@ -121,50 +121,53 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
         return ET.tostring(root, encoding='unicode')
     except ET.ParseError:
         pass
-            
-        # Try to extract XML content between tags
-        start_idx = xml_string.find('<')
-        end_idx = xml_string.rfind('>')
-        
-        if start_idx >= 0 and end_idx > start_idx:
-            xml_content = xml_string[start_idx:end_idx+1]
-            try:
-                root = ET.fromstring(xml_content)
-                return ET.tostring(root, encoding='unicode')
-            except ET.ParseError:
-                # Try common XML root tags
-                for tag in ['response', 'result', 'data', 'xml', 'root', 'memory', 'action']:
-                    start_tag = f'<{tag}'
-                    end_tag = f'</{tag}>'
-                    start = xml_string.find(start_tag)
-                    end = xml_string.rfind(end_tag)
-                    if start >= 0 and end > start:
-                        try:
-                            element = xml_string[start:end + len(end_tag)]
-                            root = ET.fromstring(element)
-                            return ET.tostring(root, encoding='unicode')
-                        except ET.ParseError:
-                            continue
-                
-                # Try to find any well-formed XML fragment
-                import re
-                xml_pattern = r'<([a-zA-Z][a-zA-Z0-9]*)(?:\s+[^>]*)?(?:/>|>.*?</\1>)'
-                matches = re.finditer(xml_pattern, xml_string, re.DOTALL)
-                for match in matches:
+    
+    # Try to extract XML content between tags
+    start_idx = xml_string.find('<')
+    end_idx = xml_string.rfind('>')
+    
+    if start_idx >= 0 and end_idx > start_idx:
+        xml_content = xml_string[start_idx:end_idx+1]
+        try:
+            root = ET.fromstring(xml_content)
+            return ET.tostring(root, encoding='unicode')
+        except ET.ParseError:
+            # Try common XML root tags
+            for tag in ['response', 'result', 'data', 'xml', 'root', 'memory', 'action']:
+                start_tag = f'<{tag}'
+                end_tag = f'</{tag}>'
+                start = xml_string.find(start_tag)
+                end = xml_string.rfind(end_tag)
+                if start >= 0 and end > start:
                     try:
-                        fragment = match.group(0)
-                        root = ET.fromstring(fragment)
+                        element = xml_string[start:end + len(end_tag)]
+                        root = ET.fromstring(element)
                         return ET.tostring(root, encoding='unicode')
                     except ET.ParseError:
                         continue
-        return ""
-    except Exception as e:
-        # Log the exception for debugging
-        print(f"Error extracting XML: {str(e)}")
-        return ""
+            
+            # Try to find any well-formed XML fragment
+            import re
+            xml_pattern = r'<([a-zA-Z][a-zA-Z0-9]*)(?:\s+[^>]*)?(?:/>|>.*?</\1>)'
+            matches = re.finditer(xml_pattern, xml_string, re.DOTALL)
+            for match in matches:
+                try:
+                    fragment = match.group(0)
+                    root = ET.fromstring(fragment)
+                    return ET.tostring(root, encoding='unicode')
+                except ET.ParseError:
+                    continue
+    return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
-    # Parse XML string into a dictionary
+    """Parse XML string into a nested dictionary structure.
+    
+    Args:
+        xml_string: XML string to parse
+        
+    Returns:
+        Dictionary representation of the XML structure
+    """
     if not is_non_empty_string(xml_string):
         return {}
     
@@ -188,12 +191,22 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
                 result[child.tag] = child.text or ""
             
         return result
+    except ET.ParseError as e:
+        # Handle XML parsing errors specifically
+        return {"error": f"XML parsing error: {str(e)}"}
     except Exception as e:
-        # Silent failure with empty dict
-        return {}
+        # Handle other exceptions
+        return {"error": f"Unexpected error: {str(e)}"}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
-    # Parse an XML element into a dictionary or string
+    """Recursively parse an XML element into a dictionary or string.
+    
+    Args:
+        element: XML element to parse
+        
+    Returns:
+        Parsed element as dictionary or string
+    """
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
