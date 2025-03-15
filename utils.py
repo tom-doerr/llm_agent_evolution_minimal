@@ -3,7 +3,25 @@ import datetime
 import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
+from typing import Optional, List, Dict, Any, Union, Tuple
+
+class DiffType(Enum):
+    ADD = auto()
+    REMOVE = auto()
+    MODIFY = auto()
+
+@dataclass
+class MemoryDiff:
+    type: DiffType
+    key: str
+    old_value: Optional[Any] = None
+    new_value: Optional[Any] = None
+
+@dataclass
+class Action:
+    type: str
+    params: Dict[str, str]
 
 __all__ = [
     'is_non_empty_string',
@@ -21,7 +39,10 @@ __all__ = [
     'print_datetime',
     'MemoryItem',
     'Agent',
-    'create_agent'
+    'create_agent',
+    'MemoryDiff',  # Added missing class
+    'Action',      # Added missing class
+    'DiffType'     # Added missing enum
 ]
 
 def is_non_empty_string(value: Any) -> bool:
@@ -79,6 +100,20 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
     return value[:max_length] + "..."
 
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+    """Run inference using the specified model.
+    
+    Args:
+        input_string: Input text to process
+        model: Model to use for inference (default: deepseek/deepseek-reasoner)
+        stream: Whether to use streaming mode (default: False)
+        
+    Returns:
+        str: Inference result as string
+        
+    Raises:
+        ValueError: If input_string is invalid
+        ImportError: If required dependencies are missing
+    """
     """Run inference using the specified model.
     
     Args:
@@ -144,6 +179,18 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
+    """Extract valid XML content from a string that might contain other text.
+    
+    Args:
+        xml_string: Input string potentially containing XML
+        max_attempts: Maximum number of parsing attempts (default: 3)
+        
+    Returns:
+        str: Extracted XML string or empty string if no valid XML found
+        
+    Raises:
+        ValueError: If xml_string is not a string
+    """
     """Extract valid XML content from a string that might contain other text.
     
     Args:
