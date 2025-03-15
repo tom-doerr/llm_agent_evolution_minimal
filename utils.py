@@ -375,12 +375,10 @@ class MemoryItem:
             return False
         return (self._normalize_value(self.input) == self._normalize_value(other.input) and
                 self._normalize_value(self.output) == self._normalize_value(other.output) and
-                self.type == other.type and
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command and
-                self.type == other.type)
+                self.command == other.command)
 
     def __hash__(self) -> int:
         return hash((
@@ -576,14 +574,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Execute validated command
         import subprocess
         try:
-            if not is_valid_xml_tag(command_elem.tag):
-                if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
-                    return "<message>Error: Invalid characters in command</message>"
+            if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
+                return "<message>Error: Invalid characters in command</message>"
             
-                # Validate basic command structure
-                if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
-                    return "<message>Error: Invalid characters in command</message>"
-                
             # Validate and sanitize command structure
             sanitized_text = re.sub(r'[;&|$`]', '', command_elem.text).strip()
             cmd_parts = sanitized_text.strip().split()
@@ -719,7 +712,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent 
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
