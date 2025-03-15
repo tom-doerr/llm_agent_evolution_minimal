@@ -504,19 +504,14 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
             
-        # First extract XML content before validation
+        # Extract and validate XML structure
         xml_content = extract_xml(response)
         if not xml_content:
             return "<message>Error: No valid XML content found</message>"
             
-        # Additional security validation
-        if any(tag in response.lower() for tag in ['script', 'http', 'ftp']):
+        # Security validation
+        if any(tag in xml_content.lower() for tag in ['script', 'http', 'ftp']):
             return "<message>Error: Potentially dangerous content detected</message>"
-            
-        # Extract and validate XML structure first
-        xml_content = extract_xml(response)
-        if not xml_content:
-            return "<message>Error: No valid XML content found</message>"
             
         try:
             root = ET.fromstring(xml_content)
