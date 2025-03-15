@@ -564,6 +564,11 @@ You can use multiple actions in a single completion but must follow the XML sche
                     <search>previous_value</search>
                     <replace>132</replace>
                 </remember>'''
+            if 'current directory' in input_text.lower():
+                return '''<response>
+                    <run>ls</run>
+                    <respond>plexsearch.log</respond>
+                </response>'''
 
         # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
