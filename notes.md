@@ -119,6 +119,8 @@ Code Quality Improvements Applied:
    - Improved model alias documentation
    - Fixed missing envs/base_env_manager exports
    - Added parse_xml_element to exports
+   - Fixed MemoryItem hash implementation
+   - Cleaned up create_agent() model docs
 
 2. Updated create_agent() documentation:
    - Added missing model aliases (gpt-3.5, gpt-4)

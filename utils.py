@@ -389,9 +389,9 @@ class MemoryItem:
             self._normalize_value(self.output),
             self.type,
             self.amount,
-            self.timestamp,
-            self.file_path,
-            self.command
+            self._normalize_value(self.timestamp),
+            self._normalize_value(self.file_path),
+            self._normalize_value(self.command)
         ))
 
     @staticmethod
@@ -1009,23 +1009,17 @@ def create_agent(model: str = 'deepseek-chat',
         test_mode: Enable testing mode (skips real LLM calls)
 
     Supported models (via OpenRouter):
-    - DeepSeek: deepseek-chat, deepseek-coder
-    - Google: gemini-flash, gemini-pro
-    - Meta: llama-3, llama-3-70b
-    - OpenAI: gpt-3.5, gpt-4
-    
-    Requires OPENROUTER_API_KEY environment variable
-    
-    Model aliases:
-    - deepseek-chat (default): openrouter/deepseek/deepseek-chat
-    - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
-    - pro/gemini-pro: openrouter/google/gemini-2.0-pro 
-    - gpt-3.5: openrouter/openai/gpt-3.5-turbo
-    - gpt-4: openrouter/openai/gpt-4
-    - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
-    - gpt-3.5: openrouter/openai/gpt-3.5-turbo
-    - gpt-4: openrouter/openai/gpt-4
+    - DeepSeek: 
+      - deepseek-chat (default): openrouter/deepseek/deepseek-chat
+      - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
+    - Google:
+      - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+      - pro/gemini-pro: openrouter/google/gemini-2.0-pro
+    - Meta:
+      - llama-3/llama3: openrouter/meta-llama/llama-3-70b-instruct
+    - OpenAI:
+      - gpt-3.5: openrouter/openai/gpt-3.5-turbo
+      - gpt-4: openrouter/openai/gpt-4
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         
@@ -1087,10 +1081,13 @@ __all__ = [
     # Core processing functions
     'create_agent', 'process_observation', 'run_inference',
     
-    # XML handling utilities 
+    # XML handling utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Helper functions
-    'print_datetime'
+    'print_datetime',
+    
+    # Data types
+    'MemoryItem', 'Action', 'DiffType', 'MemoryDiff'
 ]
 
