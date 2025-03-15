@@ -626,7 +626,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=test_mode
+            test_mode=new_test_mode
         )
         
         # Combine memories from both parents
