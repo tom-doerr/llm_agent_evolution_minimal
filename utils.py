@@ -459,7 +459,7 @@ class Agent:
             return ""
         
         # For testing purposes
-        if hasattr(self, '_test_mode') and self._test_mode:
+        if self._test_mode:
             if input_text == 'please respond with the string abc':
                 self.last_response = '<respond>abc</respond>'
                 return 'abc'
@@ -469,20 +469,6 @@ class Agent:
                     <respond>plexsearch.log</respond>
                 </response>'''
                 return 'plexsearch.log'
-        if self.lm is not None:
-            try:
-                if hasattr(self.lm, 'complete'):
-                    response = self.lm.complete(input_text)
-                    if hasattr(response, 'completion'):
-                        self.last_response = response.completion
-                        return response.completion
-                    self.last_response = str(response)
-                    return str(response)
-            except Exception as e:
-                error_msg = f"Error using LM: {str(e)}"
-                self.last_response = error_msg
-                return error_msg
-        
         # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
         response = run_inference(input_text, self.model_name, stream=use_stream)
@@ -531,12 +517,13 @@ def process_observation(
     model: str = "deepseek/deepseek-reasoner"
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
     """Process observation and return memory diffs with optional action"""
-    _validate_inputs(current_memory, observation, model)
-    prompt = _prepare_prompt(current_memory, observation)
-    response, error = _get_litellm_response(model, prompt)
-    
-    if error:
-        return [], None
+    try:
+        _validate_inputs(current_memory, observation, model)
+        prompt = _prepare_prompt(current_memory, observation)
+        response, error = _get_litellm_response(model, prompt)
+        
+        if error:
+            return [], None
         
     try:
         _validate_xml_response(response)
@@ -545,6 +532,9 @@ def process_observation(
         return diffs, action
     except ET.ParseError as e:
         print(f"XML parsing error: {str(e)}")
+        return [], None
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
         return [], None
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
