@@ -34,6 +34,12 @@ assert 'You can edit your memory using the following XML action:' in context
 assert 'Explanation of all the available XML actions' not in memory
 assert 'You can edit your memory using the following XML action:' not in memory
 
+assert 'Examples of how to use the XML actions:' in context
+assert 'You can use multiple actions in a single completion' in context
+length_context = len(context)
+print("length_context:", length_context)
+assert length_context > 1000
+
 print_datetime()
 output = agent('please respond with the string abc')
 print("output:", output)
