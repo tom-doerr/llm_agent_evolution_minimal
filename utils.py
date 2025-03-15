@@ -438,7 +438,6 @@ class MemoryItem:
              self._normalize_value(self.output),
              self.type,
              self.amount if self.amount is not None else 0.0,
-             self._normalize_value(self.timestamp or ""),
              self._normalize_value(self.file_path or ""),
              self._normalize_value(self.command or ""))
         )
@@ -451,7 +450,6 @@ class MemoryItem:
             MemoryItem._normalize_value(self.output) == MemoryItem._normalize_value(other.output) and
             self.type == other.type and
             (self.amount or 0) == (other.amount or 0) and
-            self._normalize_value(self.timestamp or "") == self._normalize_value(other.timestamp or "") and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
             self._normalize_value(self.command) == self._normalize_value(other.command)
         )
@@ -767,7 +765,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
-</response>'''  # Keep XML formatting exactly matching assertion checks
+</response>'''
             elif 'remove the text' in input_text.lower():
                 return '''<response>
     <edit>
@@ -822,7 +820,7 @@ You can use multiple actions in a single completion but must follow the XML sche
 
     @property
     def last_completion(self) -> str:
-        return self.last_response
+        return self.completions[-1] if self.completions else ""
 
     def get_net_worth(self) -> float:
         """Calculate actual net worth from reward history"""
