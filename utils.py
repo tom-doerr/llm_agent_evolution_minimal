@@ -491,8 +491,9 @@ You can use multiple actions in a single completion but must follow the XML sche
                 if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
                     return "<message>Error: Invalid characters in command</message>"
             
-                if not is_valid_xml_tag(command_elem.text):
-                    return "<message>Error: Invalid command format</message>"
+                # Validate basic command structure
+                if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
+                    return "<message>Error: Invalid characters in command</message>"
                 
             result = subprocess.run(
                 command_elem.text.strip(),
@@ -603,11 +604,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # Create new agent with same model and test mode
+        # Create new agent with same model and propagate test mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode and other._test_mode
+            test_mode=self._test_mode and other._test_mode  # Require both in test mode
         )
         
         # Combine memories from both parents
@@ -890,7 +891,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     
     return agent
 
-# Ensure __all__ is after all definitions
+# Control exported symbols for from utils import *
 __all__ = [
     'Agent',
     'Action',
@@ -900,9 +901,9 @@ __all__ = [
     'envs',
     'extract_xml',
     'MemoryDiff',
-    'MemoryItem', 
-    'parse_xml_to_dict',
+    'MemoryItem',
     'parse_xml_element',
+    'parse_xml_to_dict',
     'process_observation',
     'run_inference'
 ]
