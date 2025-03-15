@@ -381,6 +381,13 @@ class Agent:
 <remember> - Store information in memory
 <recall> - Retrieve information from memory
 <request> - Ask for additional information
+<run> - Execute approved shell commands (ls, date, pwd, wc)
+
+XML Structure Requirements:
+1. Each action must be properly nested
+2. Tags must be closed properly
+3. Attributes should use double quotes
+4. Special characters must be escaped
 
 Examples of how to use the XML actions:
 <remember>
@@ -392,7 +399,23 @@ Examples of how to use the XML actions:
     Response text here
 </respond>
 
-You can use multiple actions in a single completion""", 
+<run>
+    ls -l
+</run>
+
+Memory Management Guidelines:
+- Use <remember> for important user details
+- Use <recall> to retrieve previous information
+- Keep memory updates concise
+- Validate data before storing
+
+Security Rules:
+1. Never execute unapproved commands
+2. Sanitize all user input
+3. Validate XML structure before processing
+4. Limit memory storage of sensitive data
+
+You can use multiple actions in a single completion but must follow the XML schema.""", 
              "instruction", "XML Actions")
         ]
         
