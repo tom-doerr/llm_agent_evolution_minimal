@@ -42,7 +42,9 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, MemoryDiff) and self.type == other.type and self.key == other.key
+        return (isinstance(other, MemoryDiff) and 
+                self.type == other.type and 
+                self.key == other.key)
 
 @dataclass
 class Action:
@@ -865,7 +867,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat',
         'deepseek': 'openrouter/deepseek/deepseek-chat'
@@ -903,9 +905,9 @@ __all__ = [
     'envs',
     'extract_xml',
     'MemoryDiff',
-    'MemoryItem', 
+    'MemoryItem',
     'parse_xml_to_dict',
-    'parse_xml_element',
+    'parse_xml_element', 
     'process_observation',
     'run_inference'
 ]
