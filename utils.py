@@ -50,17 +50,11 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, MemoryItem):
+        if not isinstance(other, MemoryDiff):
             return False
         return (
-            (self._normalize_value(self.input), self._normalize_value(self.output),
-             self._normalize_value(self.type), self._normalize_value(self.amount),
-             self._normalize_value(self.timestamp), self._normalize_value(self.file_path),
-             self._normalize_value(self.command)) == 
-            (self._normalize_value(other.input), self._normalize_value(other.output),
-             self._normalize_value(other.type), self._normalize_value(other.amount),
-             self._normalize_value(other.timestamp), self._normalize_value(other.file_path),
-             self._normalize_value(other.command))
+            (self.type, self.key, self.old_value, self.new_value) == 
+            (other.type, other.key, other.old_value, other.new_value)
         )
 
     @staticmethod
@@ -378,15 +372,6 @@ class MemoryItem:
     input: str = field(default="")
     output: str = field(default="")
     
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, MemoryItem):
-            return False
-        return (
-            (self._normalize_value(self.input), self._normalize_value(self.output),
-             self.type, self.amount, self.timestamp, self.file_path, self.command) == 
-            (self._normalize_value(other.input), self._normalize_value(other.output),
-             other.type, other.amount, other.timestamp, other.file_path, other.command)
-        )
 
     def __hash__(self) -> int:
         return hash((
@@ -720,7 +705,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = utils.create_agent(
+        new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
