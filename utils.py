@@ -75,10 +75,11 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     if not is_valid_model_name(model):
         model = "deepseek/deepseek-reasoner"
             
-        # Check for required API keys
-        if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
-            return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
-            
+    # Check for required API keys
+    if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
+        return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
+        
+    try:
         response = litellm.completion(
             model=model,
             messages=[{"role": "user", "content": input_string}],
@@ -109,9 +110,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         
         # Mock response for testing when no real response is available
         return "This is a mock response for testing purposes."
-    except ImportError:
-        # For testing purposes, return a mock response
-        return "Mock response (litellm not installed)"
     except Exception as e:
         return f"Error during inference: {str(e)}"
 
