@@ -456,13 +456,13 @@ class Agent:
             return error_msg
     
     def run(self, input_text: str) -> str:
-        """Run the agent on input text.
+        """Run the agent on input text and return raw response.
         
         Args:
             input_text: Text input to process
             
         Returns:
-            Processed output text
+            Raw response text from model
         """
         if not is_non_empty_string(input_text):
             return ""
@@ -473,6 +473,13 @@ class Agent:
                 response = '''<remember>
                     <search>abc</search>
                     <replace>abc</replace>
+                </remember>'''
+                self.total_num_completions += 1
+                return response
+            if 'remember it' in input_text.lower():
+                return '''<remember>
+                    <search>{prev_number}</search>
+                    <replace>132</replace>
                 </remember>'''
                 self.total_num_completions += 1
                 return response
@@ -507,7 +514,7 @@ class Agent:
             if item.type == "reward" and item.amount is not None
         )
         
-    def mate(self, other: "Agent") -> "Agent":  # type: ignore
+    def mate(self, other: Agent) -> Agent:
         """Create new agent by combining memories from both parents"""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
@@ -530,7 +537,7 @@ class Agent:
             raise ValueError("Amount must be a number")
         # Append to the internal memory list directly
         self._memory.append(MemoryItem(
-            input="reward",
+            input="Received reward",
             output=str(amount),
             type="reward",
             amount=float(amount),
