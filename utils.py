@@ -784,7 +784,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         <search></search>
         <replace>132</replace>
     </remember>
-    <respond>Got it! I'll remember your number: 132</respond>
+    <message>Got it! I'll remember your number: 132</message>
 </response>'''
             elif 'please remember my secret number' in input_text.lower():
                 number = re.search(r'\d+', input_text).group()
@@ -835,8 +835,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
         
     def mate(self, other: 'Agent') -> 'Agent':
-        # Create new agent by combining memories from both parents
-        # Applies mating cost to self parent only (50 as defined in base_env_manager)
         # Create new agent by combining memories from both parents
         # Applies mating cost to self parent only (50 as defined in base_env_manager)
         # Inherits configuration from parents while preferring self's settings
@@ -1224,7 +1222,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem', 'create_agent',
     
     # Environment configuration
-    'base_env', 'base_env_manager', 'a_env', 'envs',
+    'base_env', 'base_env_manager', 'a_env', 'envs', 'SimpleNamespace',
     
     # XML processing utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
