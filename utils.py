@@ -137,7 +137,7 @@ def run_inference(input_string: str, model: str = "openrouter/deepseek/deepseek-
     
     Args:
         input_string: Input text to process
-        model: Model to use for inference (default: deepseek/deepseek-reasoner)
+        model: Model to use for inference (default: openrouter/deepseek/deepseek-chat)
         stream: Whether to use streaming mode (default: False)
         
     Returns:
@@ -267,7 +267,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
                     continue
     return ""
 
-def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], List[Any]]]:
+def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], List[Any], None]]:
     """Parse XML string into a nested dictionary structure."""
     if not is_non_empty_string(xml_string):
         return {}
@@ -942,10 +942,10 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 
     Args:
         model: Model to use - Valid options:
-               - 'openrouter/deepseek/deepseek-chat' (default)
-               - 'openrouter/deepseek/deepseek-coder-33b-instruct'
-               - 'openrouter/google/gemini-2.0-flash-001'
-               - 'openrouter/google/gemini-2.0-pro'
+               - 'deepseek-chat' (openrouter/deepseek/deepseek-chat)
+               - 'deepseek-coder' (openrouter/deepseek/deepseek-coder-33b-instruct)
+               - 'flash' (openrouter/google/gemini-2.0-flash-001)
+               - 'pro' (openrouter/google/gemini-2.0-pro)
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -1007,7 +1007,7 @@ __all__ = [
     'extract_xml',
     'parse_xml_element',
     'parse_xml_to_dict',
-    'print_datetime', 
+    'print_datetime',
     'process_observation',
     'run_inference'
 ]
