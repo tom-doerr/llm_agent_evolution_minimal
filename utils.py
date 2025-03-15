@@ -276,7 +276,8 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
         if element.attrib:
             result = {"_text": element.text or ""}
             result.update(element.attrib)
-            return result
+            self.last_response = result
+            return self
         return element.text or ""
     
     result = {}
@@ -351,7 +352,7 @@ class Agent:
             for item in self._memory
         )
     
-    def __call__(self, input_text: str) -> str:
+    def __call__(self, input_text: str) -> 'Agent':
         """Handle agent calls with input text.
         
         Args:
