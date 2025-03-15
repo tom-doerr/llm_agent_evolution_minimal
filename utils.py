@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import datetime
 import os
+import re
 from typing import Any, Dict, List, Optional, Union, Tuple
 
 def is_non_empty_string(value: Any) -> bool:
@@ -44,6 +45,19 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
     return value[:max_length] + "..."
 
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+    """Run inference using the specified model.
+    
+    Args:
+        input_string: Input text to process
+        model: Model to use for inference
+        stream: Whether to use streaming mode
+        
+    Returns:
+        Inference result as string
+        
+    Raises:
+        ValueError: If input_string is invalid
+    """
     # Run inference using the specified model
     if not is_non_empty_string(input_string):
         return ""
@@ -199,6 +213,14 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         return {"error": f"Unexpected error: {str(e)}"}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
+    """Parse an XML element recursively into a dictionary or string.
+    
+    Args:
+        element: XML element to parse
+        
+    Returns:
+        Parsed element as dictionary or string
+    """
     """Recursively parse an XML element into a dictionary or string.
     
     Args:
@@ -254,18 +276,34 @@ class Agent:
         return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
     
     def __call__(self, input_text: str) -> str:
+        """Handle agent calls with input text.
+        
+        Args:
+            input_text: Text input to process
+            
+        Returns:
+            Processed output text
+        """
         if not is_non_empty_string(input_text):
             return ""
             
-        result = self.run(input_text)
-        if not is_non_empty_string(result):
-            result = ""
-            
-        self.memory.append({
-            "input": truncate_string(input_text),
-            "output": truncate_string(result)
-        })
-        return result
+        try:
+            result = self.run(input_text)
+            if not is_non_empty_string(result):
+                result = ""
+                
+            self.memory.append({
+                "input": truncate_string(input_text),
+                "output": truncate_string(result)
+            })
+            return result
+        except Exception as e:
+            error_msg = f"Error processing input: {str(e)}"
+            self.memory.append({
+                "input": truncate_string(input_text),
+                "output": error_msg
+            })
+            return error_msg
     
     def run(self, input_text: str) -> str:
         if not is_non_empty_string(input_text):
@@ -293,7 +331,19 @@ class Agent:
         """Clear the agent's memory"""
         self.memory = []
 
-def create_agent(model_type: str = 'flash', **kwargs) -> "Agent":
+def create_agent(model_type: str = 'flash', **kwargs: Any) -> "Agent":
+    """Create an agent with the specified model type.
+    
+    Args:
+        model_type: Type of model to use ('flash', 'pro', 'deepseek', or 'default')
+        **kwargs: Additional arguments to pass to Agent initialization
+        
+    Returns:
+        Agent instance configured with the specified model
+        
+    Raises:
+        ValueError: If model_type is invalid
+    """
     """Create an agent with the specified model type.
     
     Args:
