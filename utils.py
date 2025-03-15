@@ -28,7 +28,7 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
         return value
     return value[:max_length] + "..."
 
-def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") -> str:
+def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
     try:
         import litellm
         import os
@@ -40,10 +40,22 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
         response = litellm.completion(
             model=model,
             messages=[{"role": "user", "content": input_string}],
-            stream=False
+            stream=stream
         )
         
-        # Extract content from response
+        # Handle streaming response
+        if stream:
+            full_response = ""
+            for chunk in response:
+                if hasattr(chunk, 'choices') and chunk.choices:
+                    delta = chunk.choices[0].delta
+                    if hasattr(delta, 'content') and delta.content:
+                        full_response += delta.content
+                    elif hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                        full_response += delta.reasoning_content
+            return full_response
+        
+        # Handle non-streaming response
         if response and hasattr(response, 'choices') and response.choices:
             choice = response.choices[0]
             if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
@@ -158,7 +170,9 @@ class Agent:
                 return f"Error using DSPy LM: {str(e)}"
         else:
             # Fallback to run_inference
-            return run_inference(input_text, self.model_name)
+            # Use streaming for DeepSeek models to properly handle reasoning content
+            use_stream = self.model_name.startswith("deepseek/")
+            return run_inference(input_text, self.model_name, stream=use_stream)
 
 def create_agent(model_type: str) -> Agent:
     model_mapping = {
@@ -173,7 +187,11 @@ def create_agent(model_type: str) -> Agent:
     
     try:
         import dspy
-        agent.lm = dspy.LM(model_name)
+        # For DeepSeek models, we need to use the appropriate configuration
+        if model_name.startswith("deepseek/"):
+            agent.lm = dspy.LM(model_name)
+        else:
+            agent.lm = dspy.LM(model_name)
         # Memory is already initialized in the Agent constructor
         return agent
     except ImportError:
