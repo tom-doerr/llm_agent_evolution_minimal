@@ -601,8 +601,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._memory.extend(other._memory)
         
         # Apply mating cost once to each parent
-        self.reward(-utils.base_env_manager.mating_cost)
-        other.reward(-utils.base_env_manager.mating_cost)
+        self.reward(-base_env_manager.mating_cost)
+        other.reward(-base_env_manager.mating_cost)
         
         # Remove duplicate memories using serialized representation
         seen = set()
