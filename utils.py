@@ -455,7 +455,6 @@ class MemoryItem:
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
             self._normalize_value(self.command) == self._normalize_value(other.command)
         )
-        )
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = True) -> None:
