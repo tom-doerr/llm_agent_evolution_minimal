@@ -16,7 +16,6 @@ Code Quality Improvements & Fixes:
 11. Improved XML response validation
 12. Fixed test_mode propagation in mate()
 13. Fixed duplicate entries in __all__ exports
-14. Added missing parse_xml_element to __all__ exports
 15. Enforced boolean type for test_mode in mate() with explicit casting
 17. Fixed duplicate test_mode parameter in docstring
 18. Simplified MemoryDiff equality check

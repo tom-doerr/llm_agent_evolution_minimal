@@ -49,8 +49,9 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        return (isinstance(other, MemoryDiff) and 
-                self.type == other.type and 
+        if not isinstance(other, MemoryDiff):
+            return False
+        return (self.type == other.type and 
                 self.key == other.key and
                 self.old_value == other.old_value and
                 self.new_value == other.new_value)
@@ -924,4 +925,4 @@ __all__ = [
     'print_datetime',
     'process_observation',
     'run_inference'
-]
+]  # Already contains parse_xml_element
