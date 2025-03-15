@@ -14,9 +14,9 @@ Code Quality Improvements & Fixes:
 13. Added missing parse_xml_element to __all__ exports
 14. Fixed duplicate parameter in create_agent docstring
 15. Enforced boolean type for test_mode in mate()
-14. Enforced boolean type for test_mode
-15. Simplified MemoryDiff equality checks
-16. Updated DeepSeek model paths to current format
+15. Enforced boolean type for test_mode
+16. Simplified MemoryDiff equality checks
+17. Updated DeepSeek model paths to current format
 17. Fixed Action equality handling of None params
 18. Standardized environment configurations
 19. Improved error messages for XML parsing
