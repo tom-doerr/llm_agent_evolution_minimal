@@ -1058,8 +1058,9 @@ def create_agent(model: str = 'deepseek-chat',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-pro': 'openrouter/google/gemini-2.0-pro',
-        'gpt-3.5-turbo': 'openrouter/openai/gpt-3.5-turbo',
-        'gpt-4': 'openrouter/openai/gpt-4'
+        'gpt-3.5': 'openrouter/openai/gpt-3.5-turbo',
+        'gpt-4': 'openrouter/openai/gpt-4',
+        'llama-3': 'openrouter/meta-llama/llama-3-70b-instruct'
     }
     # Get mapped model name
     model_name = model_mapping.get(model, model)  # Case-sensitive match
@@ -1102,10 +1103,6 @@ __all__ = [
     # Helper functions
     'print_datetime'
 ]
-
-# Ensure process_observation is properly exported
-if 'process_observation' not in __all__:
-    __all__.append('process_observation')
 
 # Ensure unique exports while preserving order
 __all__ = list(dict.fromkeys(__all__))
