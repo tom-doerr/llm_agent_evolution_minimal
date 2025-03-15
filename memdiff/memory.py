@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 from typing import Optional, Dict, List, Tuple
-import xml.etree.ElementTree as ET
 import litellm
+import xml.etree.ElementTree as ET
 
 class DiffType(Enum):
     SEARCH_REPLACE = "search/replace"
@@ -70,7 +70,7 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
             xml_update, reasoning_update = _process_chunk(chunk)
             xml_content += xml_update
             reasoning_content += reasoning_update
-        return xml_content.strip(), reasoning_content.strip()
+        return xml_content.strip(), reasoning_content.strip() # Strip whitespace for clean output
     except Exception as e:
         raise ValueError(f"Error during litellm completion: {e}") from e
 

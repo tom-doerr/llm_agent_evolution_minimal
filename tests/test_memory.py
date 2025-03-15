@@ -42,6 +42,42 @@ def test_process_observation_valid_response(mock_complete):
     assert action.params == {"param1": "value1", "param2": "value2"}
 
 @patch('litellm.completion')
+def test_process_observation_no_diffs_no_action(mock_complete):
+    # Create a mock response with no memory diffs and no action
+    mock_chunk = MagicMock()
+    mock_chunk.choices = [MagicMock()]
+    mock_chunk.choices[0].delta = MagicMock()
+    mock_chunk.choices[0].delta.content = '<response></response>'
+    mock_complete.return_value = [mock_chunk]
+
+    diffs, action, reasoning = process_observation("current", "obs", model="test-model")
+    assert len(diffs) == 0
+    assert action is None
+
+@patch('litellm.completion')
+def test_process_observation_no_action(mock_complete):
+    # Create a mock response with memory diffs but no action
+    mock_chunk = MagicMock()
+    mock_chunk.choices = [MagicMock()]
+    mock_chunk.choices[0].delta = MagicMock()
+    mock_chunk.choices[0].delta.content = '''
+        <response>
+        <memory_diff>
+        <file_path>test.py</file_path>
+        <search>old</search>
+        <replace>new</replace>
+        </memory_diff>
+        </response>
+    '''
+    mock_complete.return_value = [mock_chunk]
+
+    diffs, action, reasoning = process_observation("current", "obs", model="test-model")
+    assert len(diffs) == 1
+    assert diffs[0].file_path == "test.py"
+    assert action is None
+
+
+@patch('litellm.completion')
 def test_process_observation_invalid_xml(mock_complete):
     mock_chunk = MagicMock()
     mock_chunk.choices = [MagicMock()]
@@ -61,6 +97,7 @@ def test_process_observation_invalid_xml(mock_complete):
     mock_complete.return_value = [mock_chunk]
     with pytest.raises(ValueError, match="Invalid XML content"):
         process_observation("current", "obs", model="test-model")
+
 
 def test_xml_parsing_error_handling():
     with patch('litellm.completion') as mock_complete:
