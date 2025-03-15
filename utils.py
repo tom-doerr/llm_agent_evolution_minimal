@@ -584,9 +584,11 @@ You can use multiple actions in a single completion but must follow the XML sche
             f"{item.timestamp} | {item.type}: {item.input} -> {item.output}\n"
             for item in self._memory
             # Strictly exclude any instruction-type items and context instructions
-            if item.type not in {"instruction", "context"} 
-            and not any(item.output.strip() == ci.output.strip() for ci in self._context_instructions)
-            and item.type is not None  # Add null check
+            if item.type not in {"instruction", "context"} \
+            and not any(item.output.strip() == ci.output.strip() for ci in self._context_instructions) \
+            and item.type is not None  # Add null check \
+            and "Explanation of all the available XML actions" not in item.output \
+            and "You can edit your memory using the following XML action:" not in item.output
         )
     
     def _handle_edit_commands(self, response: str) -> None:
@@ -637,7 +639,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             r'(?:<!\[CDATA\[)',  # CDATA sections
             r'(?:/\w+>)',  # Self-closing tags
             r'(?:%\w+;)',  # URL encoding attempts
-            r'(?:\\x[0-9a-fA-F]{2})'  # Hex escapes
+            r'(?:\\x[0-9a-fA-F]{2})',  # Hex escapes
+            r'\b(?:rm|cat|cp|mv|sh|bash|zsh|sudo)\b'  # Prohibited commands
         ]
         
         if any(re.search(pattern, xml_content, re.IGNORECASE) for pattern in prohibited_patterns):
@@ -882,7 +885,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._context_instructions = self._context_instructions.copy()
         
         # Apply mating cost only to self parent per main.py assertion
-        self.reward(-base_env_manager.mating_cost)
+        self.reward(-mating_cost)
         
         return new_agent
 
