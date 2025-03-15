@@ -605,13 +605,17 @@ You can use multiple actions in a single completion but must follow the XML sche
                 self.total_num_completions += 1
                 return response
             if 'remember it' in input_text.lower():
-                return '''<remember>
-    <search>previous_value</search>
-    <replace>132</replace>
-</remember>'''
+                return '''<response>
+    <remember>
+        <search>previous_value</search>
+        <replace>132</replace>
+    </remember>
+</response>'''
             if 'current directory' in input_text.lower():
-                return '''<shell>ls</shell>
-                    <respond>plexsearch.log</respond>'''
+                return '''<response>
+    <shell>ls</shell>
+    <respond>plexsearch.log</respond>
+</response>'''
             if 'respond using the respond xml' in input_text.lower():
                 return '''<respond>Successfully processed request</respond>'''
 
@@ -645,7 +649,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # New agent only in test mode if both parents are in test mode (logical AND)
-        new_test_mode = bool(self._test_mode and other._test_mode)
+        new_test_mode = bool(self._test_mode and other._test_mode)  # Changed from OR to AND
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -955,7 +959,7 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'a_env',
     'base_env_manager',
