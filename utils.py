@@ -348,6 +348,7 @@ class Agent:
         """Initialize agent with model name and default settings"""
         self.last_response: str = ""
         self.completions: List[str] = []
+        self.total_num_completions: int = 0
         if not isinstance(model_name, str):
             raise ValueError("model_name must be a string")
             
@@ -481,6 +482,7 @@ class Agent:
                     <search>placeholder</search>
                     <replace>abc</replace>
                 </remember>'''
+                self.total_num_completions += 1
                 return 'abc'
             elif 'current directory' in input_text.lower():
                 self.last_response = '''<response>
@@ -767,6 +769,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
 
 # Ensure __all__ is after all definitions
 __all__ = [
+    # Functions
     'is_non_empty_string',
     'is_valid_xml_tag',
     'is_valid_model_name',
@@ -780,14 +783,19 @@ __all__ = [
     'parse_xml_to_dict',
     'parse_xml_element',
     'print_datetime',
-    'MemoryItem',
-    'Agent',
     'create_agent',
-    'MemoryDiff',
+    'process_observation',
+    
+    # Data classes
     'MemoryItem',
+    'MemoryDiff',
     'Action',
     'DiffType',
-    'process_observation',
+    
+    # Core classes
+    'Agent',
+    
+    # Environment configs
     'base_env_manager',
     'envs'
 ]
