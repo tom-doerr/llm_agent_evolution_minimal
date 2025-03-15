@@ -378,8 +378,7 @@ class MemoryItem:
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command and
-                self.type == other.type)
+                self.command == other.command)
 
     def __hash__(self) -> int:
         return hash((
