@@ -892,7 +892,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             output=f"Net worth changed by {total}",
             type="reward",
             amount=total,
-            timestamp=datetime.datetime.now().isoformat(timespec='milliseconds').replace('T', ' '))
+            timestamp=datetime.datetime.now().isoformat(timespec='milliseconds').replace('T', ' ')
         ))
 
 
