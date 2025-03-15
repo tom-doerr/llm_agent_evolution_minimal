@@ -1092,6 +1092,9 @@ __all__ = [
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Helper functions
-    'print_datetime'
+    'print_datetime',
+    
+    # Environment components
+    'envs', 'base_env_manager'
 ]
 
