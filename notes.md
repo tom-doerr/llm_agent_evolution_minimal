@@ -21,7 +21,7 @@ Code Quality Improvements & Fixes:
 20. Removed duplicate base_env_manager and a_env from __all__ exports
 21. Added explicit model mapping for full openrouter/deepseek path
 22. Fixed test_mode propagation in mate() to use AND instead of OR
-23. Added missing process_observation and a_env to __all__ exports
+23. Added missing process_observation to __all__ exports
 24. Simplified test_mode propagation logic in mate()
 22. Standardized environment configurations
 23. Improved error messages for XML parsing
@@ -41,7 +41,7 @@ Key Resolved Issues:
 - Fixed test_mode propagation in mate()
 - Simplified MemoryDiff equality checks
 - Standardized environment configurations
-- Added missing base_env_manager export
+- Added missing a_env and base_env_manager exports
 - Improved MemoryDiff equality checks
 - Fixed duplicate documentation sections
 

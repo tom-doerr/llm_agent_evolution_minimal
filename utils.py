@@ -933,6 +933,7 @@ __all__ = [
     'DiffType',
     'MemoryDiff', 
     'MemoryItem',
+    'a_env',
     'base_env_manager',
     'create_agent',
     'envs',
@@ -944,8 +945,3 @@ __all__ = [
     'run_inference'
 ]
 
-# Environment configurations
-envs = {
-    'a_env': a_env,
-    'base_env': SimpleNamespace(description="Base environment configuration")
-}
