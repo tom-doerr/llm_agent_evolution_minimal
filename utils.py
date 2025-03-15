@@ -618,8 +618,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             if 'respond using the respond xml' in input_text.lower():
                 return '''<respond>Successfully processed request</respond>'''
 
-        # Use streaming for DeepSeek models to properly handle reasoning content
-        use_stream = self.model_name.startswith("deepseek/")
+        # Use streaming for OpenRouter DeepSeek models
+        use_stream = self.model_name.startswith("openrouter/deepseek/")
         response = run_inference(input_text, self.model_name, stream=use_stream)
         self.last_response = response  # Store the raw response
         self.completions.append(response)
@@ -766,10 +766,12 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
     """Get response from LiteLLM API"""
     try:
         import litellm
+        # Handle streaming for OpenRouter DeepSeek models
+        stream = model.startswith("openrouter/deepseek/")
         response = litellm.completion(
             model=model, 
             messages=[{"role": "user", "content": prompt}],
-            stream=model.startswith("deepseek/")  # Stream for DeepSeek models
+            stream=stream
         )
         return response.choices[0].message.content, ""
     except Exception as e:
@@ -926,7 +928,8 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
-        'gemini-pro': 'openrouter/google/gemini-2.0-pro'
+        'gemini-pro': 'openrouter/google/gemini-2.0-pro',
+        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
     }
     # Add full model name as alias
     model_mapping[model] = model
