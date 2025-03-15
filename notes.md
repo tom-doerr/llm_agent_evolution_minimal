@@ -1,7 +1,8 @@
 Code Quality Improvements & Fixes:
-1. Consolidated duplicate entries in __all__ exports
-2. Added missing XML shell command handling
-3. Fixed environment configuration structure
+1. Fixed MemoryDiff equality comparison for string values
+2. Standardized agent initialization docstring placement
+3. Improved model name documentation in create_agent()
+4. Added whitespace normalization in MemoryDiff comparisons
 4. Added proper documentation for environment configs
 5. Fixed XML parsing function exports
 6. Removed redundant imports and comments

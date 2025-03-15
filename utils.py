@@ -365,8 +365,6 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
-        if not isinstance(model_name, str) or not model_name.strip():
-            raise ValueError("model_name must be a non-empty string")
         """Initialize agent with model name and default settings
         
         Args:
@@ -936,7 +934,8 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     """Create an agent with specified model.
 
     Args:
-        model: Model to use ('flash', 'gemini-pro', 'deepseek-chat' or full OpenRouter model name)
+        model: Model to use - 'flash' (gemini-2.0-flash), 'pro' (gemini-2.0-pro), 
+               'deepseek-chat' or 'deepseek-coder'
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -988,7 +987,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType',
+    'DiffType', 
     'MemoryDiff',
     'MemoryItem',
     'base_env_manager',
