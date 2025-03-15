@@ -1042,7 +1042,7 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         return Action(
             type=action_elem.get('type', ''),
             params={child.tag: (child.text or '').strip()
-                   for child in action_elem if child.text is not None}
+                   for child in action_elem if child.text is not None and child.tag != 'file_path'}
         )
     return None
 
