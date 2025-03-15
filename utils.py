@@ -333,32 +333,47 @@ class Agent:
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
         self._memory: List[MemoryItem] = []
+        self._context_instructions: List[MemoryItem] = []  # Separate storage for context
         self.lm: Optional[Any] = None
         self.max_tokens = 50
         self._test_mode = "flash" in model_name.lower()
-        # Initialize with core instructions
-        # Initialize context with core instructions (not stored in regular memory)
-        self.remember(
-            "Explanation of all the available XML actions. You can edit your memory using the following XML action:",
-            type_="instruction"
-        )
-        self.remember(
-            """Available XML actions:
+        
+        # Initialize context instructions (not stored in regular memory)
+        self._add_core_context_instructions()
+
+    def _add_core_context_instructions(self) -> None:
+        """Add required context instructions that should never appear in memory"""
+        core_instructions = [
+            ("Explanation of all the available XML actions. You can edit your memory using the following XML action:", 
+             "instruction", ""),
+            ("""Available XML actions:
 <respond> - Send a response to the user  
 <remember> - Store information in memory
 <recall> - Retrieve information from memory
-<request> - Ask for additional information""",
-            type_="instruction",
-            input_="XML Actions"
-        )
+<request> - Ask for additional information""", 
+             "instruction", "XML Actions")
+        ]
+        
+        for text, type_, input_ in core_instructions:
+            item = MemoryItem(
+                input=input_,
+                output=text,
+                type=type_
+            )
+            self._context_instructions.append(item)
 
     def remember(self, output: str, type_: str = "fact", input_: str = "") -> None:
         """Helper to add memory items"""
-        self._memory.append(MemoryItem(
+        item = MemoryItem(
             input=input_,
             output=output,
             type=type_
-        ))
+        )
+        
+        if type_ == "instruction":
+            self._context_instructions.append(item)
+        else:
+            self._memory.append(item)
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -368,19 +383,19 @@ class Agent:
 
     @property
     def context(self) -> str:
-        """Get context from memory entries marked as instructions"""
+        """Get context from dedicated instructions list"""
         return "\n".join(
             f"{item.output}" 
-            for item in self._memory
-            if item.type == "instruction"
+            for item in self._context_instructions
         )
 
     @property
     def memory(self) -> str:
-        """Get memory as formatted string with timestamped entries"""
+        """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
             f"{item.timestamp} | {item.type}: {item.input} -> {item.output}"
             for item in self._memory
+            if item.type != "instruction"  # Exclude any remaining instruction items
         )
     
     def __call__(self, input_text: str) -> str:
