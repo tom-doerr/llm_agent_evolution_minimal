@@ -611,8 +611,9 @@ You can use multiple actions in a single completion but must follow the XML sche
             print(f"Error handling edit command: {str(e)}")
 
     def _handle_shell_commands(self, response: str) -> str:
-        """Execute validated shell commands from XML response
-        Returns cleaned command output or error message"""
+        # Process shell commands from XML response
+        # Returns XML formatted output or error message
+        # Strict validation against prohibited commands and patterns
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
         # Extract and validate XML structure
@@ -830,14 +831,10 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
         
     def mate(self, other: 'Agent') -> 'Agent':
-        """Create new agent by combining memories from both parents.
-        Applies mating cost to self parent only.
-        
-        Inherits:
-        - Test mode from either parent
-        - Model name from self
-        - Max tokens from self
-        - Environment configurations
+        # Create new agent by combining memories from both parents
+        # Applies mating cost to self parent only
+        # Inherits configuration from parents while preferring self's settings
+        # Returns new Agent with combined memories
         
         Inherits:
         - Test mode from either parent
@@ -866,11 +863,15 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
         new_agent.total_num_completions = self.total_num_completions + other.total_num_completions
         
-        # Combine context instructions from both parents first
-        combined_context = self._context_instructions + other._context_instructions
+        # Combine and deduplicate memories while preserving order
+        combined_mem: List[MemoryItem] = []
+        seen_hashes = set()
         
-        # Combine memories from both parents
-        combined_mem = self._memory + other._memory
+        for item in self._memory + other._memory:
+            item_hash = hash(item)
+            if item_hash not in seen_hashes:
+                seen_hashes.add(item_hash)
+                combined_mem.append(item)
         
         # Remove duplicates while preserving order
         seen_hashes = set()
@@ -911,7 +912,8 @@ You can use multiple actions in a single completion but must follow the XML sche
 
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
-    """Validate input types and values"""
+    # Validate inputs for process_observation function
+    # Raises TypeError or ValueError for invalid inputs
     if not isinstance(current_memory, str):
         raise TypeError("current_memory must be a string")
     if not isinstance(observation, str):
