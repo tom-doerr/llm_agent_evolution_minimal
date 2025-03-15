@@ -360,8 +360,8 @@ class Agent:
             raise ValueError("max_tokens must be a positive integer")
 
         self.model_name = model_name
-        self.max_tokens = max_tokens
-        self._test_mode = test_mode
+        self.max_tokens = int(max_tokens)
+        self._test_mode = bool(test_mode)
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -606,11 +606,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # Create new agent with same model and propagate test mode
+        # Create new agent with same model and propagate test mode only if both parents have it
+        test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=bool(self._test_mode and other._test_mode)
+            test_mode=test_mode
         )
         
         # Combine memories from both parents
@@ -865,7 +866,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50,
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-llm-67b-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
         'default': 'openrouter/deepseek/deepseek-chat'
@@ -895,8 +896,8 @@ def create_agent(model: str = 'flash', max_tokens: int = 50,
 
 # Control exported symbols for from utils import *
 __all__ = [
-    'Agent',
     'Action',
+    'Agent',
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
@@ -905,7 +906,7 @@ __all__ = [
     'envs',
     'extract_xml',
     'parse_xml_element',
-    'parse_xml_to_dict', 
+    'parse_xml_to_dict',
     'process_observation',
     'run_inference'
 ]
