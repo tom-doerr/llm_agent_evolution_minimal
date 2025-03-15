@@ -52,16 +52,44 @@ Output format:
     memory_diffs = []
     action = None
     
-    # Extract memory diffs
-    diff_matches = re.findall(r'<memory_diff>(.*?)</memory_diff>', xml_content, re.DOTALL)
-    if diff_matches:
-        # Parse diffs here...
-        pass
+    # Validate we got valid XML content
+    if not xml_content.strip().startswith("<response>"):
+        raise ValueError("Invalid XML response format - missing root <response> tag")
         
-    # Extract action
-    action_match = re.search(r'<action name="([^"]+)"(.*?)>(.*?)</action>', xml_content, re.DOTALL)
+    # Parse memory diffs
+    diff_sections = re.findall(r'<memory_diff>(.*?)</memory_diff>', xml_content, re.DOTALL)
+    for section in diff_sections:
+        # Find all file diffs in the section
+        file_diffs = re.finditer(
+            r'<file_path>(.*?)</file_path>\s*<search>(.*?)</search>\s*<replace>(.*?)</replace>',
+            section,
+            re.DOTALL
+        )
+        for match in file_diffs:
+            file_path = match.group(1).strip()
+            search = match.group(2).strip()
+            replace = match.group(3).strip()
+            memory_diffs.append(
+                MemoryDiff(file_path=file_path, search=search, replace=replace)
+            )
+            
+    # Parse action
+    action_match = re.search(
+        r'<action name="([^"]+)">(.*?)</action>',
+        xml_content,
+        re.DOTALL
+    )
     if action_match:
-        # Parse action params here...
-        pass
+        action_name = action_match.group(1)
+        params = {}
+        # Parse params
+        param_matches = re.findall(
+            r'<([^>]+)>(.*?)</\1>',
+            action_match.group(2),
+            re.DOTALL
+        )
+        for param_name, param_value in param_matches:
+            params[param_name.strip()] = param_value.strip()
+        action = Action(name=action_name, params=params)
 
     return memory_diffs, action

@@ -19,10 +19,14 @@ def test_process_observation_valid_response(mock_complete):
         'choices': [{'delta': {'content': '''
             <response>
             <memory_diff>
-            <file>test.py</file>
+            <file_path>test.py</file_path>
             <search>old</search>
             <replace>new</replace>
             </memory_diff>
+            <action name="update">
+                <param1>value1</param1>
+                <param2>value2</param2>
+            </action>
             </response>
         '''}}]
     }]
@@ -30,6 +34,8 @@ def test_process_observation_valid_response(mock_complete):
     diffs, action = process_observation("current", "obs")
     assert len(diffs) == 1
     assert diffs[0].file_path == "test.py"
+    assert action.name == "update"
+    assert action.params == {"param1": "value1", "param2": "value2"}
 
 def test_xml_parsing_error_handling():
     with patch('litellm.completion') as mock_complete:
