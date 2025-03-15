@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "memdiff"
+version = "0.1.0"
+description = "Minimalistic memory diff implementation with LiteLLM integration"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+litellm = "^1.2.3"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
