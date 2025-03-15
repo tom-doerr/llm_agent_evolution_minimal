@@ -615,9 +615,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         Returns cleaned command output or error message"""
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
-            
-        # Store raw response before processing
-        self.completions.append(response)
         # Extract and validate XML structure
         xml_content = extract_xml(response)
         if not xml_content:
@@ -894,13 +891,12 @@ You can use multiple actions in a single completion but must follow the XML sche
     def reward(self, *amounts: Union[int, float]) -> None:
         """Update agent's net worth with reward/penalty."""
         total = sum(float(a) for a in amounts)
-        # Append to the internal memory list directly
         self._memory.append(MemoryItem(
-            input="Received reward",
-            output=str(total),
+            input="Reward adjustment",
+            output=f"Net worth changed by {total}",
             type="reward",
             amount=total,
-            timestamp=datetime.datetime.now().isoformat()
+            timestamp=datetime.datetime.now().isoformat(timespec='milliseconds')
         ))
 
 
