@@ -356,6 +356,7 @@ class Agent:
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
         self._memory: List[MemoryItem] = []
+        self._test_mode = model_name.startswith("flash")  # Initialize here
         # Initialize with core instructions
         self.remember(
             "Explanation of all the available XML actions. You can edit your memory using the following XML action:",
@@ -378,7 +379,7 @@ class Agent:
             output=output,
             type=type_
         ))
-        self._test_mode = self.model_name.startswith("flash")
+        # Removed redundant test_mode assignment
         self.lm: Optional[Any] = None  # Language model instance
         self.max_tokens = 50  # Default value
     
@@ -387,6 +388,15 @@ class Agent:
     
     def __repr__(self) -> str:
         return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
+
+    @property
+    def context(self) -> str:
+        """Get context from memory entries marked as instructions"""
+        return "\n".join(
+            f"{item.output}" 
+            for item in self._memory
+            if item.type == "instruction"
+        )
 
     @property
     def memory(self) -> str:
