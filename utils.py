@@ -80,6 +80,9 @@ class Action:
                (other.params if other.params is not None else {}))
 
     def __hash__(self) -> int:
+        return hash((self.type, frozenset((self.params or {}).items())))
+
+    def __hash__(self) -> int:
         return hash((self.type, tuple(sorted(self.params.items())) if self.params else None))
 
 
@@ -1104,13 +1107,16 @@ __all__ = [
     # Environment configuration
     'base_env', 'envs', 'base_env_manager', 'a_env',
     
-    # XML processing
+    # XML processing utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
     
-    # Core utilities
+    # Core runtime utilities
     'print_datetime', 'create_agent', 'run_inference',
     
     # Validation functions
-    'is_valid_xml_tag', 'is_valid_model_name'
+    'is_valid_xml_tag', 'is_valid_model_name',
+    
+    # Environment components
+    'base_env', 'envs', 'base_env_manager', 'a_env'
 ]
 
