@@ -947,7 +947,6 @@ def process_observation(
     observation: str,
     model: str = "openrouter/deepseek/deepseek-chat"  # Default to DeepSeek Chat model
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
-) -> Tuple[List[MemoryDiff], Optional[Action]]:
     """Process observation and return memory diffs with optional action
     
     Args:
