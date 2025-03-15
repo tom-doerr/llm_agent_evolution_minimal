@@ -371,7 +371,7 @@ class Agent:
 
         self.model_name = model_name
         self.max_tokens = int(max_tokens)
-        self._test_mode = bool(test_mode)  # Ensure boolean type
+        self._test_mode = test_mode  # Boolean flag for testing
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -631,7 +631,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model and propagate test mode only if both parents have it
-        new_test_mode = bool(self._test_mode) and bool(other._test_mode)
+        new_test_mode = self._test_mode and other._test_mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -892,8 +892,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-coder': 'openrouter/deepseek/deepseek-coder', 
-        'deepseek': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-coder': 'openrouter/deepseek/deepseek-coder',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
@@ -932,7 +931,6 @@ __all__ = [
     'extract_xml',
     'parse_xml_element',
     'parse_xml_to_dict',
-    'parse_xml_element',
     'print_datetime',
     'process_observation',
     'run_inference'
