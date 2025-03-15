@@ -1091,12 +1091,12 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environments
-    'envs',  # Contains base_env_manager and a_env
+    'envs', 'base_env_manager',
     
     # XML handling
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
     
     # Utilities
-    'print_datetime'
+    'print_datetime', 'create_agent'
 ]
 
