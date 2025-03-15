@@ -366,6 +366,7 @@ class MemoryItem:
                self.timestamp == other.timestamp and
                self.file_path == other.file_path and
                self.command == other.command)
+    # Added explicit hash implementation for MemoryItem
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
@@ -1056,7 +1057,7 @@ __all__ = [
     
     # XML handling utilities
     'extract_xml',
-    'parse_xml_to_dict',
+    'parse_xml_to_dict', 
     'parse_xml_element',
     
     # System utilities

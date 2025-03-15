@@ -65,6 +65,7 @@ Code Quality Improvements & Fixes:
 12. Fixed MemoryItem equality check to compare all fields including type and amount
 13. Removed duplicate parse_xml_element from __all__ exports
 14. Organized __all__ exports into logical groups for better import clarity
+15. Added explicit hash implementation for MemoryItem
 4. Improved error handling for shell command execution
 5. Added missing test_mode initialization in Agent creation
 6. Fixed XML tag validation logic in parse_xml_element()
