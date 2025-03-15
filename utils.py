@@ -54,9 +54,9 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
                     
                 delta = chunk.choices[0].delta
                 # Handle both regular content and reasoning_content (for DeepSeek models)
-                if hasattr(delta, 'content') and delta.content:
+                if hasattr(delta, 'content') and delta.content is not None:
                     full_response += delta.content
-                elif hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                elif hasattr(delta, 'reasoning_content') and delta.reasoning_content is not None:
                     full_response += delta.reasoning_content
             return full_response
         
@@ -123,7 +123,9 @@ def extract_xml(xml_string: str) -> str:
                     except ET.ParseError:
                         continue
         return ""
-    except Exception:
+    except Exception as e:
+        # Log the exception for debugging
+        print(f"Error extracting XML: {str(e)}")
         return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
