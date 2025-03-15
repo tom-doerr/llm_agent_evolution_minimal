@@ -309,13 +309,14 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     if not is_valid_xml_tag(element.tag):
         raise ValueError(
-            f"Invalid XML tag: {element.tag}. Tags must:\n"
-            f"1. Start with a letter\n"
-            f"2. Contain only a-z, 0-9, -, _, or .\n" 
-            f"3. Not contain spaces or colons\n"
+            f"Invalid XML tag: {element.tag}.\n"
+            f"Valid tags must:\n"
+            f"1. Start with a letter (a-z, A-Z)\n"
+            f"2. Contain only letters, numbers, or [-_.]\n" 
+            f"3. Be 1-255 characters long\n"
             f"4. Not start with 'xml' (case-insensitive)\n"
-            f"5. Not end with hyphen\n"
-            f"6. Be between 1-255 characters"
+            f"5. Not end with a hyphen\n"
+            f"6. Not contain spaces or colons"
         )
     if len(element) == 0:
         # Return text with attributes if any
@@ -359,14 +360,20 @@ class MemoryItem:
     
     def __eq__(self, other: object) -> bool:
         return (isinstance(other, MemoryItem) and 
-               self.input == other.input and
-               self.output == other.output and
+               self._normalize_value(self.input) == self._normalize_value(other.input) and
+               self._normalize_value(self.output) == self._normalize_value(other.output) and
                self.type == other.type and
                self.amount == other.amount and
                self.timestamp == other.timestamp and
                self.file_path == other.file_path and
                self.command == other.command)
-    # Added explicit hash implementation for MemoryItem
+
+    @staticmethod
+    def _normalize_value(value: Any) -> Any:
+        """Normalize string values for consistent comparison"""
+        if isinstance(value, str):
+            return re.sub(r'\s+', ' ', value).strip()
+        return value
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
