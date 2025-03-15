@@ -225,6 +225,10 @@ def run_inference(input_string: str, model: str = "openrouter/deepseek/deepseek-
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
+    # Fast path for empty input
+    if not xml_string or not xml_string.strip():
+        return ""
+    
     # First check if input is valid XML already
     if is_valid_xml(xml_string):
         return xml_string
@@ -751,10 +755,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not is_non_empty_string(input_text):
             return ""
         
+        # Always count completions (for both test and real modes)
+        self.total_num_completions += 1
+        
         # Test mode responses
         if self._test_mode:
-            # Track test mode completions
-            self.total_num_completions += 1
             if input_text == 'please respond with the string abc':
                 return '''<response>
     <remember>
@@ -834,11 +839,6 @@ You can use multiple actions in a single completion but must follow the XML sche
     def mate(self, other: 'Agent') -> 'Agent':
         """Create new agent by combining memories from both parents.
         Applies mating cost to self parent only.
-        
-        Inherits:
-        - Test mode from either parent
-        - Model name from self
-        - Max tokens from self
         
         Args:
             other: Another Agent instance to mate with
