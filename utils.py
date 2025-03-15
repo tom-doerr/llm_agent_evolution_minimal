@@ -441,6 +441,7 @@ class MemoryItem:
              self._normalize_value(self.timestamp or ""),
              self._normalize_value(self.file_path or ""),
              self._normalize_value(self.command or ""))
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
@@ -453,6 +454,7 @@ class MemoryItem:
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
             self._normalize_value(self.command) == self._normalize_value(other.command)
+        )
         )
 
 class Agent:
