@@ -49,8 +49,8 @@ class MemoryDiff:
         return (isinstance(other, MemoryDiff) and 
                 self.type == other.type and 
                 self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                (self.old_value or "") == (other.old_value or "") and
+                (self.new_value or "") == (other.new_value or ""))
 
 @dataclass
 class Action:
@@ -639,7 +639,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             item_repr = (item.input, item.output, item.type, item.amount)
             if item_repr not in seen:
                 seen.add(item_repr)
-                unique_memory.append(item)
+                unique_memory.append(item)  # Store the actual MemoryItem
         new_agent._memory = unique_memory
         
         return new_agent
@@ -863,9 +863,6 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         load: Path to load agent state from
         test_mode: Boolean flag for testing mode
         
-    Note:
-        The 'test_mode' parameter must be a boolean to ensure proper operation
-        
     Returns:
         Initialized Agent instance
         
@@ -919,7 +916,7 @@ __all__ = [
     'extract_xml',
     'MemoryDiff',
     'MemoryItem',
-    'parse_xml_element',
+    'parse_xml_element', 
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
