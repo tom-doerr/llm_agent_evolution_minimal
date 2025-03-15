@@ -444,9 +444,9 @@ class Agent:
             if not isinstance(result, str):
                 result = str(result)
                 
-            # Extract clean text from XML response while preserving original
+            # Extract clean text from XML response
             xml_content = extract_xml(result)
-            clean_output = result  # Keep original response as output
+            clean_output = ET.tostring(ET.fromstring(xml_content), encoding='unicode', method='text') if xml_content else result
             
             memory_item = MemoryItem(
                 input=truncate_string(input_text),
@@ -749,8 +749,8 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
         raise ValueError("max_tokens must be a positive integer")
         
     model_mapping = {
-        'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro-001',
+        'flash': 'deepseek/deepseek-reasoner',
+        'pro': 'deepseek/deepseek-reasoner', 
         'deepseek': 'deepseek/deepseek-reasoner',
     }
     
@@ -784,5 +784,6 @@ __all__ = [
     'DiffType',
     'process_observation',
     'base_env_manager',
-    'envs'
+    'envs',
+    'process_observation'
 ]
