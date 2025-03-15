@@ -82,6 +82,7 @@ def is_valid_xml_tag(tag: str) -> bool:
     return (is_non_empty_string(tag) 
             and tag[0].isalpha()
             and tag[-1] != '-'
+            and 1 <= len(tag) <= 255
             and all(c.isalnum() or c in ('-', '_', '.') for c in tag[1:])
             and not tag.lower().startswith('xml')
             and ':' not in tag
@@ -693,12 +694,10 @@ You can use multiple actions in a single completion but must follow the XML sche
         
     def mate(self, other: 'Agent') -> 'Agent':
         """Create new agent by combining memories from both parents.
-        New agent inherits test mode only if both parents are in test mode.
         Applies mating cost to both parents."""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        new_test_mode = bool(self._test_mode and other._test_mode)
         # Inherit test mode from either parent for testing flexibility
         new_test_mode = bool(self._test_mode or other._test_mode)
         new_agent = create_agent(
