@@ -452,7 +452,8 @@ class MemoryItem:
             # Compare amounts with tolerance for numeric types
             abs((self.amount or 0.0) - (other.amount or 0.0)) < 0.001 and
             # Compare optional fields with None handling
-            (self.file_path or "") == (other.file_path or "") 
+            (self.file_path or "") == (other.file_path or "") and
+            (self.command or "") == (other.command or "")
         )
 
 class Agent:
@@ -730,13 +731,17 @@ You can use multiple actions in a single completion but must follow the XML sche
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
-            output = clean_output  # Fix typo from ouput to output
+            clean_output = clean_output  # Fix typo from ouput to output
 
             # Process shell commands and store output separately
             shell_output = self._handle_shell_commands(raw_response)
             if shell_output:
-                # Append as new completion after main response
-                self.completions.append(shell_output)
+                # Store shell output in memory but don't add as separate completion
+                self._memory.append(MemoryItem(
+                    input="shell_output",
+                    output=shell_output,
+                    type="system"
+                ))
 
             return clean_output
         except Exception as e:
@@ -1228,7 +1233,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem', 'create_agent',
     
     # Environment configuration
-    'base_env', 'base_env_manager', 'a_env', 'envs',
+    'base_env', 'base_env_manager', 'a_env', 'envs', 'base_env_manager',
     
     # Explicitly export envs for main.py assertions
     'envs',
