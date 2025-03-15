@@ -43,9 +43,14 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
             stream=False
         )
         
+        # Extract content from response
         if response and hasattr(response, 'choices') and response.choices:
-            if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
-                return response.choices[0].message.content
+            choice = response.choices[0]
+            if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
+                return choice.message.content
+            elif hasattr(choice, 'text'):  # Handle different response formats
+                return choice.text
+        
         return f"Inference result for: {input_string}"
     except ImportError:
         # Fallback if litellm is not installed
@@ -137,6 +142,12 @@ class Agent:
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
     
+    def __call__(self, input_text: str) -> str:
+        """Process input and return response"""
+        result = self.run(input_text)
+        self.memory.append({"input": input_text, "output": result})
+        return result
+    
     def run(self, input_text: str) -> str:
         """Run inference using the agent's language model or fallback to run_inference"""
         if self.lm and hasattr(self.lm, 'complete'):
@@ -163,13 +174,12 @@ def create_agent(model_type: str) -> Agent:
     try:
         import dspy
         agent.lm = dspy.LM(model_name)
-        # Initialize memory with an empty list
-        agent.memory = []
+        # Memory is already initialized in the Agent constructor
         return agent
     except ImportError:
-        # Return a dummy agent if dspy is not installed
+        # Return the agent without DSPy integration
         return agent
     except Exception as e:
-        # Return a dummy agent with error info
+        # Return agent with error info in model_name
         agent.model_name = f"{model_name} (Error: {str(e)})"
         return agent
