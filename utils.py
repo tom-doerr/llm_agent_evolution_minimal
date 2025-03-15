@@ -1011,22 +1011,12 @@ def create_agent(model: str = 'deepseek-chat',
         test_mode: Enable testing mode (skips real LLM calls)
 
     Supported models (via OpenRouter):
-    1. DeepSeek:
-       - openrouter/deepseek/deepseek-chat (default)
-       - openrouter/deepseek/deepseek-coder-33b-instruct
+    - DeepSeek: deepseek-chat, deepseek-coder
+    - Google: gemini-flash, gemini-pro
+    - Meta: llama-3, llama-3-70b
+    - OpenAI: gpt-3.5, gpt-4
     
-    2. Google:
-       - openrouter/google/gemini-2.0-flash-001
-       - openrouter/google/gemini-2.0-pro
-    
-    3. Meta:
-       - openrouter/meta-llama/llama-3-70b-instruct
-    
-    4. OpenAI:
-       - openrouter/openai/gpt-3.5-turbo
-       - openrouter/openai/gpt-4
-    
-    Required: OPENROUTER_API_KEY environment variable
+    Requires OPENROUTER_API_KEY environment variable
     
     Model aliases:
     - deepseek-chat (default): openrouter/deepseek/deepseek-chat
