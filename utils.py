@@ -355,16 +355,9 @@ class MemoryItem:
             self.input = str(self.input)
         if self.file_path and not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File path {self.file_path} does not exist")
-        # Validate value types
-        if self.old_value is not None and not isinstance(self.old_value, (str, int, float)):
-            raise TypeError("old_value must be string, number or None")
-        if self.new_value is not None and not isinstance(self.new_value, (str, int, float)):
-            raise TypeError("new_value must be string, number or None")
         # Truncate long values
-        if isinstance(self.old_value, str):
-            self.old_value = truncate_string(self.old_value, 500)
-        if isinstance(self.new_value, str): 
-            self.new_value = truncate_string(self.new_value, 500)
+        if isinstance(self.output, str): 
+            self.output = truncate_string(self.output, 500)
         if not isinstance(self.output, str):
             self.output = str(self.output)
         if self.amount is not None and not isinstance(self.amount, (int, float)):
