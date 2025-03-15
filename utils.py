@@ -408,7 +408,7 @@ class MemoryItem:
     command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
 
     def __post_init__(self) -> None:
-        """Validate and normalize MemoryItem fields"""
+        # Validate and normalize fields
         object.__setattr__(self, 'input', str(self.input))
         object.__setattr__(self, 'output', str(self.output))
         if self.amount is not None:
@@ -424,7 +424,7 @@ class MemoryItem:
         # Validate allowed types
         allowed_types = {'fact', 'interaction', 'reward', 'instruction', None}
         if self.type not in allowed_types:
-            self.type = 'fact'  # Default type to satisfy main.py assertions
+            self.type = 'fact'
 
     def __hash__(self) -> int:
         return hash((
@@ -616,7 +616,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Store raw response before processing
         self.completions.append(response)
-        self.total_num_completions += 1  # Count non-test mode completions
+        if not self._test_mode:
+            self.total_num_completions += 1  # Only count non-test mode completions
             
         # Extract and validate XML structure
         xml_content = extract_xml(response)
