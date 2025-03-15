@@ -698,8 +698,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # New agent only inherits test mode if both parents are in test mode
         new_test_mode = bool(self._test_mode and other._test_mode)
+        # Inherit test mode only if both parents are in test mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -972,7 +972,8 @@ def process_observation(
         print(f"Critical error processing observation: {str(e)}")
         return [], None
 
-def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: int = 50,
+def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default to DeepSeek Chat
+                max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
@@ -1048,6 +1049,7 @@ __all__ = [
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    'parse_xml_element',
     
     # Environment configuration
     'a_env',
