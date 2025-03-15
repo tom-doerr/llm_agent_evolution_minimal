@@ -96,11 +96,11 @@ def is_valid_xml_tag(tag: str) -> bool:
             f"Invalid XML tag: {tag}\n"
             "Valid tags must:\n"
             "1. Start with a letter or underscore\n" 
-            "2. Contain only letters, numbers, hyphens, underscores or periods\n"
-            "3. Be 1-255 characters long\n"
-            "4. Not contain spaces or colons\n"
-            "5. Not start with 'xml' (case-insensitive)\n"
-            "6. Not end with a hyphen"
+            "2. Contain only a-z, 0-9, -, _, or .\n"
+            "3. Be 1-255 characters\n"
+            "4. No spaces/colons\n"
+            "5. Not start with 'xml'\n"
+            "6. Not end with hyphen"
         )
     
     if not 1 <= len(tag) <= 255:
@@ -1000,13 +1000,13 @@ def create_agent(model: str = 'deepseek-chat',
     
     Args:
         model: Model identifier string. Valid options:
-            - deepseek-chat (default alias): openrouter/deepseek/deepseek-chat
+            - deepseek-chat (default): openrouter/deepseek/deepseek-chat
             - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-            - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+            - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001 
             - pro/gemini-pro: openrouter/google/gemini-2.0-pro
             - gpt-3.5: openrouter/openai/gpt-3.5-turbo
             - gpt-4: openrouter/openai/gpt-4
-            - llama-3: openrouter/meta-llama/llama-3-70b-instruct
+            - llama-3/llama3: openrouter/meta-llama/llama-3-70b-instruct
             
         Requires OPENROUTER_API_KEY environment variable.
         max_tokens: Maximum response length in tokens
@@ -1096,9 +1096,6 @@ __all__ = [
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Helper functions
-    'print_datetime',
-    
-    # Environment components
-    'envs', 'base_env_manager'
+    'print_datetime'
 ]
 
