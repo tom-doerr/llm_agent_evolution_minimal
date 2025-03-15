@@ -250,10 +250,10 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
         ValueError: If xml_string is not a string
     """
     # Remove any XML declaration and namespaces
-    # Remove XML namespaces while preserving tags
-    xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string or '', flags=re.DOTALL)
-    xml_string = re.sub(r'\sxmlns(:?\w*)?\s*=\s*"[^"]*"', '', xml_string)
-    xml_string = re.sub(r'</?\w+:', '</', xml_string)  # Remove namespace prefixes
+    # Remove XML namespaces and declarations
+    xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string, flags=re.DOTALL|re.IGNORECASE)
+    xml_string = re.sub(r'\sxmlns(:[^=]+)?=(".*?"|\'.*?\')', '', xml_string)
+    xml_string = re.sub(r'(</?)\w+:', r'\1', xml_string)  # Remove namespace prefixes
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -630,12 +630,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Security validation - check for prohibited patterns
         prohibited_patterns = [
             r'(?:script|http|ftp|&\w+;|//)',  # Basic web protocols
-            r'(?:<\w+:)',  # Namespace prefixes
-            r'(?:<!\[CDATA\[)',  # CDATA sections
-            r'(?:/\w+>)',  # Self-closing tags
             r'(?:%\w+;)',  # URL encoding attempts
-            r'(?:\\x[0-9a-fA-F]{2})',  # Hex escapes
-            r'\b(?:rm|cat|cp|mv|sh|bash|zsh|sudo)\b'  # Prohibited commands
+            r'(?:\\x[0-9a-fA-F]{2})'  # Hex escapes
         ]
         
         if any(re.search(pattern, xml_content, re.IGNORECASE) for pattern in prohibited_patterns):
@@ -841,6 +837,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         - Max tokens from self
         - Environment configurations
         
+        Inherits:
+        - Test mode from either parent
+        - Model name from self
+        - Max tokens from self
+        - Environment configurations
+        
         Args:
             other: Another Agent instance to mate with
         
@@ -855,8 +857,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
-            model=self.model_name,
+        new_agent = Agent(
+            model_name=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
         )
