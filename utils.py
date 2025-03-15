@@ -22,6 +22,8 @@ class DiffType(Enum):
     MODIFY = auto()
     REPLACE = auto()
     UPDATE = auto()
+    CREATE = auto()
+    DELETE = auto()
 
 @dataclass(frozen=True)
 class MemoryDiff:
@@ -240,7 +242,6 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], List[Any]]]:
-    """Parse XML string into a nested dictionary structure with type hints."""
     """Parse XML string into a nested dictionary structure.
     
     Args:
@@ -870,10 +871,6 @@ __all__ = [
     
     # Core classes
     'Agent',
-    
-    # Environment configs
-    'base_env_manager',
-    'envs',
     
     # Environment configs
     'base_env_manager',
