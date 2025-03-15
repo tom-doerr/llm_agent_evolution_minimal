@@ -340,7 +340,13 @@ class Agent:
             raise ValueError("model_name must be a string")
             
         self.model_name = model_name
-        self.memory: List[MemoryItem] = []
+        self.memory: List[MemoryItem] = [
+            MemoryItem(
+                input="",
+                output="You can edit your memory using the following xml action:",
+                type="instruction"
+            )
+        ]
         self._test_mode = model_name.startswith("flash")
         self.lm: Optional[Any] = None  # Language model instance
         self.max_tokens = 50  # Default value
