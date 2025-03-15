@@ -44,10 +44,7 @@ class MemoryDiff:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
             return NotImplemented
-        return (self.type == other.type and 
-                self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+        return self.type == other.type and self.key == other.key
 
 @dataclass
 class Action:
@@ -487,11 +484,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         try:
             root = ET.fromstring(command)
         except ET.ParseError as e:
-            return f"Invalid XML format for command: {str(e)}"
+            return f"<message>Error: Invalid XML format - {str(e)}</message>"
             
         command_elem = root.find('.//shell')
         if not command_elem or not command_elem.text:
-            return "Invalid command format"
+            return "<message>Error: Invalid command format</message>"
             
         cmd = command_elem.text.strip().split()[0]
         if cmd not in self.allowed_shell_commands:
@@ -905,11 +902,11 @@ __all__ = [
     'process_observation',
     'MemoryItem',
     'MemoryDiff',
-    'Action', 
+    'Action',
     'DiffType',
     'Agent',
     'parse_xml_to_dict',
+    'parse_xml_element',
     'base_env_manager',
-    'envs',
-    'parse_xml_element'
+    'envs'
 ]
