@@ -1,22 +1,4 @@
-def is_non_empty_string(value: str) -> bool:
-    # Check if value is a non-empty string after stripping whitespace
-    return isinstance(value, str) and bool(value.strip())
-
-def safe_int_conversion(value: str) -> int | None:
-    try:
-        return int(value)
-    except (ValueError, TypeError):
-        return None
-
-def safe_float_conversion(value: str) -> float | None:
-    try:
-        return float(value)
-    except (ValueError, TypeError):
-        return None
-
-def is_valid_number(value: Any) -> bool:
-    # Check if value is int/float but not subclass bool
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+from typing import Any
 
 def is_non_empty_string(value: str) -> bool:
     # Check if value is a non-empty string after stripping whitespace
