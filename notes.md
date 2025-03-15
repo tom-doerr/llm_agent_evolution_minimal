@@ -96,8 +96,8 @@ Code Quality Improvements & Fixes:
 13. Added missing llama-3 model to documentation
 14. Removed duplicate type check in MemoryItem equality
 Code Quality Improvements & Fixes:
-1. Fixed duplicate parse_xml_element in __all__ exports
-2. Added missing envs and base_env_manager to exports
+1. Fixed __all__ exports to properly group and validate all components
+2. Added explicit utils namespace for create_agent in mate()
 3. Fixed MemoryItem equality check missing fields
 4. Removed redundant output truncation in MemoryItem
 5. Cleaned up create_agent docstring
