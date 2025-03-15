@@ -2,11 +2,9 @@ import xml.etree.ElementTree as ET
 import datetime
 import os
 import re
-from typing import Any, Dict, List, Optional, Union, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass
 from enum import Enum
-
-T = TypeVar('T')
 
 def is_non_empty_string(value: Any) -> bool:
     """Check if value is a non-empty string after stripping whitespace.
@@ -92,6 +90,19 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
     return value[:max_length] + "..."
 
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+    """Run inference using the specified model.
+    
+    Args:
+        input_string: Input text to process
+        model: Model to use for inference
+        stream: Whether to use streaming mode
+        
+    Returns:
+        str: Inference result as string
+        
+    Raises:
+        ValueError: If input_string is invalid
+    """
     """Run inference using the specified model.
     
     Args:
@@ -268,14 +279,6 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
     Returns:
         Parsed element as dictionary or string
     """
-    """Recursively parse an XML element into a dictionary or string.
-    
-    Args:
-        element: XML element to parse
-        
-    Returns:
-        Parsed element as dictionary or string
-    """
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -302,9 +305,9 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
     return result
 
 def print_datetime() -> None:
-    # Print the current date and time
+    """Print the current date and time in a standardized format."""
     current_time = datetime.datetime.now()
-    print(f"Current date and time: {current_time}")
+    print(f"Current date and time: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 class Agent:
     def __init__(self, model_name: str):
@@ -390,15 +393,6 @@ def create_agent(model_type: str = 'flash', **kwargs: Any) -> "Agent":
         
     Raises:
         ValueError: If model_type is invalid
-    """
-    """Create an agent with the specified model type.
-    
-    Args:
-        model_type: Type of model to use ('flash', 'pro', 'deepseek', or 'default')
-        **kwargs: Additional arguments to pass to Agent initialization
-    
-    Returns:
-        Agent instance configured with the specified model
     """
     if not is_non_empty_string(model_type):
         model_type = 'default'
