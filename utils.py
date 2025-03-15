@@ -4,7 +4,6 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Optional, List, Dict, Any, Union, Tuple
 
 class DiffType(Enum):
     ADD = auto()
@@ -59,15 +58,14 @@ __all__ = [
 ]
 
 def is_non_empty_string(value: Any) -> bool:
-    # Check if value is a non-empty string after stripping whitespace
+    """True if value is a non-empty string after stripping whitespace"""
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
-    # Check if a string is a valid XML tag name
-    if not is_non_empty_string(tag):
-        return False
-    # Basic XML tag name validation
-    return tag[0].isalpha() and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
+    """True if string is a valid XML tag name"""
+    return (is_non_empty_string(tag) 
+            and tag[0].isalpha() 
+            and all(c.isalnum() or c in ('-', '_', '.') for c in tag))
 
 def is_valid_model_name(model: str) -> bool:
     # Check if model name is valid (contains non-empty string with slash)
@@ -283,18 +281,8 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
         # Handle other exceptions
         return {"error": f"Unexpected error: {str(e)}"}
 
-def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, Dict[str, str]]:
-    """Parse an XML element recursively into a dictionary or string.
-    
-    Args:
-        element: XML element to parse
-        
-    Returns:
-        Parsed element as dictionary or string
-        
-    Raises:
-        ValueError: If element contains invalid XML tags
-    """
+def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
+    """Parse XML element recursively into dict or string"""
     if not is_valid_xml_tag(element.tag):
         raise ValueError(f"Invalid XML tag: {element.tag}")
     if len(element) == 0:
@@ -459,6 +447,71 @@ class Agent:
             amount=float(amount),
             timestamp=datetime.datetime.now().isoformat()
         ))
+
+def process_observation(
+    current_memory: str, 
+    observation: str,
+    model: str = "deepseek/deepseek-reasoner"
+) -> Tuple[List[MemoryDiff], Optional[Action]]:
+    """Process observation and return memory diffs with optional action"""
+    _validate_inputs(current_memory, observation, model)
+    prompt = _prepare_prompt(current_memory, observation)
+    response, _ = _get_litellm_response(model, prompt)
+    _validate_xml_response(response)
+    return _parse_memory_diffs(response), _parse_action(response)
+
+def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
+    """Validate input types and values"""
+    if not isinstance(current_memory, str):
+        raise TypeError("current_memory must be a string")
+    if not isinstance(observation, str):
+        raise TypeError("observation must be a string")
+    if not is_valid_model_name(model):
+        raise ValueError(f"Invalid model name: {model}")
+
+def _create_prompt_header(current_memory: str, observation: str) -> str:
+    """Create header section of prompt"""
+    return f"""Current Memory:
+{current_memory}
+
+New Observation:
+{observation}
+
+Instructions:
+1. Analyze the observation
+2. Update memory with specific diffs
+3. Optional: Suggest an action"""
+
+def _prepare_prompt(current_memory: str, observation: str) -> str:
+    """Combine all prompt sections"""
+    return f"{_create_prompt_header(current_memory, observation)}\n{_create_prompt_body()}"
+
+def _create_prompt_body() -> str:
+    """Return fixed prompt body"""
+    return "Format response as XML with <diffs> and <action> sections"
+
+def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
+    """Get response from LiteLLM API"""
+    try:
+        import litellm
+        response = litellm.completion(model=model, messages=[{"role": "user", "content": prompt}])
+        return response.choices[0].message.content, ""
+    except Exception as e:
+        return "", str(e)
+
+def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
+    """Parse memory diffs from XML"""
+    diffs = []
+    root = ET.fromstring(xml_content)
+    for diff_elem in root.findall('.//diff'):
+        diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+        diffs.append(MemoryDiff(
+            type=diff_type,
+            key=diff_elem.find('key').text,
+            old_value=diff_elem.find('old_value').text,
+            new_value=diff_elem.find('new_value').text
+        ))
+    return diffs
 
 def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     """Create an agent with specified model.
