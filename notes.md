@@ -21,7 +21,10 @@ Code Quality Improvements & Fixes:
 18. Simplified MemoryDiff equality check
 18. Fixed variable naming inconsistency in mate()
 16. Simplified MemoryDiff equality checks
-17. Updated DeepSeek model paths to current format
+17. Updated model paths with proper OpenRouter prefixes
+18. Fixed API key check to use OPENROUTER_API_KEY
+19. Added missing XML action example to context
+20. Removed redundant comments
 17. Fixed Action equality handling of None params
 18. Standardized environment configurations
 19. Improved error messages for XML parsing

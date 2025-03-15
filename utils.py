@@ -154,7 +154,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         model = "deepseek/deepseek-reasoner"
             
     # Check for required API keys
-    if model.startswith("openrouter/deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
+    if model.startswith("openrouter/") and "OPENROUTER_API_KEY" not in os.environ:
         return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
         
     try:
@@ -415,6 +415,11 @@ Examples of how to use the XML actions:
 <shell>
     ls -l
 </shell>
+
+<remember>
+    <search>old_value</search>
+    <replace>new_value</replace>
+</remember>
 
 Memory Management Guidelines:
 - Use <remember> for important user details
@@ -879,12 +884,12 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         
     # Model name mapping with full OpenRouter paths
     model_mapping = {
-        'flash': 'google/gemini-2.0-flash-001',
-        'pro': 'google/gemini-2.0-pro',
-        'deepseek-chat': 'deepseek/deepseek-chat',
-        'deepseek-coder': 'deepseek/deepseek-coder', 
-        'deepseek': 'deepseek/deepseek-chat',
-        'default': 'deepseek/deepseek-chat'
+        'flash': 'openrouter/google/gemini-2.0-flash-001',
+        'pro': 'openrouter/google/gemini-2.0-pro',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-coder': 'openrouter/deepseek/deepseek-coder', 
+        'deepseek': 'openrouter/deepseek/deepseek-chat',
+        'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
     
