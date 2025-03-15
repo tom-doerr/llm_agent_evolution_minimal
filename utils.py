@@ -389,8 +389,8 @@ class MemoryItem:
         return hash((
             self._normalize_value(self.input),
             self._normalize_value(self.output),
-            self._normalize_value(self.type or ""),
-            self.amount if isinstance(self.amount, (int, float)) else 0,
+            self._normalize_value(self.type),
+            self.amount,
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
             self._normalize_value(self.command)
@@ -723,13 +723,14 @@ You can use multiple actions in a single completion but must follow the XML sche
         Inherits:
         - Test mode from either parent
         - Model name from self
-        - Max tokens from self"""
+        - Max tokens from self
+        - Environment configurations"""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1094,13 +1095,16 @@ __all__ = [
     'base_env_manager', 'envs',
     
     # XML processing
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     'process_observation',
     
     # Core utilities
     'print_datetime', 'create_agent',
     
     # Environment functions
-    'a_env'
+    'a_env', 'base_env_manager'
+    
+    # Validation functions
+    'is_valid_xml_tag', 'is_valid_model_name'
 ]
 
