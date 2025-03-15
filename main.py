@@ -28,10 +28,10 @@ context = agent.context
 print("context:", context)
 assert type(memory) == str
 assert type(context) == str
-assert 'Explanation of all the available XML actions' not in memory
-assert 'You can edit your memory using the following XML action:' not in memory
 assert 'Explanation of all the available XML actions' in context
 assert 'You can edit your memory using the following XML action:' in context
+assert 'Explanation of all the available XML actions' not in memory
+assert 'You can edit your memory using the following XML action:' not in memory
 
 print_datetime()
 output = agent('please respond with the string abc')
@@ -106,3 +106,55 @@ with open('test.txt', 'r') as f:
     content = f.read()
 
 assert 'abcd' not in content
+
+
+agent_a = create_agent(model='flash', max_tokens=50)
+agent_b = create_agent(model='flash', max_tokens=50)
+output_a = agent_a('please remember my secret number 321!')
+print("output_a:", output_a)
+last_completion_a = agent_a.last_completion
+print("last_completion_a:", last_completion_a)
+output_b = agent_b('please remember my secret number 477!')
+print("output_b:", output_b)
+last_completion_b = agent_b.last_completion
+print("last_completion_b:", last_completion_b)
+
+memory_a = agent_a.memory
+print("memory_a:", memory_a)
+memory_b = agent_b.memory
+print("memory_b:", memory_b)
+
+assert '321' in memory_a
+assert '477' in memory_b
+
+agent_a.reward(1,000,000)
+
+net_worth_a = agent_a.get_net_worth()
+print("net_worth_a:", net_worth_a)
+net_worth_b = agent_b.get_net_worth()
+print("net_worth_b:", net_worth_b)
+
+net_worth_a_prev = net_worth_a
+net_worth_b_prev = net_worth_b
+
+from utils import base_env_manager
+
+mating_cost = base_env_manager.mating_cost
+print("mating_cost:", mating_cost)
+
+agent_c = agent_a.mate(agent_b) 
+memory_c = agent_c.memory
+print("memory_c:", memory_c)
+assert '321' in memory_c
+assert '477' in memory_c
+
+
+net_worth_a = agent_a.get_net_worth()
+print("net_worth_a:", net_worth_a)
+net_worth_b = agent_b.get_net_worth()
+print("net_worth_b:", net_worth_b)
+
+assert net_worth_a == net_worth_a_prev - mating_cost
+assert net_worth_b == net_worth_b_prev
+
+
