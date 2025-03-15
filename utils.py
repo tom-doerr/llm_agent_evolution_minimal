@@ -583,7 +583,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     def memory(self) -> str:
         """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
-            re.sub(r'<[^>]*>', '', f"{item.type}: {item.input} -> {item.output.strip()}", flags=re.DOTALL)
+            f"{item.type}: {item.input} -> {item.output.strip()}"
             for item in self._memory
             # Strict filtering to match main.py assertions
             if item.type not in {"instruction", "context"}
@@ -871,6 +871,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Applies mating cost to self parent only (50 as defined in base_env_manager)
         # Inherits configuration from parents while preferring self's settings
         # Returns new Agent with combined memories
+        # This matches main.py's assertion that only the self parent pays the mating cost
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
