@@ -276,8 +276,7 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
         if element.attrib:
             result = {"_text": element.text or ""}
             result.update(element.attrib)
-            self.last_response = result
-            return self
+            return result
         return element.text or ""
     
     result = {}
