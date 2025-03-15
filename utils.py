@@ -44,7 +44,10 @@ class MemoryDiff:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
             return False
-        return self.type == other.type and self.key == other.key
+        return (self.type == other.type and 
+                self.key == other.key and
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -52,9 +55,10 @@ class Action:
     params: Dict[str, str]
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Action) and \
-               self.type == other.type and \
-               (self.params or {}) == (other.params or {})
+        return (isinstance(other, Action) and 
+               self.type == other.type and 
+               (self.params if self.params is not None else {}) == 
+               (other.params if other.params is not None else {}))
 
 
 
@@ -870,7 +874,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50,
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
         'default': 'openrouter/deepseek/deepseek-chat'
@@ -913,5 +917,5 @@ __all__ = [
     'parse_xml_to_dict',
     'process_observation',
     'run_inference',
-    'parse_xml_element'  # Was missing from exports
+    'parse_xml_element'
 ]
