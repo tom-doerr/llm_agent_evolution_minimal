@@ -1096,7 +1096,7 @@ __all__ = [
     'create_agent', 'process_observation', 'run_inference',
     
     # XML handling utilities
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
+    'extract_xml', 'parse_xml_to_dict',
     
     # Helper functions
     'print_datetime'
