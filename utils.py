@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import datetime
 from typing import Any, Dict, List, Optional, Union
 
 def is_non_empty_string(value: Any) -> bool:
@@ -33,7 +34,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         import litellm
         import os
         
-        # Ensure API key is set for DeepSeek models
         if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
             return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
             
@@ -43,7 +43,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
             stream=stream
         )
         
-        # Handle streaming response
         if stream:
             full_response = ""
             for chunk in response:
@@ -55,7 +54,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
                         full_response += delta.reasoning_content
             return full_response
         
-        # Handle non-streaming response
         if hasattr(response, 'choices') and response.choices:
             choice = response.choices[0]
             if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
@@ -65,8 +63,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         
         return ""
     except ImportError:
-        # Fallback if litellm is not installed
-        return f"Error: litellm not installed"
+        return "Error: litellm not installed"
     except Exception as e:
         return f"Error during inference: {str(e)}"
 
@@ -75,9 +72,7 @@ def extract_xml(xml_string: str) -> str:
     if not is_non_empty_string(xml_string):
         return ""
     
-    # Try to find XML content between tags if it's embedded in other text
     try:
-        # Look for content between first < and last >
         start_idx = xml_string.find('<')
         end_idx = xml_string.rfind('>')
         
@@ -87,7 +82,6 @@ def extract_xml(xml_string: str) -> str:
                 root = ET.fromstring(xml_content)
                 return ET.tostring(root, encoding='unicode')
             except ET.ParseError:
-                # Try to find a complete XML element
                 for tag in ['response', 'result', 'data', 'xml', 'root']:
                     start_tag = f'<{tag}'
                     end_tag = f'</{tag}>'
@@ -102,7 +96,6 @@ def extract_xml(xml_string: str) -> str:
                             continue
                 return ""
         
-        # Try parsing the whole string as XML
         root = ET.fromstring(xml_string)
         return ET.tostring(root, encoding='unicode')
     except ET.ParseError:
@@ -113,7 +106,6 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         return {}
     
     try:
-        # First try to extract valid XML if it's embedded in other text
         extracted = extract_xml(xml_string)
         if extracted:
             xml_string = extracted
@@ -122,7 +114,6 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         result = {}
         
         for child in root:
-            # Handle nested elements
             if len(child) > 0:
                 result[child.tag] = parse_xml_element(child)
             else:
@@ -145,23 +136,26 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
     
     return result
 
+def print_datetime() -> None:
+    """Print the current date and time."""
+    current_time = datetime.datetime.now()
+    print(f"Current date and time: {current_time}")
+
 class Agent:
     def __init__(self, model_name: str):
         self.model_name = model_name
-        self.memory = []
+        self.memory: List[Dict[str, str]] = []
         self.lm = None
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
     
     def __call__(self, input_text: str) -> str:
-        """Process input and return response"""
         result = self.run(input_text)
         self.memory.append({"input": input_text, "output": result})
         return result
     
     def run(self, input_text: str) -> str:
-        """Run inference using the agent's language model or fallback to run_inference"""
         if self.lm and hasattr(self.lm, 'complete'):
             try:
                 response = self.lm.complete(input_text)
@@ -171,8 +165,6 @@ class Agent:
             except Exception as e:
                 return f"Error using DSPy LM: {str(e)}"
         
-        # Fallback to run_inference
-        # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
         return run_inference(input_text, self.model_name, stream=use_stream)
 
@@ -189,13 +181,10 @@ def create_agent(model_type: str) -> Agent:
     
     try:
         import dspy
-        # Initialize the language model
         agent.lm = dspy.LM(model_name)
         return agent
     except ImportError:
-        # Return the agent without DSPy integration
         return agent
     except Exception as e:
-        # Return agent with error info in model_name
         agent.model_name = f"{model_name} (Error: {str(e)})"
         return agent
