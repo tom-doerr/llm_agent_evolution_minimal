@@ -888,10 +888,5 @@ __all__ = [
     'envs',
     
     # XML processing
-    'extract_xml',
-    
-    # Additional exports for public API
-    'MemoryDiff',
-    'Action',
-    'DiffType'
+    'extract_xml'
 ]
