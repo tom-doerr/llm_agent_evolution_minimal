@@ -18,8 +18,6 @@ def is_valid_number(value: Any) -> bool:
     # Check if value is int/float but not subclass bool
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
-from typing import Any
-
 def is_non_empty_string(value: str) -> bool:
     # Check if value is a non-empty string after stripping whitespace
     return isinstance(value, str) and bool(value.strip())
