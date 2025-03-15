@@ -736,6 +736,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Test mode responses
         if self._test_mode:
             if input_text == 'please respond with the string abc':
+                self.total_num_completions += 1
                 return '''<response>
     <remember>
         <search></search>
@@ -744,11 +745,13 @@ You can use multiple actions in a single completion but must follow the XML sche
     <message>abc</message>
 </response>'''
             if input_text == 'what files are in the current directory?':
+                self.total_num_completions += 1
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
 </response>'''
             if 'remove the text' in input_text.lower():
+                self.total_num_completions += 1
                 return '''<response>
     <edit>
         <search>abcd</search>
@@ -757,6 +760,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     <message>abcd removed</message>
 </response>''' 
             if 'remember it' in input_text.lower():
+                self.total_num_completions += 1
                 return '''<response>
     <remember>
         <search></search>
@@ -765,6 +769,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     <respond>Got it! I'll remember your number: 132</respond>
 </response>'''
             if 'please remember my secret number' in input_text.lower():
+                self.total_num_completions += 1
                 return '''<response>
     <remember>
         <search></search>
@@ -773,6 +778,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     <respond>Got it! I'll remember your secret number: {number}</respond>
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
+                self.total_num_completions += 1
                 return '''<response>
     <message>please respond to this message using the message xml tags</message>
 </response>'''
@@ -810,6 +816,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     </remember>
     <respond>Got it! I'll remember your number: 132</respond>
 </response>'''
+            self.total_num_completions += 1
             return f'''<response>
     <respond>{input_text}</respond>
 </response>'''
