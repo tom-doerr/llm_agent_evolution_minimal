@@ -432,6 +432,8 @@ class Agent:
         Raises:
             ValueError: If input_text is not a string
         """
+        # Store raw XML response separately
+        self.last_response = self.run(input_text)
         if not isinstance(input_text, str):
             raise ValueError("input_text must be a string")
         if not input_text.strip():
@@ -442,9 +444,9 @@ class Agent:
             if not isinstance(result, str):
                 result = str(result)
                 
-            # Extract clean text from XML response
+            # Extract clean text from XML response while preserving original
             xml_content = extract_xml(result)
-            clean_output = parse_xml_to_dict(xml_content).get('message', result) if xml_content else result
+            clean_output = result  # Keep original response as output
             
             memory_item = MemoryItem(
                 input=truncate_string(input_text),
@@ -781,5 +783,6 @@ __all__ = [
     'Action', 
     'DiffType',
     'process_observation',
-    'base_env_manager'
+    'base_env_manager',
+    'envs'
 ]
