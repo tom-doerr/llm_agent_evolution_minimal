@@ -909,10 +909,10 @@ __all__ = [
     'DiffType',
     'envs',
     'extract_xml',
-    'MemoryDiff', 
+    'MemoryDiff',
     'MemoryItem',
     'parse_xml_to_dict',
     'parse_xml_element',
-    'process_observation',
+    'process_observation', 
     'run_inference'
 ]
