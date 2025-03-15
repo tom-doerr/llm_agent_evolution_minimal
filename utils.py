@@ -650,8 +650,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # New agent only in test mode if both parents are in test mode (logical AND)
-        new_test_mode = bool(self._test_mode and other._test_mode)  # Changed from OR to AND
+        # New agent only in test mode if both parents are in test mode
+        new_test_mode = self._test_mode and other._test_mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -921,7 +921,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     """Create an agent with specified model.
 
     Args:
-        model: Model to use ('flash', 'pro', 'deepseek-chat' or full model name)
+        model: Model to use ('flash', 'gemini-pro', 'deepseek-chat' or full OpenRouter model name)
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
