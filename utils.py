@@ -36,6 +36,8 @@ class Action:
         return (self.type == other.type and 
                 self.params == other.params)
 
+
+# Move __all__ to end of file to ensure all symbols are defined
 __all__ = [
     'is_non_empty_string',
     'is_valid_xml_tag',
@@ -58,8 +60,6 @@ __all__ = [
     'DiffType',
     'process_observation'
 ]
-
-# Moved to bottom to ensure all symbols are defined before __all__ is set
 
 def is_non_empty_string(value: Any) -> bool:
     """True if value is a non-empty string after stripping whitespace"""
