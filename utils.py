@@ -554,7 +554,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         return "\n".join(
             f"{item.timestamp} | {item.type}: {item.input} -> {item.output}"
             for item in self._memory
-            if item.type != "instruction"  # Exclude any remaining instruction items
+            # Strictly exclude any instruction-type items and context instructions
+            if item.type not in {"instruction", "context"} 
+            and not any(item.output == ci.output for ci in self._context_instructions)
         )
     
     def _handle_shell_commands(self, response: str) -> str:
@@ -586,8 +588,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         cmd_text = command_elem.text.strip()
         # Validate against prohibited characters and patterns
         prohibited = {
-            'chars': (';', '&', '|', '$', '`', '>', '<'),
-            'patterns': [r'\brm\b', r'\bdel\b', r'\bdelete\b', r'\bmv\b', r'\bmove\b']
+            'chars': (';', '&', '|', '$', '`', '>', '<', '*', '?', '{', '}', '[', ']'),
+            'patterns': [r'\brm\b', r'\bdel\b', r'\bdelete\b', r'\bmv\b', r'\bmove\b', r'\bcp\b', r'\bcat\b']
         }
             
         if any(c in cmd_text for c in prohibited['chars']):
@@ -769,8 +771,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Combine and deduplicate memories from both parents
         combined_mem = [
             item for item in self._memory + other._memory
-            if item.type != "instruction" 
-            and not any(i.output == item.output for i in self._context_instructions + other._context_instructions)
+            # Strict filtering of memory items
+            if item.type not in {"instruction", "context"}
+            and not any(item.output == ci.output 
+                      for ci in self._context_instructions + other._context_instructions)
+            and item.input.strip() != ""  # Exclude empty inputs
         ]
         
         # Remove duplicates while preserving order
