@@ -75,12 +75,13 @@ Code Quality Improvements & Fixes:
 9. Fixed __all__ exports to include all required components
 10. Updated model documentation with latest OpenRouter options
 Code Quality Improvements & Fixes:
-1. Fixed __all__ exports formatting and order
-2. Removed redundant test_mode type check in Agent.mate()
-3. Improved create_agent() docstring with full model paths
-4. Added explicit model default documentation
-5. Removed redundant comments
-6. Standardized model name references
+1. Fixed duplicate parse_xml_element in __all__ exports
+2. Added missing envs and base_env_manager to exports
+3. Fixed MemoryItem equality check missing fields
+4. Removed redundant output truncation in MemoryItem
+5. Cleaned up create_agent docstring
+6. Added proper environment config exports
+7. Fixed model documentation consistency
 Code Quality Improvements Applied:
 1. Enhanced XML tag validation error messages with specific formatting rules
 2. Organized __all__ exports into logical groups for better import clarity

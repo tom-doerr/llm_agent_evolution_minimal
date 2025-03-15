@@ -398,10 +398,6 @@ class MemoryItem:
             self.input = str(self.input)
         if self.file_path and not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File path {self.file_path} does not exist")
-            
-        # Only truncate non-instruction memory items
-        if isinstance(self.output, str) and self.type != 'instruction':
-            self.output = truncate_string(self.output, 500)
         if not isinstance(self.output, str):
             self.output = str(self.output)
         if self.amount is not None and not isinstance(self.amount, (int, float)):
@@ -985,7 +981,7 @@ def process_observation(
         print(f"Critical error processing observation: {str(e)}")
         return [], None
 
-def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default: DeepSeek Chat via OpenRouter
+def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
                 max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
