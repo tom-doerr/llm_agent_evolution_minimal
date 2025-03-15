@@ -60,8 +60,9 @@ Code Quality Improvements & Fixes:
 10. Added missing parse_xml_element to __all__ exports
 12. Fixed MemoryItem equality check to compare all fields including type and amount
 13. Removed duplicate 'rm' in prohibited commands
-14. Added parse_xml_element to __all__ exports
-15. Cleaned up create_agent docstring and default model documentation
+14. Added proper __hash__ implementation for MemoryItem
+15. Fixed duplicate parse_xml_element in __all__ exports
+16. Cleaned up create_agent docstring and default model documentation
 12. Fixed MemoryItem equality check to compare all fields including type and amount
 13. Removed duplicate parse_xml_element from __all__ exports
 14. Organized __all__ exports into logical groups for better import clarity

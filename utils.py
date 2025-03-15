@@ -369,6 +369,17 @@ class MemoryItem:
                 self.file_path == other.file_path and
                 self.command == other.command)
 
+    def __hash__(self) -> int:
+        return hash((
+            self._normalize_value(self.input),
+            self._normalize_value(self.output),
+            self.type,
+            self.amount,
+            self.timestamp,
+            self.file_path,
+            self.command
+        ))
+
     @staticmethod
     def _normalize_value(value: Any) -> Any:
         """Normalize string values for consistent comparison"""
@@ -1065,7 +1076,7 @@ __all__ = [
     
     # XML handling utilities
     'extract_xml',
-    'parse_xml_to_dict', 
+    'parse_xml_to_dict',
     'parse_xml_element',
 
     # System utilities
