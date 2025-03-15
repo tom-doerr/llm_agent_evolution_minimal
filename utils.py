@@ -38,6 +38,9 @@ class MemoryDiff:
         if not isinstance(self.type, DiffType):
             raise TypeError(f"Invalid DiffType: {type(self.type)}")
 
+    def __hash__(self):
+        return hash((self.type, self.key, self.old_value, self.new_value))
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
             return NotImplemented
@@ -359,7 +362,7 @@ class MemoryItem:
             self.timestamp = datetime.datetime.now().isoformat()
 
 class Agent:
-    def __init__(self, model_name: str, max_tokens: int = 50) -> None:
+    def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
         """Initialize agent with model name and default settings"""
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -367,6 +370,7 @@ class Agent:
             raise ValueError("max_tokens must be a positive integer")
 
         self.model_name = model_name
+        self._test_mode = test_mode
         self.last_response = ""
         self.completions = []
         self.total_num_completions = 0
@@ -841,12 +845,14 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     Args:
         model: Model to use ('flash', 'pro', 'deepseek' or full model name)
         max_tokens: Maximum number of tokens for responses
+        load: Path to load agent state from
         
     Returns:
         Initialized Agent instance
         
     Raises:
         ValueError: If max_tokens is not a positive integer
+        FileNotFoundError: If load path is specified but doesn't exist
     """
     if not isinstance(max_tokens, int) or max_tokens <= 0:
         raise ValueError("max_tokens must be a positive integer")
@@ -858,8 +864,25 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'deepseek': 'openrouter/deepseek/deepseek-chat',
     }
     model_name = model_mapping.get(model.lower(), model)
-    agent = Agent(model_name)
-    agent.max_tokens = max_tokens
+    
+    if not is_valid_model_name(model_name):
+        raise ValueError(f"Invalid model name: {model_name}")
+
+    agent = Agent(model_name, max_tokens=max_tokens)
+    
+    if load:
+        if not os.path.exists(load):
+            raise FileNotFoundError(f"Agent save file not found: {load}")
+        with open(load, 'r') as f:
+            # Simple memory loading from file
+            agent._memory = [
+                MemoryItem(
+                    input="Loaded memory",
+                    output=f.read(),
+                    type="persisted",
+                    timestamp=datetime.datetime.now().isoformat()
+                )
+            ]
     
     return agent
 
