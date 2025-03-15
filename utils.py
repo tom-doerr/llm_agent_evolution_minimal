@@ -147,7 +147,8 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
                 result[child.tag] = child.text or ""
             
         return result
-    except Exception:
+    except Exception as e:
+        # Silent failure with empty dict
         return {}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
