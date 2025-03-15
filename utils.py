@@ -389,8 +389,8 @@ class MemoryItem:
         return hash((
             self._normalize_value(self.input),
             self._normalize_value(self.output),
-            self.type,
-            self.amount,
+            self.type if self.type is not None else "",
+            self.amount if self.amount is not None else 0.0,
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
             self._normalize_value(self.command)
@@ -736,7 +736,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = utils.create_agent(
+        new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1098,7 +1098,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env', 'base_env_manager', 'a_env',
+    'envs', 'base_env_manager', 'a_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',

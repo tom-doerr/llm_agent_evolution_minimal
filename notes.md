@@ -112,6 +112,9 @@ Code Quality Improvements Applied:
 # Import Fixes and Code Cleanup
 
 1. Added Action __hash__ implementation for proper hashing
+2. Fixed __all__ exports to include base_env_manager
+3. Removed duplicate 'base_env' from __all__ that wasn't defined
+4. Added proper MemoryItem field handling in hash/equality checks
 2. Fixed MemoryItem equality check to include type comparison
 3. Fixed create_agent reference in mate() with utils namespace
 4. Removed duplicate 'rm' in prohibited commands
