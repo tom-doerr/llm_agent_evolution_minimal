@@ -617,8 +617,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
         
-        # Store raw XML response first to match main.py assertions
-        self.completions.append(response)
         # Extract and validate XML structure
         xml_content = extract_xml(response)
         if not xml_content:
@@ -1186,8 +1184,6 @@ def create_agent(
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        # Alias for main.py test case
         'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
