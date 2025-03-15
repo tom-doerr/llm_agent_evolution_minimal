@@ -1101,7 +1101,7 @@ __all__ = [
     'envs', 'base_env_manager', 'a_env',
     
     # XML processing
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
     'process_observation',
     
     # Core utilities
