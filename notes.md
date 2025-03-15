@@ -197,6 +197,9 @@ Code Quality Improvements Applied:
 1. Memory Handling:
    - Fixed MemoryItem hash implementation to match equality check
    - Removed duplicate 'rm' from prohibited commands
+   - Added 'sudo' to prohibited shell commands
+   - Fixed create_agent missing from __all__ exports
+   - Ensured MemoryItem hash includes all equality fields
    - Added explicit utils namespace for create_agent in mate()
    - Fixed __all__ exports grouping for XML processing utilities
    - Added missing base_env_manager to __all__ exports

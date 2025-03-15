@@ -400,7 +400,8 @@ class MemoryItem:
             self._normalize_value(self.output),
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
-            self._normalize_value(self.command)
+            self._normalize_value(self.command),
+            self._normalize_value(self.type)
         ))
 
     def __eq__(self, other: object) -> bool:
@@ -457,7 +458,7 @@ class Agent:
         self.completions = []
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo'}
         self._context_instructions = []
         
         # Initialize context instructions (not stored in regular memory)
@@ -1102,7 +1103,7 @@ def create_agent(model: str = 'deepseek-chat',
 # Control exported symbols for from utils import *
 __all__ = [
     # Core agent components
-    'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
+    'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem', 'create_agent',
     
     # Environment configuration
     'base_env', 'envs', 'base_env_manager', 'a_env',
