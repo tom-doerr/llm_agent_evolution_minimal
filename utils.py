@@ -398,7 +398,7 @@ class MemoryItem:
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
             self._normalize_value(self.command)
-        ))
+        ))  # Fixed trailing comma
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
@@ -1061,7 +1061,7 @@ def create_agent(model: str = 'deepseek-chat',
         
     # Model name mapping with full OpenRouter paths
     model_mapping = {
-        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',  # Default model
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
@@ -1102,10 +1102,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env', 'base_env_manager', 'a_env',
-    
-    # XML processing
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
+    'envs', 'base_env_manager', 'a_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
