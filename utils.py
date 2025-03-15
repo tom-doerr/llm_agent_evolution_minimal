@@ -448,7 +448,7 @@ class Agent:
         self.completions = []
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh'}  # Removed duplicate 'rm'
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh'}
         self._context_instructions = []
         
         # Initialize context instructions (not stored in regular memory)
