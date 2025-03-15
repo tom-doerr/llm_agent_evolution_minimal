@@ -368,11 +368,14 @@ class Agent:
         # This is a mock implementation since we don't have real financial data
         return 1000.0  # Default mock value
         
-    def reward(self, amount: float) -> None:
+    def reward(self, amount: Union[int, float]) -> None:
         """Reward the agent with a positive amount (mock implementation).
         
         Args:
             amount: Positive reward amount to add
+            
+        Raises:
+            ValueError: If amount is not a positive number
         """
         if not is_valid_number(amount) or amount < 0:
             raise ValueError("Reward amount must be a positive number")
@@ -380,7 +383,7 @@ class Agent:
         # For now just log the reward
         self.memory.append({
             "type": "reward",
-            "amount": amount,
+            "amount": float(amount),
             "timestamp": datetime.datetime.now().isoformat()
         })
 
@@ -393,7 +396,13 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
         
     Returns:
         Initialized Agent instance
+        
+    Raises:
+        ValueError: If max_tokens is not a positive integer
     """
+    if not isinstance(max_tokens, int) or max_tokens <= 0:
+        raise ValueError("max_tokens must be a positive integer")
+        
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
@@ -403,5 +412,6 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     # Get model name with default fallback
     model_name = model_mapping.get(model.lower(), model)
     agent = Agent(model_name)
+    agent.max_tokens = max_tokens
     
     return agent
