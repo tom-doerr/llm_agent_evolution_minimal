@@ -42,7 +42,9 @@ __all__ = [
     'MemoryDiff',
     'Action',
     'DiffType',
-    'process_observation'
+    'process_observation',
+    '_create_prompt_body',
+    '_create_prompt_examples'
 ]
 
 def is_non_empty_string(value: Any) -> bool:
@@ -276,7 +278,8 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
         if element.attrib:
             result = {"_text": element.text or ""}
             result.update(element.attrib)
-            return result
+            self.last_response = result  # Store raw response
+            return result.strip()  # Return cleaned response
         return element.text or ""
     
     result = {}
@@ -322,6 +325,7 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str) -> None:
+        self.last_response: str = ""  # Track last raw response
         if not isinstance(model_name, str):
             raise ValueError("model_name must be a string")
             
@@ -360,7 +364,7 @@ class Agent:
             for item in self._memory
         )
     
-    def __call__(self, input_text: str) -> 'Agent':
+    def __call__(self, input_text: str) -> str:
         """Handle agent calls with input text.
         
         Args:
@@ -519,9 +523,33 @@ Example valid response:
     </diff>
   </diffs>
   <action type="remember">
-    <item>user_number</item>
+    <key>user_number</key>
     <value>132</value>
   </action>
+</response>"""
+
+def _create_prompt_examples() -> str:
+    """Return additional examples for prompt"""
+    return """\nMore Examples:
+    
+1. Simple addition:
+<response>
+  <diffs>
+    <diff type="ADD">
+      <key>new_item</key>
+      <new_value>example</new_value>
+    </diff>
+  </diffs>
+</response>
+
+2. Removal example:
+<response>
+  <diffs>
+    <diff type="REMOVE">
+      <key>old_item</key>
+      <old_value>deprecated</old_value>
+    </diff>
+  </diffs>
 </response>"""
 
 def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
