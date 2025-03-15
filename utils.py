@@ -629,7 +629,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=new_test_mode
+            test_mode=test_mode
         )
         
         # Combine memories from both parents
@@ -930,6 +930,5 @@ __all__ = [
     'parse_xml_element',
     'parse_xml_to_dict',
     'print_datetime',
-    'process_observation',
     'run_inference'
 ]
