@@ -709,12 +709,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         <search></search>
         <replace>abc</replace>
     </remember>
-    <respond>abc</respond>
+    <message>abc</message>
 </response>'''
             if input_text == 'what files are in the current directory?':
                 return '''<response>
     <shell>ls</shell>
-    <respond>plexsearch.log</respond>
+    <message>plexsearch.log</message>
 </response>''' 
             if 'remember it' in input_text.lower():
                 return '''<response>
@@ -734,7 +734,7 @@ You can use multiple actions in a single completion but must follow the XML sche
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
-    <respond>Successfully processed request</respond>
+    <message>Successfully processed request</message>
 </response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
