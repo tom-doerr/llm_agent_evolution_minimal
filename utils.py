@@ -103,19 +103,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     Raises:
         ValueError: If input_string is invalid
     """
-    """Run inference using the specified model.
-    
-    Args:
-        input_string: Input text to process
-        model: Model to use for inference
-        stream: Whether to use streaming mode
-        
-    Returns:
-        Inference result as string
-        
-    Raises:
-        ValueError: If input_string is invalid
-    """
     # Run inference using the specified model
     if not is_non_empty_string(input_string):
         return ""
@@ -310,7 +297,7 @@ def print_datetime() -> None:
     print(f"Current date and time: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 class Agent:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str) -> None:
         if not isinstance(model_name, str):
             raise ValueError("model_name must be a string")
             
@@ -319,10 +306,10 @@ class Agent:
         self.lm = None
         self._test_mode = False
     
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # type: ignore
         return f"Agent with model: {self.model_name}"
     
-    def __repr__(self) -> str:
+    def __repr__(self) -> str:  # type: ignore
         return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
     
     def __call__(self, input_text: str) -> str:
@@ -355,7 +342,7 @@ class Agent:
             })
             return error_msg
     
-    def run(self, input_text: str) -> str:
+    def run(self, input_text: str) -> str:  # type: ignore
         if not is_non_empty_string(input_text):
             return ""
         
@@ -381,7 +368,7 @@ class Agent:
         """Clear the agent's memory"""
         self.memory = []
 
-def create_agent(model_type: str = 'flash', **kwargs: Any) -> "Agent":
+def create_agent(model_type: str = 'flash', **kwargs: Any) -> Agent:
     """Create an agent with the specified model type.
     
     Args:
