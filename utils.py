@@ -433,15 +433,14 @@ class MemoryItem:
             self.type = 'fact'
 
     def __hash__(self) -> int:
-        return hash((
-            self._normalize_value(self.input),
-            self._normalize_value(self.output),
-            self.type,
-            self.amount,
-            self._normalize_value(self.timestamp),
-            self._normalize_value(self.file_path),
-            self._normalize_value(self.command)
-        ))
+        return hash(
+            (self._normalize_value(self.input),
+             self._normalize_value(self.output),
+             self.type,
+             self.amount if self.amount is not None else 0.0,
+             self._normalize_value(self.timestamp or ""),
+             self._normalize_value(self.file_path or ""),
+             self._normalize_value(self.command or ""))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
@@ -468,9 +467,6 @@ class Agent:
         # Initialize from base environment configuration
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
-        self._context_instructions = []
-        self._test_mode = bool(test_mode)
-        self.completions = []
         
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -735,7 +731,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
-            self.completions.append(raw_response)
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
