@@ -227,13 +227,6 @@ def run_inference(input_string: str, model: str = "openrouter/deepseek/deepseek-
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
-    # Fast path for empty input
-    if not xml_string or not xml_string.strip():
-        return ""
-    
-    # First check if input is valid XML already
-    if is_valid_xml(xml_string):
-        return xml_string
     """Extract valid XML content from a string that might contain other text.
     
     Handles common XML response tags like <respond>, <remember>, etc.
@@ -251,9 +244,11 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     """
     # Remove any XML declaration and namespaces
     # Remove XML namespaces and declarations
+    # Pre-clean XML string
     xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string, flags=re.DOTALL|re.IGNORECASE)
     xml_string = re.sub(r'\sxmlns(:[^=]+)?=(".*?"|\'.*?\')', '', xml_string)
     xml_string = re.sub(r'(</?)\w+:', r'\1', xml_string)  # Remove namespace prefixes
+    xml_string = xml_string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')  # Basic XML escaping
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -467,7 +462,7 @@ class Agent:
         # Initialize from base environment but override with test-specific commands
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo',
-                                        '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod'}
+                                        '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod', 'rm'}
         
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -840,7 +835,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         
     def mate(self, other: 'Agent') -> 'Agent':
         # Create new agent by combining memories from both parents
-        # Applies mating cost to self parent only
+        # Applies mating cost to self parent only (50 as defined in base_env_manager)
         # Inherits configuration from parents while preferring self's settings
         # Returns new Agent with combined memories
         #
@@ -889,7 +884,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._context_instructions = self._context_instructions.copy()
         
         # Apply mating cost only to self parent per main.py assertion
-        self.reward(-float(base_env_manager.mating_cost))
+        self.reward(-base_env_manager.mating_cost)
         
         return new_agent
 
