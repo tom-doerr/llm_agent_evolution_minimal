@@ -35,7 +35,7 @@ def _create_prompt_body() -> str:
     return """<response>\n  <memory_diff>\n    <!-- 1+ SEARCH/REPLACE diffs -->\n    <file_path>filename.ext</file_path>\n    <search>EXACT existing code/text</search>\n    <replace>NEW code/text</replace>\n  </memory_diff>\n  <action name="action_name">\n    <!-- 0+ parameters -->\n    <param_name>value</param_name>\n  </action>\n</response>\n"""
 
 def _create_prompt_examples() -> str:
-    example1 = """1. File edit with action:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n"""
+    example1 = """1. File edit:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/gemini'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n"""
     example2 = """2. Multiple files:\n<response>\n  <memory_diff>\n    <file_path>app.py</file_path>\n    <search>debug=True</search>\n    <replace>debug=False</replace>\n    <file_path>README.md</file_path>\n    <search>Old feature list</search>\n    <replace>New feature list</replace>\n  </memory_diff>\n</response>"""
     return "Examples:\n" + example1 + example2
 
@@ -58,23 +58,20 @@ def _process_chunk(chunk) -> Tuple[str, str]:
     return xml_content, reasoning_content
 
 def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
-    xml_content = ""
-    reasoning_content = ""
     try:
         response = litellm.completion(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             stream=True
         )
-
+        xml_content, reasoning_content = "",""
         for chunk in response:
             xml_update, reasoning_update = _process_chunk(chunk)
             xml_content += xml_update
             reasoning_content += reasoning_update
-
+        return xml_content, reasoning_content
     except Exception as e:
         raise ValueError(f"Error during litellm completion: {e}") from e
-    return xml_content, reasoning_content
 
 def _extract_file_diffs(section: str) -> List[MemoryDiff]:
     file_diffs = []
