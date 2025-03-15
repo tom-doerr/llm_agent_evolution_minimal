@@ -968,16 +968,17 @@ def process_observation(
         print(f"Critical error processing observation: {str(e)}")
         return [], None
 
-def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default to DeepSeek Chat
+def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
                 max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
-    Supported models (use full OpenRouter paths):
+    Supported models (via OpenRouter):
     - openrouter/deepseek/deepseek-chat (default)
     - openrouter/deepseek/deepseek-coder-33b-instruct
     - openrouter/google/gemini-2.0-flash-001
     - openrouter/google/gemini-2.0-pro
+    - openrouter/meta-llama/llama-3-70b-instruct
     - openrouter/openai/gpt-3.5-turbo
     - openrouter/openai/gpt-4
     
@@ -1052,7 +1053,7 @@ __all__ = [
     'envs',
     
     # Core functions
-    'create_agent',
+    'create_agent', 
     'process_observation',
     'run_inference',
     

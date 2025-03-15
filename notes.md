@@ -69,6 +69,8 @@ Code Quality Improvements & Fixes:
 6. Fixed XML tag validation logic in parse_xml_element()
 7. Removed redundant code in memory handling
 8. Added strict type checks for memory operations
+9. Fixed __all__ exports to include all required components
+10. Updated model documentation with latest OpenRouter options
 Code Quality Improvements & Fixes:
 1. Fixed __all__ exports formatting and order
 2. Removed redundant test_mode type check in Agent.mate()
