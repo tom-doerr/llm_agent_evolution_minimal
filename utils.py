@@ -467,7 +467,7 @@ class Agent:
         self.total_num_completions = 0
         # Initialize from base environment configuration
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*', '??'}
         
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -579,10 +579,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             f"{item.timestamp} | {item.type}: {item.input} -> {item.output}\n"
             for item in self._memory
             # Strictly exclude any instruction-type items and context instructions
-            if item.type not in {"instruction", "context"} \
-            and not any(item.output.strip() == ci.output.strip() for ci in self._context_instructions) \
-            and item.type is not None  # Add null check \
-            and "Explanation of all the available XML actions" not in item.output \
+            if item.type not in {"instruction", "context"} 
+            and not any(ci.output.strip() in item.output for ci in self._context_instructions) 
+            and item.type is not None 
+            and "Explanation of all the available XML actions" not in item.output 
             and "You can edit your memory using the following XML action:" not in item.output
         )
     
@@ -881,9 +881,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._memory = unique_memory
         new_agent._context_instructions = self._context_instructions.copy()
         
-        # Apply mating cost only to self parent per main.py assertion 
-        # Convert to float to match type hints in reward()
-        self.reward(float(-base_env_manager.mating_cost))
+        # Apply mating cost only to self parent per main.py assertion
+        self.reward(-float(base_env_manager.mating_cost))
         
         return new_agent
 
