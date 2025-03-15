@@ -549,6 +549,11 @@ You can use multiple actions in a single completion""",
         
         return new_agent
 
+    def save(self, file_path: str) -> None:
+        """Save agent state to file"""
+        with open(file_path, 'w') as f:
+            f.write(self.memory)
+
     def reward(self, amount: Union[int, float]) -> None:
         """Update agent's net worth with reward/penalty."""
         if not isinstance(amount, (int, float)):
