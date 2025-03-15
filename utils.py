@@ -926,6 +926,5 @@ __all__ = [
     'parse_xml_element',
     'process_observation',
     'run_inference',
-    'print_datetime',
-    'parse_xml_element'
+    'print_datetime'
 ]
