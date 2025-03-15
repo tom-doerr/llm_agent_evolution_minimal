@@ -90,10 +90,14 @@ Examples:
         # Process streaming response
         xml_content = ""
         for chunk in response:
-            xml_content += chunk.choices[0].delta.content or ""
+            try:
+                if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
+                    xml_content += chunk.choices[0].delta.content
+            except Exception as e:
+                print(f"Error processing chunk: {e}")
+                continue
     except Exception as e:
-        print(f"Error during litellm completion: {e}")
-        return [], None
+        raise ValueError(f"Error during litellm completion: {e}") from e
 
     # Parse XML response
     memory_diffs = []

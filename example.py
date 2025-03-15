@@ -1,5 +1,6 @@
 from memdiff.memory import process_observation
 import litellm
+from rich import print
 import os
 
 # Configure LiteLLM 
@@ -19,6 +20,10 @@ current_memory = "<current_state></current_state>"
 
 diffs, action = process_observation(current_memory, args.observation, model=args.model)
 
+print("[bold blue]Reasoning:[/bold blue]")
+# TODO: Capture and print reasoning from the model
+
+print("\n[bold blue]Memory Diffs:[/bold blue]")
 print("Memory Diffs:")
 for diff in diffs:
     print(f"File: {diff.file_path}")
