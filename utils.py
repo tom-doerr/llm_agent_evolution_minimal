@@ -4,6 +4,7 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
+import xml.etree.ElementTree as ET
 from types import SimpleNamespace
 
 # Environment configurations
@@ -355,7 +356,7 @@ class Agent:
         self.completions = []
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh'}
         self._memory = []
         self._context_instructions = []
         self.max_tokens = 50
@@ -801,5 +802,8 @@ __all__ = [
     'envs',
     
     # XML parsing functions
-    'parse_xml_element'
+    'parse_xml_element',
+    
+    # Observation processing
+    'process_observation'
 ]
