@@ -16,9 +16,11 @@ base_env_manager = SimpleNamespace(
     mating_cost=50
 )
 
-def a_env(input_str: str) -> int:
+def a_env(input_str: Union[str, 'Agent']) -> int:
     # Count occurrences of 'a' (case-insensitive)
-    return sum(1 for c in str(input_str) if c.lower() == 'a')
+    if isinstance(input_str, Agent):
+        return sum(1 for c in input_str.memory.lower() if c == 'a')
+    return sum(1 for c in str(input_str).lower() if c == 'a')
 
 envs = {
     'a_env': a_env,
@@ -839,6 +841,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         """Create new agent by combining memories from both parents.
         Applies mating cost to self parent only.
         
+        Inherits:
+        - Test mode from either parent
+        - Model name from self
+        - Max tokens from self
+        - Environment configurations
+        
         Args:
             other: Another Agent instance to mate with
         
@@ -858,6 +866,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
         )
+        new_agent.total_num_completions = self.total_num_completions + other.total_num_completions
         
         # Combine and deduplicate memories from both parents without filtering
         combined_mem = self._memory + other._memory
