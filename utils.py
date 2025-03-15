@@ -71,9 +71,12 @@ def is_non_empty_string(value: Any) -> bool:
 def is_valid_xml_tag(tag: str) -> bool:
     """True if string is a valid XML tag name"""
     return (is_non_empty_string(tag) 
-            and tag[0].isalpha() 
-            and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
-            and not tag.startswith(('xml', 'XML')))  # Prevent reserved names
+            and tag[0].isalpha()
+            and tag[-1] != '-'
+            and all(c.isalnum() or c in ('-', '_', '.') for c in tag[1:])
+            and not tag.lower().startswith('xml')
+            and ':' not in tag
+            and ' ' not in tag)
 
 def is_valid_model_name(model: str) -> bool:
     # Check if model name is valid (contains non-empty string with slash)
@@ -862,12 +865,13 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     if not isinstance(max_tokens, int) or max_tokens <= 0:
         raise ValueError("max_tokens must be a positive integer")
         
-    # Get model name with default fallback
+    # Model name mapping with full OpenRouter paths
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro', 
+        'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner'
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
+        'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -903,5 +907,7 @@ __all__ = [
     'Action',
     'DiffType',
     'Agent',
-    'parse_xml_to_dict'
+    'parse_xml_to_dict',
+    'base_env_manager',
+    'envs'
 ]
