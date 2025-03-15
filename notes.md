@@ -16,3 +16,6 @@ Code Quality Improvements & Fixes:
 15. Added missing environment config exports to __all__
 16. Removed duplicate _test_mode initialization
 17. Fixed base_env_manager accessibility
+18. Added missing XML action type validation
+19. Fixed environment config initialization
+20. Added test mode propagation in agent creation

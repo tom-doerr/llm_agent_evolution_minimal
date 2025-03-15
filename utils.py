@@ -371,6 +371,7 @@ class Agent:
 
         self.model_name = model_name
         self._test_mode = test_mode
+        self._memory = []
         self.last_response = ""
         self.completions = []
         self.total_num_completions = 0
@@ -838,7 +839,7 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         )
     return None
 
-def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str] = None) -> Agent:
+def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
     Args:
@@ -867,7 +868,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     if not is_valid_model_name(model_name):
         raise ValueError(f"Invalid model name: {model_name}")
 
-    agent = Agent(model_name, max_tokens=max_tokens)
+    agent = Agent(model_name, max_tokens=max_tokens, test_mode=test_mode)
     
     if load:
         if not os.path.exists(load):
@@ -888,7 +889,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 # Ensure __all__ is after all definitions
 __all__ = [
     'create_agent',
-    'run_inference', 
+    'run_inference',
     'extract_xml',
     'process_observation',
     'MemoryItem',
@@ -896,6 +897,8 @@ __all__ = [
     'Action',
     'DiffType',
     'Agent',
+    'base_env_manager',
+    'envs',
     'base_env_manager',
     'envs'
 ]
