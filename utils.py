@@ -331,7 +331,16 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     """Parse XML element into Python data structures with validation"""
     if not is_valid_xml_tag(element.tag):
-        raise ValueError(f"Invalid XML tag: {element.tag}")
+        raise ValueError(
+            f"Invalid XML tag: {element.tag}\n"
+            "Valid tags must:\n"
+            "1. Start with a letter or underscore\n"
+            "2. Contain only a-z, 0-9, -, _, or .\n"
+            "3. Be 1-255 characters\n"
+            "4. No spaces/colons\n"
+            "5. Not start with 'xml'\n"
+            "6. Not end with hyphen"
+        )
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
