@@ -370,7 +370,6 @@ class Agent:
         self.model_name = model_name
         self.max_tokens = max_tokens
         self._test_mode = test_mode
-        self.max_tokens = max_tokens
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -620,7 +619,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             max_tokens=self.max_tokens,
             test_mode=self._test_mode and other._test_mode
         )
-        new_agent._test_mode = self._test_mode and other._test_mode
+        new_agent._test_mode = self._test_mode or other._test_mode
         
         # Combine memories from both parents
         new_agent._memory.extend(self._memory)
@@ -873,12 +872,11 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek': 'openrouter/deepseek/deepseek-chat',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-v1',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
-        'default': 'openrouter/deepseek/deepseek-reasoner',
-        'deepseek': 'openrouter/deepseek/deepseek-reasoner'  # Alias for consistency
+        'default': 'openrouter/deepseek/deepseek-chat',
+        'deepseek': 'openrouter/deepseek/deepseek-chat'  # Primary alias
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -909,10 +907,10 @@ __all__ = [
     'Action',
     'base_env_manager',
     'create_agent',
-    'DiffType',
+    'DiffType', 
     'envs',
     'extract_xml',
-    'MemoryDiff', 
+    'MemoryDiff',
     'MemoryItem',
     'parse_xml_to_dict',
     'parse_xml_element',
