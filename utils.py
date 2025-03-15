@@ -623,16 +623,19 @@ You can use multiple actions in a single completion but must follow the XML sche
             return f"<message>XML parsing error: {str(e)}</message>"
                 
             # Execute validated command
-            result = subprocess.run(
-                cmd_parts,
-                shell=False,  # Safer without shell
-                capture_output=True,
-                text=True,
-                timeout=5
-            )
-            return f"<shell_output>\n{result.stdout or result.stderr}\n</shell_output>"
+            try:
+                result = subprocess.run(
+                    cmd_parts,
+                    shell=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
+                return f"<shell_output>\n{result.stdout}\n{result.stderr}\n</shell_output>"
+            except Exception as e:
+                return f"<error>{str(e)}</error>"
         except Exception as e:
-            return str(e)
+            return f"<error>{str(e)}</error>"
 
     def __call__(self, input_text: str) -> str:
         """Process input and return cleaned response."""
@@ -689,12 +692,16 @@ You can use multiple actions in a single completion but must follow the XML sche
         if self._test_mode:
             if input_text == 'please respond with the string abc':
                 return '''<response>
+    <remember>
+        <search></search>
+        <replace>abc</replace>
+    </remember>
     <respond>abc</respond>
 </response>'''
             if 'remember it' in input_text.lower():
                 return '''<response>
     <remember>
-        <search>old_value</search>
+        <search></search>
         <replace>132</replace>
     </remember>
     <respond>Got it! I'll remember that!</respond>
