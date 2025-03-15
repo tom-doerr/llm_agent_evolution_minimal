@@ -46,7 +46,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         if stream:
             full_response = ""
             for chunk in response:
-                if hasattr(chunk, 'choices') and chunk.choices:
+                if hasattr(chunk, 'choices') and chunk.choices and len(chunk.choices) > 0:
                     delta = chunk.choices[0].delta
                     if hasattr(delta, 'content') and delta.content:
                         full_response += delta.content
@@ -54,7 +54,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
                         full_response += delta.reasoning_content
             return full_response
         
-        if hasattr(response, 'choices') and response.choices:
+        if hasattr(response, 'choices') and response.choices and len(response.choices) > 0:
             choice = response.choices[0]
             if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
                 return choice.message.content
@@ -73,6 +73,14 @@ def extract_xml(xml_string: str) -> str:
         return ""
     
     try:
+        # First try to parse the entire string as XML
+        try:
+            root = ET.fromstring(xml_string)
+            return ET.tostring(root, encoding='unicode')
+        except ET.ParseError:
+            pass
+            
+        # Try to extract XML content between tags
         start_idx = xml_string.find('<')
         end_idx = xml_string.rfind('>')
         
@@ -82,7 +90,8 @@ def extract_xml(xml_string: str) -> str:
                 root = ET.fromstring(xml_content)
                 return ET.tostring(root, encoding='unicode')
             except ET.ParseError:
-                for tag in ['response', 'result', 'data', 'xml', 'root']:
+                # Try common XML root tags
+                for tag in ['response', 'result', 'data', 'xml', 'root', 'memory', 'action']:
                     start_tag = f'<{tag}'
                     end_tag = f'</{tag}>'
                     start = xml_string.find(start_tag)
@@ -94,10 +103,7 @@ def extract_xml(xml_string: str) -> str:
                             return ET.tostring(root, encoding='unicode')
                         except ET.ParseError:
                             continue
-                return ""
-        
-        root = ET.fromstring(xml_string)
-        return ET.tostring(root, encoding='unicode')
+        return ""
     except ET.ParseError:
         return ""
 
@@ -107,17 +113,23 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
     
     try:
         extracted = extract_xml(xml_string)
-        if extracted:
-            xml_string = extracted
+        if not extracted:
+            return {}
             
+        xml_string = extracted
         root = ET.fromstring(xml_string)
         result = {}
         
+        # Include root attributes if any
+        if root.attrib:
+            result.update(root.attrib)
+        
+        # Process child elements
         for child in root:
             if len(child) > 0:
                 result[child.tag] = parse_xml_element(child)
             else:
-                result[child.tag] = child.text
+                result[child.tag] = child.text or ""
             
         return result
     except ET.ParseError:
@@ -125,14 +137,27 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
     if len(element) == 0:
+        # Return text with attributes if any
+        if element.attrib:
+            result = {"_text": element.text or ""}
+            result.update(element.attrib)
+            return result
         return element.text or ""
     
     result = {}
+    # Include element attributes if any
+    if element.attrib:
+        result.update(element.attrib)
+    
+    # Process child elements
     for child in element:
-        if len(child) > 0:
-            result[child.tag] = parse_xml_element(child)
+        if child.tag in result:
+            # Handle duplicate tags by converting to list
+            if not isinstance(result[child.tag], list):
+                result[child.tag] = [result[child.tag]]
+            result[child.tag].append(parse_xml_element(child))
         else:
-            result[child.tag] = child.text or ""
+            result[child.tag] = parse_xml_element(child)
     
     return result
 
@@ -150,12 +175,18 @@ class Agent:
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
     
+    def __repr__(self) -> str:
+        return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
+    
     def __call__(self, input_text: str) -> str:
         result = self.run(input_text)
         self.memory.append({"input": input_text, "output": result})
         return result
     
     def run(self, input_text: str) -> str:
+        if not is_non_empty_string(input_text):
+            return ""
+            
         if self.lm and hasattr(self.lm, 'complete'):
             try:
                 response = self.lm.complete(input_text)
@@ -167,6 +198,10 @@ class Agent:
         
         use_stream = self.model_name.startswith("deepseek/")
         return run_inference(input_text, self.model_name, stream=use_stream)
+    
+    def clear_memory(self) -> None:
+        """Clear the agent's memory"""
+        self.memory = []
 
 def create_agent(model_type: str) -> Agent:
     model_mapping = {
@@ -182,9 +217,9 @@ def create_agent(model_type: str) -> Agent:
     try:
         import dspy
         agent.lm = dspy.LM(model_name)
-        return agent
     except ImportError:
-        return agent
+        pass
     except Exception as e:
         agent.model_name = f"{model_name} (Error: {str(e)})"
-        return agent
+    
+    return agent
