@@ -455,7 +455,7 @@ class Agent:
         self.completions = []
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';'}
         self._context_instructions = []
         
         # Initialize context instructions (not stored in regular memory)
@@ -689,7 +689,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             if 'remember it' in input_text.lower():
                 return '''<response>
     <remember>
-        <search>previous_value</search>
+        <search>old_value</search>
         <replace>132</replace>
     </remember>
     <respond>Got it! I'll remember that!</respond>
@@ -751,9 +751,15 @@ You can use multiple actions in a single completion but must follow the XML sche
             test_mode=new_test_mode
         )
         
-        # Combine memories from both parents (using copies to prevent reference issues)
-        new_agent._memory.extend(list(self._memory))
-        new_agent._memory.extend(list(other._memory))
+        # Combine memories from both parents excluding context instructions
+        new_agent._memory.extend([
+            item for item in self._memory 
+            if item.type != "instruction" and not any(i.output == item.output for i in self._context_instructions)
+        ])
+        new_agent._memory.extend([
+            item for item in other._memory 
+            if item.type != "instruction" and not any(i.output == item.output for i in other._context_instructions)
+        ])
         
         # Apply mating cost once to each parent
         self.reward(-envs['base_env_manager'].mating_cost)
