@@ -425,9 +425,11 @@ class Agent:
         self._memory = []
 
     def get_net_worth(self) -> float:
-        """Get the agent's net worth (mock implementation)."""
-        # This is a mock implementation since we don't have real financial data
-        return 1000.0  # Default mock value
+        """Calculate actual net worth from reward history"""
+        return sum(
+            item.amount for item in self._memory 
+            if item.type == "reward" and item.amount is not None
+        )
         
     def reward(self, amount: Union[int, float]) -> None:
         """Reward the agent with a positive amount (mock implementation).
@@ -457,9 +459,19 @@ def process_observation(
     """Process observation and return memory diffs with optional action"""
     _validate_inputs(current_memory, observation, model)
     prompt = _prepare_prompt(current_memory, observation)
-    response, _ = _get_litellm_response(model, prompt)
-    _validate_xml_response(response)
-    return _parse_memory_diffs(response), _parse_action(response)
+    response, error = _get_litellm_response(model, prompt)
+    
+    if error:
+        return [], None
+        
+    try:
+        _validate_xml_response(response)
+        diffs = _parse_memory_diffs(response)
+        action = _parse_action(response)
+        return diffs, action
+    except ET.ParseError as e:
+        print(f"XML parsing error: {str(e)}")
+        return [], None
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
     """Validate input types and values"""
@@ -488,8 +500,22 @@ def _prepare_prompt(current_memory: str, observation: str) -> str:
     return f"{_create_prompt_header(current_memory, observation)}\n{_create_prompt_body()}"
 
 def _create_prompt_body() -> str:
-    """Return fixed prompt body"""
-    return "Format response as XML with <diffs> and <action> sections"
+    """Return fixed prompt body with examples"""
+    return """\nFormat response as XML with <diffs> and <action> sections\n
+Example valid response:
+<response>
+  <diffs>
+    <diff type="MODIFY">
+      <key>user_number</key>
+      <old_value>None</old_value>
+      <new_value>132</new_value>
+    </diff>
+  </diffs>
+  <action type="remember">
+    <item>user_number</item>
+    <value>132</value>
+  </action>
+</response>"""
 
 def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
     """Get response from LiteLLM API"""
