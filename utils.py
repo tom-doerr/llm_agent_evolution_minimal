@@ -448,7 +448,7 @@ class MemoryItem:
             MemoryItem._normalize_value(self.input) == MemoryItem._normalize_value(other.input) and
             MemoryItem._normalize_value(self.output) == MemoryItem._normalize_value(other.output) and
             self.type == other.type and
-            (self.amount or 0) == (other.amount or 0) and  # Handle None values
+            (self.amount if self.amount is not None else 0) == (other.amount if other.amount is not None else 0) and
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
             self._normalize_value(self.command) == self._normalize_value(other.command)
@@ -568,7 +568,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         return f"Agent with model: {self.model_name}"
     
     def __repr__(self) -> str:
-        return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
+        return f"Agent(model_name='{self.model_name}', memory_size={len(self._memory)})"
 
     @property
     def context(self) -> str:
@@ -754,10 +754,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not is_non_empty_string(input_text):
             return ""
         
-        # Always count completions (for both test and real modes)
-        self.total_num_completions += 1
-        
-        # Test mode responses
+        # Test mode responses (completions counted in __call__)
         if self._test_mode:
             if input_text == 'please respond with the string abc':
                 return '''<response>
@@ -859,15 +856,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             test_mode=new_test_mode
         )
         
-        # Combine and deduplicate memories from both parents
-        combined_mem = [
-            item for item in self._memory + other._memory
-            # Strict filtering of memory items
-            if item.type not in {"instruction", "context"} and item.input.strip() != ""
-            and not any(item.output == ci.output 
-                      for ci in self._context_instructions + other._context_instructions)
-            and item.input.strip() != ""  # Exclude empty inputs
-        ]
+        # Combine and deduplicate memories from both parents without filtering
+        combined_mem = self._memory + other._memory
         
         # Remove duplicates while preserving order using hashes and ensure proper initialization
         seen_hashes = set()
