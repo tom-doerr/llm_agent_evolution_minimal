@@ -20,7 +20,7 @@ Code Quality Improvements & Fixes:
 19. Fixed API key check to use OPENROUTER_API_KEY
 20. Removed duplicate base_env_manager and a_env from __all__ exports
 21. Added explicit model mapping for full openrouter/deepseek path
-22. Fixed test_mode propagation in mate() to use OR instead of AND
+22. Fixed test_mode propagation in mate() to use AND instead of OR
 23. Added missing process_observation to __all__ exports
 22. Standardized environment configurations
 23. Improved error messages for XML parsing
