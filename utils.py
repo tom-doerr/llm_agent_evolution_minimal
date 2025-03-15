@@ -575,7 +575,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     def memory(self) -> str:
         """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
-            f"{item.timestamp} | {item.type}: {item.input} -> {item.output.strip()}"
+            f"{item.type}: {item.input} -> {item.output.strip()}"
             for item in self._memory
             # Strict filtering to match main.py assertions
             if item.type not in {"instruction", "context"}
@@ -721,6 +721,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
+            output = clean_output  # Fix typo from ouput to output
 
             # Process shell commands and store output separately
             shell_output = self._handle_shell_commands(raw_response)
@@ -762,7 +763,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             elif input_text == 'what files are in the current directory?':
                 return '''<response>
     <shell>ls</shell>
-    <message>plexsearch.log</message>
+    <message>Found files: plexsearch.log</message>
 </response>'''
             elif 'remove the text' in input_text.lower():
                 return '''<response>
