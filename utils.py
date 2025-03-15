@@ -1049,7 +1049,6 @@ __all__ = [
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
-    'parse_xml_element',
     
     # Environment configuration
     'a_env',
@@ -1061,7 +1060,8 @@ __all__ = [
     
     # XML processing
     'extract_xml',
-    'parse_xml_to_dict',
+    'parse_xml_element',
+    'parse_xml_to_dict', 
     'process_observation',
     
     # Utility functions
