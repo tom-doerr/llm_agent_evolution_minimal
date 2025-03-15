@@ -54,8 +54,8 @@ class MemoryDiff:
         return (isinstance(other, MemoryDiff) and 
                 self.type == other.type and
                 self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                (self.old_value == other.old_value if self.old_value is not None else other.old_value is None) and
+                (self.new_value == other.new_value if self.new_value is not None else other.new_value is None))
 
 @dataclass
 class Action:
@@ -379,7 +379,7 @@ class Agent:
 
         self.model_name = model_name
         self.max_tokens = max_tokens
-        self._test_mode = test_mode
+        self._test_mode = bool(test_mode)
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -639,7 +639,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model and propagate test mode only if both parents have it
-        new_test_mode = self._test_mode and other._test_mode
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -899,7 +899,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat', 
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
@@ -942,5 +942,6 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'base_env_manager'
 ]
