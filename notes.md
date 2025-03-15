@@ -123,6 +123,7 @@ Code Quality Improvements Applied:
 5. Verified all __all__ exports have proper implementations
 
 1. Fixed __all__ exports in utils.py:
+   - Added missing base_env export
    - Removed duplicate entries and validation blocks
    - Ensured all referenced symbols are exported
    - Added proper grouping of related components
