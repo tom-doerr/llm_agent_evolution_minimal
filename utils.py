@@ -332,6 +332,15 @@ class Agent:
                 input="",
                 output="Explanation of all the available XML actions. You can edit your memory using the following XML action:",
                 type="instruction"
+            ),
+            MemoryItem(
+                input="XML Actions",
+                output="""Available XML actions:
+<respond> - Send a response to the user
+<remember> - Store information in memory 
+<recall> - Retrieve information from memory
+<request> - Ask for additional information""",
+                type="instruction"
             )
         ]
         self._test_mode = model_name.startswith("flash")
