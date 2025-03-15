@@ -31,7 +31,7 @@ def test_process_observation_valid_response(mock_complete):
         '''}}]
     }]
     
-    diffs, action = process_observation("current", "obs")
+    diffs, action = process_observation("current", "obs", model="test-model")
     assert len(diffs) == 1
     assert diffs[0].file_path == "test.py"
     assert action.name == "update"
