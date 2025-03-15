@@ -85,13 +85,14 @@ def is_valid_xml_tag(tag: str) -> bool:
     
     if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_.-]*$', tag):
         raise ValueError(
-            f"Invalid XML tag: {tag}. Tags must:\n"
-            "1. Start with a letter or underscore\n"
-            "2. Contain only a-z, 0-9, -, _, or .\n"
-            "3. Not contain spaces or colons\n"
-            "4. Not start with 'xml' (case-insensitive)\n"
-            "5. Not end with hyphen\n"
-            "6. Be between 1-255 characters"
+            f"Invalid XML tag: {tag}\n"
+            "Valid tags must:\n"
+            "1. Start with a letter or underscore\n" 
+            "2. Contain only letters, numbers, hyphens, underscores or periods\n"
+            "3. Be 1-255 characters long\n"
+            "4. Not contain spaces or colons\n"
+            "5. Not start with 'xml' (case-insensitive)\n"
+            "6. Not end with a hyphen"
         )
     
     if not 1 <= len(tag) <= 255:
@@ -718,7 +719,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent 
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
@@ -1060,7 +1061,8 @@ def create_agent(model: str = 'deepseek-chat',
         'gpt-3.5': 'openrouter/openai/gpt-3.5-turbo',
         'gpt-4': 'openrouter/openai/gpt-4',
         'llama-3': 'openrouter/meta-llama/llama-3-70b-instruct',
-        'llama3': 'openrouter/meta-llama/llama-3-70b-instruct'
+        'llama3': 'openrouter/meta-llama/llama-3-70b-instruct',
+        'llama-3-70b': 'openrouter/meta-llama/llama-3-70b-instruct'
     }
     # Get mapped model name
     model_name = model_mapping.get(model, model)  # Case-sensitive match
@@ -1103,7 +1105,4 @@ __all__ = [
     # Helper functions
     'print_datetime'
 ]
-
-# Ensure unique exports while preserving order
-__all__ = list(dict.fromkeys(__all__))
 
