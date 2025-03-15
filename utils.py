@@ -250,6 +250,9 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string, flags=re.DOTALL|re.IGNORECASE)
     xml_string = re.sub(r'\sxmlns(:[^=]+)?=(".*?"|\'.*?\')', '', xml_string)
     xml_string = re.sub(r'(</?)\w+:', r'\1', xml_string)  # Remove namespace prefixes
+        
+    # Main.py assertions require strict XML validation
+    xml_string = re.sub(r'&(?!(?:amp|lt|gt|quot|apos);)', '&amp;', xml_string)
     if not is_non_empty_string(xml_string):
         return ""
         
