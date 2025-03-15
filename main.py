@@ -157,4 +157,50 @@ print("net_worth_b:", net_worth_b)
 assert net_worth_a == net_worth_a_prev - mating_cost
 assert net_worth_b == net_worth_b_prev
 
+from utils import envs
+
+a_env = envs['a_env']
+reward = a_env('')
+assert reward == 0
+
+reward = a_env('aaaaa')
+assert reward == 5
+
+reward = a_env('abaaaccccc')
+assert reward == 4
+
+reward = a_env('abaaacccccaa')
+assert reward == 6
+
+total_num_completions = agent_a.total_num_completions
+print("total_num_completions:", total_num_completions)
+total_num_completions_prev = total_num_completions
+
+net_worth_a = agent_a.get_net_worth()
+print("net_worth_a:", net_worth_a)
+net_worth_a_prev = net_worth_a
+
+reward = a_env(agent_a)
+print("reward:", reward)
+
+total_num_completions = agent_a.total_num_completions
+print("total_num_completions:", total_num_completions)
+assert total_num_completions == total_num_completions_prev + 1
+
+net_worth_a = agent_a.get_net_worth()
+print("net_worth_a:", net_worth_a)
+assert net_worth_a == net_worth_a_prev + reward
+net_worth_a_prev = net_worth_a
+
+memory_a = agent_a.memory
+print("memory_a:", memory_a)
+memory_a_prev = memory_a
+agent_a.save('agent_a.toml')
+
+agent_a = create_agent(model='flash', max_tokens=50, load='agent_a.toml')
+memory_a = agent_a.memory
+print("memory_a:", memory_a)
+assert memory_a == memory_a_prev
+
+assert net_worth_a == net_worth_a_prev
 
