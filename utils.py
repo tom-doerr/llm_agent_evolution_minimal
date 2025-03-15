@@ -17,6 +17,14 @@ class MemoryDiff:
     old_value: Optional[Any] = None
     new_value: Optional[Any] = None
 
+    def __eq__(self, other):
+        if not isinstance(other, MemoryDiff):
+            return False
+        return (self.type == other.type and 
+                self.key == other.key and
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
+
 @dataclass
 class Action:
     type: str
@@ -256,12 +264,21 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
         if root.attrib:
             result.update(root.attrib)
         
-        # Process child elements
+        # Process child elements and text content
+        if root.text and root.text.strip():
+            result["text"] = root.text.strip()
+        
         for child in root:
             if len(child) > 0:
                 result[child.tag] = parse_xml_element(child)
             else:
-                result[child.tag] = child.text or ""
+                # Store both text and attributes for leaf nodes
+                child_data = {}
+                if child.text and child.text.strip():
+                    child_data["text"] = child.text.strip()
+                if child.attrib:
+                    child_data.update(child.attrib)
+                result[child.tag] = child_data or ""
             
         return result
     except ET.ParseError as e:
@@ -385,12 +402,16 @@ class Agent:
             if not isinstance(result, str):
                 result = str(result)
                 
+            # Extract clean text from XML response
+            xml_content = extract_xml(result)
+            clean_output = parse_xml_to_dict(xml_content).get('message', result) if xml_content else result
+            
             memory_item = MemoryItem(
                 input=truncate_string(input_text),
-                output=truncate_string(result)
+                output=truncate_string(clean_output)
             )
             self._memory.append(memory_item)
-            return result
+            return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
             self._memory.append(MemoryItem(
