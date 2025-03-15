@@ -578,7 +578,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     def memory(self) -> str:
         """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
-            f"{item.type}: {item.input} -> {item.output.strip()}"
+            re.sub(r'<[^>]+>', '', f"{item.type}: {item.input} -> {item.output.strip()}")
             for item in self._memory
             # Strict filtering to match main.py assertions
             if item.type not in {"instruction", "context"}
@@ -588,8 +588,6 @@ You can use multiple actions in a single completion but must follow the XML sche
                 if "Explanation of all the available XML actions" in ci.output 
                 or "You can edit your memory using the following XML action:" in ci.output
             )
-            and "Explanation of all the available XML actions" not in item.output
-            and "You can edit your memory using the following XML action:" not in item.output
         )
     
     def _handle_edit_commands(self, response: str) -> None:
