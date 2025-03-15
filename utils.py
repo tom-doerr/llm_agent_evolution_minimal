@@ -87,8 +87,8 @@ def is_valid_xml_tag(tag: str) -> bool:
         raise ValueError(
             f"Invalid XML tag: {tag}. Tags must:\n"
             "1. Start with a letter or underscore\n"
-            "2. Contain only a-z, 0-9, -, _, or .\n" 
-            "3. Not contain spaces or special characters\n"
+            "2. Contain only a-z, 0-9, -, _, or .\n"
+            "3. Not contain spaces or colons\n"
             "4. Not start with 'xml' (case-insensitive)\n"
             "5. Not end with hyphen\n"
             "6. Be between 1-255 characters"
@@ -389,7 +389,8 @@ class MemoryItem:
             self.amount,
             self.timestamp,
             self.file_path,
-            self.command
+            self.command,
+            self.type
         ))
 
     @staticmethod
