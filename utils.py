@@ -450,7 +450,7 @@ class MemoryItem:
             MemoryItem._normalize_value(self.input) == MemoryItem._normalize_value(other.input) and
             MemoryItem._normalize_value(self.output) == MemoryItem._normalize_value(other.output) and
             self.type == other.type and
-            (self.amount if self.amount is not None else 0) == (other.amount if other.amount is not None else 0) and
+            (self.amount or 0) == (other.amount or 0) and
             self._normalize_value(self.timestamp or "") == self._normalize_value(other.timestamp or "") and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
             self._normalize_value(self.command) == self._normalize_value(other.command)
@@ -468,7 +468,7 @@ class Agent:
         # Initialize from base environment configuration
         # Initialize from base environment but override with test-specific commands
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', 
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo',
                                         '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod'}
         
         if not isinstance(model_name, str):
@@ -767,7 +767,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
-</response>'''  # Maintain exact match expected by main.py assertions
+</response>'''  # Keep XML formatting exactly matching assertion checks
             elif 'remove the text' in input_text.lower():
                 return '''<response>
     <edit>
