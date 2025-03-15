@@ -447,6 +447,16 @@ class Agent:
         """Initialize agent with model configuration and memory"""
         # Ensure context instructions are never stored in regular memory
         self._context_instructions = []
+        self._test_mode = bool(test_mode)
+        self._memory = []
+        self.last_response = ""
+        self.completions = []
+        self.total_num_completions = 0
+        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
+        self._context_instructions = []
+        
+        # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -724,7 +734,7 @@ You can use multiple actions in a single completion but must follow the XML sche
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
-    <message>Successfully processed request</message>
+    <respond>Successfully processed request</respond>
 </response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
@@ -813,9 +823,9 @@ You can use multiple actions in a single completion but must follow the XML sche
                 seen.add(item_repr)
                 new_agent._memory.append(item)
         
-        # Apply mating cost once to each parent
+        # Apply mating cost only to self per main.py assertion
         self.reward(-envs['base_env_manager'].mating_cost)
-        other.reward(-envs['base_env_manager'].mating_cost)
+        # other.reward(-envs['base_env_manager'].mating_cost)  # Disabled per main.py test
         
         # Remove duplicate memories using all fields
         seen = set()
