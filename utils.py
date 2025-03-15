@@ -27,13 +27,13 @@ class MemoryDiff:
     old_value: Optional[Any] = None
     new_value: Optional[Any] = None
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
-            return False
+            return NotImplemented
         return (self.type == other.type and 
                 self.key == other.key and
-                (self.old_value == other.old_value) and
-                (self.new_value == other.new_value))
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -692,10 +692,14 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
     """Get response from LiteLLM API"""
     try:
         import litellm
-        response = litellm.completion(model=model, messages=[{"role": "user", "content": prompt}])
+        response = litellm.completion(
+            model=model, 
+            messages=[{"role": "user", "content": prompt}],
+            stream=model.startswith("deepseek/")  # Stream for DeepSeek models
+        )
         return response.choices[0].message.content, ""
     except Exception as e:
-        return "", str(e)
+        return "", f"API Error: {str(e)}"
 
 def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
     """Parse memory diffs from XML"""
@@ -784,6 +788,5 @@ __all__ = [
     'DiffType',
     'process_observation',
     'base_env_manager',
-    'envs',
-    'process_observation'
+    'envs'
 ]
