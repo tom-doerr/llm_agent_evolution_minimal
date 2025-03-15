@@ -932,6 +932,7 @@ __all__ = [
     'extract_xml',
     'parse_xml_element',
     'parse_xml_to_dict',
+    'parse_xml_element',
     'print_datetime',
     'process_observation',
     'run_inference'
