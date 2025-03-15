@@ -99,7 +99,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         import litellm
         import os
     except ImportError as e:
-        # Return mock response if litellm not installed
         return f"Mock response (litellm not installed: {str(e)})"
     
     # Validate and normalize model name
@@ -117,30 +116,29 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
             stream=stream
         )
         
-        if stream:
-            full_response = ""
-            for chunk in response:
-                if not hasattr(chunk, 'choices') or not chunk.choices:
-                    continue
-                    
-                delta = chunk.choices[0].delta
-                # Handle both regular content and reasoning_content (for DeepSeek models)
-                if hasattr(delta, 'content') and delta.content is not None:
-                    full_response += delta.content
-                elif hasattr(delta, 'reasoning_content') and delta.reasoning_content is not None:
-                    full_response += delta.reasoning_content
-            return full_response
+        if not stream:
+            if hasattr(response, 'choices') and response.choices:
+                choice = response.choices[0]
+                if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
+                    return choice.message.content
+                elif hasattr(choice, 'text'):
+                    return choice.text
+            return "This is a mock response for testing purposes."
+            
+        # Handle streaming response
+        full_response = ""
+        for chunk in response:
+            if not hasattr(chunk, 'choices') or not chunk.choices:
+                continue
+                
+            delta = chunk.choices[0].delta
+            if hasattr(delta, 'content') and delta.content is not None:
+                full_response += delta.content
+            elif hasattr(delta, 'reasoning_content') and delta.reasoning_content is not None:
+                full_response += delta.reasoning_content
+                
+        return full_response
         
-        # Handle non-streaming response
-        if hasattr(response, 'choices') and response.choices:
-            choice = response.choices[0]
-            if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
-                return choice.message.content
-            elif hasattr(choice, 'text'):
-                return choice.text
-        
-        # Mock response for testing when no real response is available
-        return "This is a mock response for testing purposes."
     except Exception as e:
         return f"Error during inference: {str(e)}"
 
@@ -299,7 +297,8 @@ class Agent:
         self.model_name = model_name
         self.memory: List[Dict[str, str]] = []
         self._test_mode = model_name.startswith("flash")
-        self.lm: Optional[Any] = None  # Initialize lm attribute with type hint
+        self.lm: Optional[Any] = None
+        self.max_tokens = 50  # Default value
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -369,33 +368,24 @@ class Agent:
         # This is a mock implementation since we don't have real financial data
         return 1000.0  # Default mock value
 
-def create_agent(model_type: str = 'flash', max_tokens: int = 50, model: Optional[str] = None) -> Agent:
-    """Create an agent with specified model type and token limit.
+def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
+    """Create an agent with specified model.
     
     Args:
-        model_type: Type of model to use ('flash', 'pro', 'deepseek')
+        model: Model to use ('flash', 'pro', 'deepseek' or full model name)
         max_tokens: Maximum number of tokens for responses
-        model: Alternate parameter name for model_type (backward compatibility)
         
     Returns:
         Initialized Agent instance
     """
-    # Handle both model and model_type parameters
-    if model is not None:
-        model_type = model
-        
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
         'deepseek': 'deepseek/deepseek-reasoner',
-        'default': 'openrouter/google/gemini-2.0-flash-001'
     }
     
     # Get model name with default fallback
-    model_name = model_mapping.get(model_type.lower(), model_mapping['default'])
+    model_name = model_mapping.get(model.lower(), model)
     agent = Agent(model_name)
-    
-    # Set max_tokens if needed (currently unused but available for future use)
-    agent.max_tokens = max_tokens
     
     return agent
