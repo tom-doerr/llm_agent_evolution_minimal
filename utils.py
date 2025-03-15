@@ -1109,6 +1109,9 @@ __all__ = [
     'is_valid_xml_tag', 'is_valid_model_name',
     
     # Types and classes
-    'MemoryItem', 'SimpleNamespace'
+    'MemoryItem', 'SimpleNamespace',
+    
+    # Standard library types
+    'SimpleNamespace'
 ]
 
