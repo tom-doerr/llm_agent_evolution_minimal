@@ -1085,16 +1085,16 @@ def create_agent(model: str = 'deepseek-chat',
 
 # Control exported symbols for from utils import *
 __all__ = [
-    # Core components
+    # Core agent components
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
     'base_env_manager', 'envs', 'a_env',
     
-    # Core processing
+    # Core processing functions
     'create_agent', 'process_observation', 'run_inference',
     
-    # XML utilities
+    # XML handling utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Helper functions
