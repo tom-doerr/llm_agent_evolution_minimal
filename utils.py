@@ -494,6 +494,10 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
             
+        # Additional security validation
+        if any(tag in response.lower() for tag in ['script', 'http', 'ftp']):
+            return "<message>Error: Potentially dangerous content detected</message>"
+            
         # Extract and validate XML structure first
         xml_content = extract_xml(response)
         if not xml_content:
