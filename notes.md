@@ -186,7 +186,10 @@ Code Quality Improvements Applied:
 # Critical Fixes Applied
 
 1. Memory Handling:
-   - Fixed MemoryItem equality/hash to properly compare all fields
+   - Fixed MemoryItem equality/hash to properly compare all fields including type
+   - Added missing type field to hash calculation
+   - Removed duplicate 'rm' from prohibited commands
+   - Fixed create_agent reference in mate() with utils namespace
    - Standardized value normalization for reliable comparisons
    - Removed duplicate 'rm' from prohibited commands
    - Fixed hash() call syntax in MemoryItem
