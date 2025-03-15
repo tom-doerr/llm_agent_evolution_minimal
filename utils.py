@@ -573,10 +573,12 @@ You can use multiple actions in a single completion but must follow the XML sche
                 self._test_mode = True
                 return response
             if 'remember it' in input_text.lower():
-                return '''<remember>
-    <search>previous_value</search>
-    <replace>132</replace>
-</remember>'''
+                return '''<response>
+    <remember>
+        <search>previous_value</search>
+        <replace>132</replace>
+    </remember>
+</response>'''
             if 'current directory' in input_text.lower():
                 return '''<shell>ls</shell>
                     <respond>plexsearch.log</respond>'''
@@ -612,7 +614,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Create new agent with same model and propagate test mode only if both parents have it
         test_mode = bool(self._test_mode and other._test_mode)
-        test_mode = bool(test_mode)  # Ensure boolean type
+        # Ensure proper XML validation in child agent
+        test_mode = bool(test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
