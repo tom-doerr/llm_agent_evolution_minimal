@@ -31,3 +31,6 @@ Code Quality Improvements & Fixes:
 30. Corrected deepseek-reasoner model mapping
 31. Fixed test_mode initialization in Agent class
 32. Added proper test_mode propagation in mate()
+33. Fixed duplicate entries in __all__ exports
+34. Added missing parse_xml_to_dict to __all__
+35. Updated deepseek-reasoner model path format

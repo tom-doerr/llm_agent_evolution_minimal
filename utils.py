@@ -869,7 +869,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-001',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
@@ -902,7 +902,7 @@ __all__ = [
     'extract_xml',
     'process_observation',
     'MemoryItem',
-    'MemoryDiff',
+    'MemoryDiff', 
     'Action',
     'DiffType',
     'Agent',
