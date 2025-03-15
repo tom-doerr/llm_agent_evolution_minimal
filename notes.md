@@ -52,11 +52,14 @@ Code Quality Improvements & Fixes:
 2. Added complete XML schema validation
 3. Improved test_mode responses for all main.py test cases
 4. Removed duplicate environment configuration docs
-2. Added proper test_mode propagation in mate() method
-3. Added process_observation to __all__ exports for proper import*
-4. Improved XML tag validation error messages
-5. Enhanced model documentation in create_agent()
-6. Fixed missing OpenRouter API key requirement in docs
+5. Added proper test_mode propagation in mate() method 
+6. Added process_observation to __all__ exports for proper import
+7. Improved XML tag validation error messages
+8. Enhanced model documentation in create_agent()
+9. Fixed missing OpenRouter API key requirement in docs
+10. Added missing parse_xml_element to __all__ exports
+11. Fixed MemoryItem equality check to include command field
+12. Completed memory item comparison in agent mating
 3. Enhanced XML validation in _handle_shell_commands()
 4. Improved error handling for shell command execution
 5. Added missing test_mode initialization in Agent creation
