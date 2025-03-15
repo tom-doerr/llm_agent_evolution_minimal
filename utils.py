@@ -38,7 +38,9 @@ class MemoryDiff:
         return (self.type == other.type and 
                 self.key == other.key and
                 self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                self.new_value == other.new_value and
+                type(self.old_value) == type(other.old_value) and
+                type(self.new_value) == type(other.new_value))
 
 @dataclass
 class Action:
@@ -366,7 +368,7 @@ class Agent:
         self._memory = []
         self._context_instructions = []
         self.max_tokens = 50
-        self._test_mode = any(kw in model_name.lower() for kw in ["flash", "deepseek"])
+        self._test_mode = any(kw in model_name.lower() for kw in ["flash", "deepseek-chat"])
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -589,7 +591,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model
-        new_agent = Agent(self.model_name, max_tokens=self.max_tokens)
+        new_agent = create_agent(model=self.model_name, max_tokens=self.max_tokens)
         
         # Combine memories from both parents
         new_agent._memory.extend(self._memory)
@@ -855,7 +857,6 @@ __all__ = [
     'is_valid_number',
     'truncate_string',
     'run_inference',
-    'extract_xml',
     'print_datetime',
     'create_agent',
     'process_observation',
