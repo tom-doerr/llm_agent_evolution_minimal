@@ -367,6 +367,8 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
+        if not isinstance(model_name, str) or not model_name.strip():
+            raise ValueError("model_name must be a non-empty string")
         """Initialize agent with model name and default settings
         
         Args:
@@ -652,6 +654,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # New agent only in test mode if both parents are in test mode
         new_test_mode = self._test_mode and other._test_mode
+        if not isinstance(new_test_mode, bool):
+            new_test_mode = False
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -919,17 +923,6 @@ def process_observation(
 def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
-    
-    Args:
-        model: Model identifier string (supports 'flash', 'pro', 'deepseek-chat', etc)
-        max_tokens: Maximum response length (default: 50)
-        load: Path to load agent state from (optional)
-        test_mode: Enable testing mode with mocked responses (default: False)
-        
-    Returns:
-        Initialized Agent instance
-    """
-    """Create an agent with specified model.
 
     Args:
         model: Model to use ('flash', 'gemini-pro', 'deepseek-chat' or full OpenRouter model name)
@@ -995,7 +988,6 @@ __all__ = [
     'extract_xml',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'base_env_manager'
+    'run_inference'
 ]
 
