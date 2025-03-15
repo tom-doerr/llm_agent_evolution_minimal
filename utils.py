@@ -774,6 +774,7 @@ __all__ = [
     'is_valid_xml_tag',
     'is_valid_model_name',
     'is_valid_xml',
+    'parse_xml_to_dict',
     'safe_int_conversion',
     'safe_float_conversion',
     'is_valid_number',
