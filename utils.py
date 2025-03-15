@@ -1104,24 +1104,6 @@ __all__ = [
     'print_datetime'
 ]
 
-# Remove duplicates and ensure all required exports
+# Ensure unique exports while preserving order
 __all__ = list(dict.fromkeys(__all__))
-
-# Remove duplicate parse_xml_element and add missing process_observation
-__all__ = [
-    # Core components
-    'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
-    
-    # Environment configuration
-    'base_env_manager', 'envs', 'a_env',
-    
-    # Core processing
-    'create_agent', 'process_observation', 'run_inference',
-    
-    # XML utilities
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
-    
-    # Helper functions
-    'print_datetime'
-]
 
