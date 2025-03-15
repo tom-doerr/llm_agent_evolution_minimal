@@ -42,20 +42,15 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, MemoryDiff):
-            return False
-        return self.type == other.type and self.key == other.key
+        return isinstance(other, MemoryDiff) and self.type == other.type and self.key == other.key
 
 @dataclass
 class Action:
     type: str
     params: Dict[str, str]
 
-    def __eq__(self, other):
-        if not isinstance(other, Action):
-            return False
-        return (self.type == other.type and 
-                self.params == (other.params or {}))
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Action) and self.type == other.type and self.params == other.params
 
 
 
