@@ -39,6 +39,7 @@ output = agent('please respond with the string abc')
 print("output:", output)
 assert 'abc' in output
 
+# don't mock llm calls, just run it. not that expensive
 ouput = agent('my number is 132, please remember it')
 print("ouput:", ouput)
 last_completion = agent.last_completion
