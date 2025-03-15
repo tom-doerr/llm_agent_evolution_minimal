@@ -20,3 +20,7 @@ good-names=
 
 [DESIGN]
 max-complexity=8
+max-line-length=120
+max-module-lines=1000
+max-function-lines=300
+max-class-attributes=10
