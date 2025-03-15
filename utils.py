@@ -367,6 +367,22 @@ class Agent:
         """Get the agent's net worth (mock implementation)."""
         # This is a mock implementation since we don't have real financial data
         return 1000.0  # Default mock value
+        
+    def reward(self, amount: float) -> None:
+        """Reward the agent with a positive amount (mock implementation).
+        
+        Args:
+            amount: Positive reward amount to add
+        """
+        if not is_valid_number(amount) or amount < 0:
+            raise ValueError("Reward amount must be a positive number")
+        # In a real implementation this would modify some internal state
+        # For now just log the reward
+        self.memory.append({
+            "type": "reward",
+            "amount": amount,
+            "timestamp": datetime.datetime.now().isoformat()
+        })
 
 def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     """Create an agent with specified model.
