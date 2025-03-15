@@ -187,6 +187,8 @@ Code Quality Improvements Applied:
 
 1. Memory Handling:
    - Fixed MemoryItem equality/hash to properly compare all fields including type
+   - Added missing base_env_manager to __all__ exports
+   - Fixed MemoryItem hash tuple syntax
    - Added missing type field to hash calculation
    - Removed duplicate 'rm' from prohibited commands
    - Fixed create_agent reference in mate() with utils namespace

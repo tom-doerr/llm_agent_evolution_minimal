@@ -391,14 +391,13 @@ class MemoryItem:
 
     def __hash__(self) -> int:
         return hash((
-            self.type,
-            self.amount,
+            self._normalize_value(self.type),
+            self._normalize_value(self.amount),
             self._normalize_value(self.input),
             self._normalize_value(self.output),
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
-            self._normalize_value(self.command),
-            self._normalize_value(self.type)
+            self._normalize_value(self.command)
         ))
 
     def __eq__(self, other: object) -> bool:
@@ -1103,7 +1102,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env', 'base_env_manager', 'a_env',
+    'envs', 'base_env', 'base_env_manager', 'a_env', 'base_env_manager',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
