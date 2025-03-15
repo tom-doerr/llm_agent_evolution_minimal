@@ -4,7 +4,6 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import xml.etree.ElementTree as ET
 from types import SimpleNamespace
 
 # Environment configurations
@@ -35,8 +34,8 @@ class MemoryDiff:
             return NotImplemented
         return (self.type == other.type and 
                 self.key == other.key and
-                str(self.old_value) == str(other.old_value) and
-                str(self.new_value) == str(other.new_value))
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -561,7 +560,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         if self._test_mode:
             if 'remember it' in input_text.lower():
                 return '''<remember>
-                    <search></search>
+                    <search>previous_value</search>
                     <replace>132</replace>
                 </remember>'''
 
@@ -854,6 +853,7 @@ __all__ = [
     'is_valid_model_name',
     'is_valid_xml',
     'parse_xml_to_dict',
+    'process_observation',
     'safe_int_conversion',
     'safe_float_conversion',
     'is_valid_number',
