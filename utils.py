@@ -394,6 +394,19 @@ class MemoryItem:
             self._normalize_value(self.command)
         ))
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, MemoryItem):
+            return False
+        return (
+            self._normalize_value(self.input) == self._normalize_value(other.input) and
+            self._normalize_value(self.output) == self._normalize_value(other.output) and
+            self.type == other.type and
+            self.amount == other.amount and
+            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
+            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
+            self._normalize_value(self.command) == self._normalize_value(other.command)
+        )
+
     @staticmethod
     def _normalize_value(value: Any) -> Any:
         """Normalize string values for consistent comparison"""
@@ -1088,6 +1101,5 @@ __all__ = [
     'print_datetime',
     
     # Data types
-    'MemoryItem', 'Action', 'DiffType', 'MemoryDiff'
 ]
 
