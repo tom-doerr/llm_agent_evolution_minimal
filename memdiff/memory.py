@@ -13,7 +13,7 @@ class MemoryDiff:
     file_path: str
     search: str
     replace: str
-    type: DiffType = DiffType.SEARCH_REPLACE
+    type: DiffType
 
 @dataclass
 class Action:
@@ -29,50 +29,22 @@ def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
         raise ValueError("model must be a string")
 
 def _prepare_prompt(current_memory: str, observation: str) -> str:
-    return f"""Current memory state:
-{current_memory}
+    prompt = f"""Current memory state:\n{current_memory}\n\nNew observation:\n{observation}\n\nRespond STRICTLY in this XML format:\n<response>\n  <memory_diff>\n    <!-- 1+ SEARCH/REPLACE diffs -->\n    <file_path>filename.ext</file_path>\n    <search>EXACT existing code/text</search>\n    <replace>NEW code/text</replace>\n  </memory_diff>\n  <action name="action_name">\n    <!-- 0+ parameters -->\n    <param_name>value</param_name>\n  </action>\n</response>\n\nExamples:\n1. File edit with action:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n\n2. Multiple files:\n<response>\n  <memory_diff>\n    <file_path>app.py</file_path>\n    <search>debug=True</search>\n    <replace>debug=False</replace>\n    <file_path>README.md</file_path>\n    <search>Old feature list</search>\n    <replace>New feature list</replace>\n  </memory_diff>\n</response>"""
+    return prompt
 
-New observation:
-{observation}
-
-Respond STRICTLY in this XML format:
-<response>
-  <memory_diff>
-    <!-- 1+ SEARCH/REPLACE diffs -->
-    <file_path>filename.ext</file_path>
-    <search>EXACT existing code/text</search>
-    <replace>NEW code/text</replace>
-  </memory_diff>
-  <action name="action_name">
-    <!-- 0+ parameters -->
-    <param_name>value</param_name>
-  </action>
-</response>
-
-Examples:
-1. File edit with action:
-<response>
-  <memory_diff>
-    <file_path>config.py</file_path>
-    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>
-    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>
-  </memory_diff>
-  <action name="reload_config">
-    <module>config</module>
-  </action>
-</response>
-
-2. Multiple files:
-<response>
-  <memory_diff>
-    <file_path>app.py</file_path>
-    <search>debug=True</search>
-    <replace>debug=False</replace>
-    <file_path>README.md</file_path>
-    <search>Old feature list</search>
-    <replace>New feature list</replace>
-  </memory_diff>
-</response>"""
+def _process_chunk(chunk) -> Tuple[str, str]:
+    xml_content = ""
+    reasoning_content = ""
+    try:
+        if chunk.choices and chunk.choices[0].delta:
+            delta = chunk.choices[0].delta
+            if hasattr(delta, 'content') and delta.content:
+                xml_content += delta.content
+            if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                reasoning_content += delta.reasoning_content
+    except Exception as e:
+        print(f"Error processing chunk: {e}")
+    return xml_content, reasoning_content
 
 def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
     xml_content = ""
@@ -85,54 +57,43 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
         )
 
         for chunk in response:
-            try:
-                if chunk.choices and chunk.choices[0].delta:
-                    delta = chunk.choices[0].delta
-                    if hasattr(delta, 'content') and delta.content:
-                        xml_content += delta.content
-                    if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-                        reasoning_content += delta.reasoning_content
-            except Exception as e:
-                print(f"Error processing chunk: {e}")
-                continue
+            xml_update, reasoning_update = _process_chunk(chunk)
+            xml_content += xml_update
+            reasoning_content += reasoning_update
+
     except Exception as e:
         raise ValueError(f"Error during litellm completion: {e}") from e
     return xml_content, reasoning_content
+
+def _extract_file_diffs(section: str) -> List[MemoryDiff]:
+    file_diffs = []
+    matches = re.finditer(r'<file_path>(.*?)</file_path>\s*<search>(.*?)</search>\s*<replace>(.*?)</replace>', section, re.DOTALL)
+    for match in matches:
+        file_path = match.group(1).strip()
+        search = match.group(2).strip()
+        replace = match.group(3).strip()
+        file_diffs.append(MemoryDiff(file_path=file_path, search=search, replace=replace, type=DiffType.SEARCH_REPLACE))
+    return file_diffs
 
 def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
     memory_diffs = []
     diff_sections = re.findall(r'<memory_diff>(.*?)</memory_diff>', xml_content, re.DOTALL)
     for section in diff_sections:
-        file_diffs = re.finditer(
-            r'<file_path>(.*?)</file_path>\s*<search>(.*?)</search>\s*<replace>(.*?)</replace>',
-            section,
-            re.DOTALL
-        )
-        for match in file_diffs:
-            file_path = match.group(1).strip()
-            search = match.group(2).strip()
-            replace = match.group(3).strip()
-            memory_diffs.append(
-                MemoryDiff(file_path=file_path, search=search, replace=replace)
-            )
+        memory_diffs.extend(_extract_file_diffs(section))
     return memory_diffs
 
+def _parse_action_params(action_content: str) -> Dict[str, str]:
+    params = {}
+    param_matches = re.findall(r'<([^>]+)>(.*?)</\1>', action_content, re.DOTALL)
+    for param_name, param_value in param_matches:
+        params[param_name.strip()] = param_value.strip()
+    return params
+
 def _parse_action(xml_content: str) -> Optional[Action]:
-    action_match = re.search(
-        r'<action name="([^"]+)">(.*?)</action>',
-        xml_content,
-        re.DOTALL
-    )
+    action_match = re.search(r'<action name="([^"]+)">(.*?)</action>', xml_content, re.DOTALL)
     if action_match:
         action_name = action_match.group(1)
-        params = {}
-        param_matches = re.findall(
-            r'<([^>]+)>(.*?)</\1>',
-            action_match.group(2),
-            re.DOTALL
-        )
-        for param_name, param_value in param_matches:
-            params[param_name.strip()] = param_value.strip()
+        params = _parse_action_params(action_match.group(2))
         return Action(name=action_name, params=params)
     return None
 
