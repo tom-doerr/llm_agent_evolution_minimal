@@ -28,9 +28,20 @@ def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
     if not isinstance(model, str):
         raise ValueError("model must be a string")
 
+def _create_prompt_header(current_memory: str, observation: str) -> str:
+    return f"""Current memory state:\n{current_memory}\n\nNew observation:\n{observation}\n\nRespond STRICTLY in this XML format:\n"""
+
+def _create_prompt_body() -> str:
+    return """<response>\n  <memory_diff>\n    <!-- 1+ SEARCH/REPLACE diffs -->\n    <file_path>filename.ext</file_path>\n    <search>EXACT existing code/text</search>\n    <replace>NEW code/text</replace>\n  </memory_diff>\n  <action name="action_name">\n    <!-- 0+ parameters -->\n    <param_name>value</param_name>\n  </action>\n</response>\n"""
+
+def _create_prompt_examples() -> str:
+    return """Examples:\n1. File edit with action:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n\n2. Multiple files:\n<response>\n  <memory_diff>\n    <file_path>app.py</file_path>\n    <search>debug=True</search>\n    <replace>debug=False</replace>\n    <file_path>README.md</file_path>\n    <search>Old feature list</search>\n    <replace>New feature list</replace>\n  </memory_diff>\n</response>"""
+
 def _prepare_prompt(current_memory: str, observation: str) -> str:
-    prompt = f"""Current memory state:\n{current_memory}\n\nNew observation:\n{observation}\n\nRespond STRICTLY in this XML format:\n<response>\n  <memory_diff>\n    <!-- 1+ SEARCH/REPLACE diffs -->\n    <file_path>filename.ext</file_path>\n    <search>EXACT existing code/text</search>\n    <replace>NEW code/text</replace>\n  </memory_diff>\n  <action name="action_name">\n    <!-- 0+ parameters -->\n    <param_name>value</param_name>\n  </action>\n</response>\n\nExamples:\n1. File edit with action:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n\n2. Multiple files:\n<response>\n  <memory_diff>\n    <file_path>app.py</file_path>\n    <search>debug=True</search>\n    <replace>debug=False</replace>\n    <file_path>README.md</file_path>\n    <search>Old feature list</search>\n    <replace>New feature list</replace>\n  </memory_diff>\n</response>"""
-    return prompt
+    header = _create_prompt_header(current_memory, observation)
+    body = _create_prompt_body()
+    examples = _create_prompt_examples()
+    return header + body + examples
 
 def _process_chunk(chunk) -> Tuple[str, str]:
     xml_content = ""
@@ -67,12 +78,18 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
 
 def _extract_file_diffs(section: str) -> List[MemoryDiff]:
     file_diffs = []
-    matches = re.finditer(r'<file_path>(.*?)</file_path>\s*<search>(.*?)</search>\s*<replace>(.*?)</replace>', section, re.DOTALL)
+    matches = re.finditer(
+        r'<file_path>(.*?)</file_path>\s*<search>(.*?)</search>\s*<replace>(.*?)</replace>',
+        section,
+        re.DOTALL
+    )
     for match in matches:
         file_path = match.group(1).strip()
         search = match.group(2).strip()
         replace = match.group(3).strip()
-        file_diffs.append(MemoryDiff(file_path=file_path, search=search, replace=replace, type=DiffType.SEARCH_REPLACE))
+        file_diffs.append(
+            MemoryDiff(file_path=file_path, search=search, replace=replace, type=DiffType.SEARCH_REPLACE)
+        )
     return file_diffs
 
 def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
