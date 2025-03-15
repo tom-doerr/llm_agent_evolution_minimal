@@ -697,6 +697,14 @@ You can use multiple actions in a single completion but must follow the XML sche
     </remember>
     <respond>Got it! I'll remember that!</respond>
 </response>'''
+            if 'please remember my secret number' in input_text.lower():
+                return '''<response>
+    <remember>
+        <search></search>
+        <replace>{number}</replace>
+    </remember>
+    <respond>Acknowledged</respond>
+</response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
     <message>Successfully processed request</message>
@@ -758,15 +766,21 @@ You can use multiple actions in a single completion but must follow the XML sche
             test_mode=new_test_mode
         )
         
-        # Combine memories from both parents excluding context instructions
-        new_agent._memory.extend([
-            item for item in self._memory 
-            if item.type != "instruction" and not any(i.output == item.output for i in self._context_instructions)
-        ])
-        new_agent._memory.extend([
-            item for item in other._memory 
-            if item.type != "instruction" and not any(i.output == item.output for i in other._context_instructions)
-        ])
+        # Combine and deduplicate memories from both parents
+        combined_mem = [
+            item for item in self._memory + other._memory
+            if item.type != "instruction" 
+            and not any(i.output == item.output for i in self._context_instructions + other._context_instructions)
+        ]
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        new_agent._memory = []
+        for item in combined_mem:
+            item_hash = hash(item)
+            if item_hash not in seen:
+                seen.add(item_hash)
+                new_agent._memory.append(item)
         
         # Apply mating cost once to each parent
         self.reward(-envs['base_env_manager'].mating_cost)
@@ -1080,7 +1094,8 @@ def create_agent(
         
     # Model name mapping with full OpenRouter paths
     model_mapping = {
-        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',  # Default model
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',  # Alias
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
