@@ -225,6 +225,9 @@ def run_inference(input_string: str, model: str = "openrouter/deepseek/deepseek-
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
+    # First check if input is valid XML already
+    if is_valid_xml(xml_string):
+        return xml_string
     """Extract valid XML content from a string that might contain other text.
     
     Handles common XML response tags like <respond>, <remember>, etc.
@@ -438,13 +441,13 @@ class MemoryItem:
         if not isinstance(other, MemoryItem):
             return False
         return (
-            self._normalize_value(self.input) == other._normalize_value(other.input) and
-            self._normalize_value(self.output) == other._normalize_value(other.output) and
+            self._normalize_value(self.input) == self._normalize_value(other.input) and
+            self._normalize_value(self.output) == self._normalize_value(other.output) and
             self.type == other.type and
-            self.amount == other.amount and
-            self._normalize_value(self.timestamp) == other._normalize_value(other.timestamp) and
-            (self.file_path or None) == (other.file_path or None) and
-            (self.command or None) == (other.command or None)
+            (self.amount or 0) == (other.amount or 0) and  # Handle None values
+            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
+            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
+            self._normalize_value(self.command) == self._normalize_value(other.command)
         )
 
 class Agent:
@@ -621,8 +624,17 @@ You can use multiple actions in a single completion but must follow the XML sche
         if any(c in xml_content for c in (';', '&', '|', '$', '`', '>', '<', '*')):
             return "<message>Error: Dangerous characters detected</message>"
             
-        # Security validation
-        if re.search(r'(?:script|http|ftp|&\w+;|//)', xml_content, re.IGNORECASE):
+        # Security validation - check for prohibited patterns
+        prohibited_patterns = [
+            r'(?:script|http|ftp|&\w+;|//)',  # Basic web protocols
+            r'(?:<\w+:)',  # Namespace prefixes
+            r'(?:<!\[CDATA\[)',  # CDATA sections
+            r'(?:/\w+>)',  # Self-closing tags
+            r'(?:%\w+;)',  # URL encoding attempts
+            r'(?:\\x[0-9a-fA-F]{2})'  # Hex escapes
+        ]
+        
+        if any(re.search(pattern, xml_content, re.IGNORECASE) for pattern in prohibited_patterns):
             return "<message>Error: Potentially dangerous content detected</message>"
             
         try:
