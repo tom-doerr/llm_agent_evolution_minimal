@@ -374,6 +374,7 @@ class Agent:
 
         self.model_name = model_name
         self._test_mode = test_mode
+        self.max_tokens = max_tokens  # Was missing initialization
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -706,8 +707,8 @@ def process_observation(
             action_elem = root.find('.//action')
             if action_elem is not None:
                 action_type = action_elem.get('type', '').strip()
-                params = {child.tag: child.text.strip() 
-                         for child in action_elem if child.text}
+                params = {child.tag: (child.text or '').strip()
+                         for child in action_elem if child.text is not None}
                 
                 action = Action(
                     type=action_type,
@@ -870,7 +871,8 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
         'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-001',
-        'default': 'openrouter/deepseek/deepseek-chat'
+        'default': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat'  # Add missing alias
     }
     model_name = model_mapping.get(model.lower(), model)
     

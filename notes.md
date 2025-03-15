@@ -34,3 +34,6 @@ Code Quality Improvements & Fixes:
 33. Fixed duplicate entries in __all__ exports
 34. Added missing parse_xml_to_dict to __all__
 35. Updated deepseek-reasoner model path format
+36. Added missing max_tokens initialization in Agent class
+37. Fixed None handling in action parameter parsing
+38. Added deepseek-chat model alias to mapping
