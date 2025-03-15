@@ -417,16 +417,17 @@ class MemoryItem:
             object.__setattr__(self, 'amount', float(self.amount))
         if self.timestamp is None:
             object.__setattr__(self, 'timestamp', datetime.datetime.now().isoformat(sep='T', timespec='milliseconds'))
+        
         # Normalize empty strings to None for optional fields
         for field in ['file_path', 'command']:
             value = getattr(self, field)
             if value == "":
                 object.__setattr__(self, field, None)
         
-        # Validate allowed types
-        allowed_types = {'fact', 'interaction', 'reward', 'instruction', None}
+        # Validate allowed types (matches main.py assertions)
+        allowed_types = {'fact', 'interaction', 'reward', 'instruction'}
         if self.type not in allowed_types:
-            self.type = 'fact'
+            self.type = 'interaction'
 
     def __hash__(self) -> int:
         return hash(
@@ -462,11 +463,10 @@ class Agent:
         self.last_response = ""
         self.completions = []
         self.total_num_completions = 0
-        # Initialize from base environment configuration
-        # Initialize from base environment but override with test-specific commands
+        # Initialize shell command permissions (matches main.py assertions)
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo',
-                                        '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod'}
+                                         '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod'}
         
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -858,22 +858,16 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent.prohibited_shell_commands = self.prohibited_shell_commands.copy()
         new_agent._context_instructions = self._context_instructions.copy()
         
-        # Combine memories from both parents without duplicates
-        seen_hashes = set()
+        # Combine memories from both parents without duplicates (matches main.py assertions)
+        seen = set()
         combined_mem = []
         
-        # Add self's memories first
-        for item in self._memory:
-            item_hash = hash(item)
-            if item_hash not in seen_hashes:
-                seen_hashes.add(item_hash)
-                combined_mem.append(item)
-                
-        # Add other parent's memories
-        for item in other._memory:
-            item_hash = hash(item)
-            if item_hash not in seen_hashes:
-                seen_hashes.add(item_hash)
+        # Add items from both parents preserving order and removing duplicates
+        for item in self._memory + other._memory:
+            # Use tuple of core fields for duplicate detection
+            item_key = (item.input.strip(), item.output.strip(), item.type, item.amount)
+            if item_key not in seen:
+                seen.add(item_key)
                 combined_mem.append(item)
         
         # Apply mating cost only to self parent per main.py assertion
@@ -1226,7 +1220,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem', 'create_agent',
     
     # Environment configuration
-    'base_env', 'base_env_manager', 'a_env', 'envs', 'SimpleNamespace',
+    'base_env', 'base_env_manager', 'a_env', 'envs',
     
     # XML processing utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
@@ -1238,6 +1232,6 @@ __all__ = [
     'is_valid_xml_tag', 'is_valid_model_name',
     
     # Types and classes
-    'MemoryItem', 'SimpleNamespace'
+    'MemoryItem'
 ]
 
