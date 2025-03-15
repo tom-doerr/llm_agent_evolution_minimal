@@ -412,6 +412,11 @@ class MemoryItem:
             object.__setattr__(self, 'amount', float(self.amount))
         if self.timestamp is None:
             object.__setattr__(self, 'timestamp', datetime.datetime.now().isoformat())
+        
+        # Validate allowed types
+        allowed_types = {'fact', 'interaction', 'reward', 'instruction', None}
+        if self.type not in allowed_types:
+            raise ValueError(f"Invalid memory type: {self.type}. Must be one of {allowed_types}")
 
     def __hash__(self) -> int:
         return hash((
@@ -654,11 +659,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             else:
                 clean_output = raw_response
 
-            # Store successful interaction in memory
-            # Note: output is cleaned version without XML tags
+            # Store raw XML in memory while maintaining clean output
             self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
-                output=clean_output,
+                output=raw_response,  # Store raw XML
                 type="interaction"
             ))
             self.completions.append(raw_response)  # Store raw XML for later access
@@ -696,7 +700,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             if 'remember it' in input_text.lower():
                 return '''<response>
     <remember>
-        <search></search>
+        <search>old_value</search>
         <replace>132</replace>
     </remember>
     <respond>Got it! I'll remember that!</respond>
