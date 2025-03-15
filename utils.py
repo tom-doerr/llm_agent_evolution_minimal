@@ -665,13 +665,13 @@ You can use multiple actions in a single completion but must follow the XML sche
         
     def mate(self, other: 'Agent') -> 'Agent':
         """Create new agent by combining memories from both parents.
-        New agent will be in test mode only if both parents are in test mode.
+        New agent inherits test mode only if both parents are in test mode.
         Applies mating cost to both parents."""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # Inherit test mode only if both parents are in test mode
-        new_test_mode = bool(self._test_mode and other._test_mode)  # AND not OR
+        # AND logic for test mode inheritance
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -941,8 +941,11 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     """Create an agent with specified model.
 
     Args:
-        model: Model to use - 'deepseek-chat' (default), 'deepseek-coder', 
-               'gemini-flash', or 'gemini-pro'
+        model: Model to use - Valid options:
+               - 'openrouter/deepseek/deepseek-chat' (default)
+               - 'openrouter/deepseek/deepseek-coder-33b-instruct'
+               - 'openrouter/google/gemini-2.0-flash-001'
+               - 'openrouter/google/gemini-2.0-pro'
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -995,7 +998,7 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'a_env',
     'base_env_manager',
