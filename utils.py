@@ -50,6 +50,10 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
             return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
             
+        # Validate model name format
+        if not isinstance(model, str) or not model.strip():
+            model = "deepseek/deepseek-reasoner"
+            
         response = litellm.completion(
             model=model,
             messages=[{"role": "user", "content": input_string}],
@@ -86,10 +90,21 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     except Exception as e:
         return f"Error during inference: {str(e)}"
 
-def extract_xml(xml_string: str) -> str:
-    """Extract valid XML content from a string that might contain other text"""
+def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
+    """Extract valid XML content from a string that might contain other text
+    
+    Args:
+        xml_string: Input string potentially containing XML
+        max_attempts: Maximum number of parsing attempts
+        
+    Returns:
+        Extracted XML string or empty string if no valid XML found
+    """
     if not is_non_empty_string(xml_string):
         return ""
+        
+    # Remove common problematic characters
+    xml_string = xml_string.replace('\x00', '').strip()
     
     # First check if the entire string is valid XML
     if is_valid_xml(xml_string):
@@ -217,8 +232,17 @@ class Agent:
         return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
     
     def __call__(self, input_text: str) -> str:
+        if not is_non_empty_string(input_text):
+            return ""
+            
         result = self.run(input_text)
-        self.memory.append({"input": input_text, "output": result})
+        if not is_non_empty_string(result):
+            result = ""
+            
+        self.memory.append({
+            "input": truncate_string(input_text),
+            "output": truncate_string(result)
+        })
         return result
     
     def run(self, input_text: str) -> str:
@@ -247,16 +271,22 @@ class Agent:
         """Clear the agent's memory"""
         self.memory = []
 
-def create_agent(model_type: str = 'flash') -> Agent:
+def create_agent(model_type: str = 'flash', **kwargs) -> Agent:
     """Create an agent with the specified model type.
     
     Args:
         model_type: Type of model to use ('flash', 'pro', 'deepseek', or 'default')
+        **kwargs: Additional arguments to pass to Agent initialization
     
     Returns:
         Agent instance configured with the specified model
     """
     if not is_non_empty_string(model_type):
+        model_type = 'default'
+        
+    # Validate model_type against known types
+    valid_types = ['flash', 'pro', 'deepseek', 'default']
+    if model_type.lower() not in valid_types:
         model_type = 'default'
         
     model_mapping = {
