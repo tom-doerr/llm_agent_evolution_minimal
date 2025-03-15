@@ -445,6 +445,10 @@ You can use multiple actions in a single completion""",
         if not input_text.strip():
             return ""
 
+        # Handle shell command requests
+        if '<run>' in self.last_response.lower():
+            return self._handle_shell_commands(self.last_response)
+
         try:
             raw_response = self.run(input_text)
             self.last_response = raw_response  # Store raw XML response
