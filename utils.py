@@ -7,6 +7,10 @@ def is_non_empty_string(value: Any) -> bool:
     """Check if value is a non-empty string after stripping whitespace."""
     return isinstance(value, str) and bool(value.strip())
 
+def is_valid_model_name(model: str) -> bool:
+    """Check if model name is valid."""
+    return isinstance(model, str) and bool(model.strip()) and '/' in model
+
 def is_valid_xml(xml_string: str) -> bool:
     """Check if string contains valid XML."""
     if not is_non_empty_string(xml_string):
@@ -57,7 +61,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     Raises:
         ValueError: If input_string is invalid
     """
-    # Run inference using the specified model
     if not is_non_empty_string(input_string):
         return ""
         
@@ -65,12 +68,13 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         import litellm
         import os
             
+        # Validate and normalize model name
+        if not is_valid_model_name(model):
+            model = "deepseek/deepseek-reasoner"
+            
+        # Check for required API keys
         if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
             return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
-            
-        # Validate model name format
-        if not isinstance(model, str) or not model.strip():
-            model = "deepseek/deepseek-reasoner"
             
         response = litellm.completion(
             model=model,
@@ -338,9 +342,10 @@ def create_agent(model_type: str = 'flash', **kwargs: Any) -> Agent:
     if not is_non_empty_string(model_type):
         model_type = 'default'
         
-    # Validate model_type against known types
-    valid_types = ['flash', 'pro', 'deepseek', 'default']
-    if model_type.lower() not in valid_types:
+    # Normalize and validate model_type
+    model_type = model_type.lower()
+    valid_types = {'flash', 'pro', 'deepseek', 'default'}
+    if model_type not in valid_types:
         model_type = 'default'
         
     model_mapping = {
