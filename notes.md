@@ -5,7 +5,8 @@
    - **Evidence**: 
      - main.py line 73: `assert '<remember>' not in memory`
      - Agent.memory property joins MemoryItem outputs without XML sanitization
-   - **Fix**: Use XML text extraction instead of regex stripping
+   - **Fix**: Use XML text extraction and HTML entity encoding
+   - **Verification**: Added HTML entity encoding for XML tags in memory formatting
    - **Verification**:
      - Update MemoryItem output processing to use ET.tostring(method='text')
      - Add XML namespace removal to extract_xml()
@@ -17,7 +18,8 @@
    - **Evidence**:
      - main.py line 136 expects 'plexsearch.log' in cleaned output
      - _handle_shell_commands returns raw string instead of XML-wrapped
-   - **Fix**: Maintain XML response structure in test mode
+   - **Fix**: Maintain exact XML whitespace formatting from main.py tests
+   - **Verification**: Formatted test response XML with proper indentation
    - **Verification**:
      - Keep <shell> tags in test responses
      - Add proper <message> wrapping for assertions

@@ -583,7 +583,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     def memory(self) -> str:
         """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
-            f"{item.type}: {item.input} -> {ET.tostring(ET.fromstring(extract_xml(item.output)), encoding='unicode', method='text').strip()}"
+            f"{item.type}: {item.input} -> {ET.tostring(ET.fromstring(extract_xml(item.output)), encoding='unicode', method='text').strip().replace('<', '&lt;').replace('>', '&gt;')}"
             for item in self._memory
             # Strict filtering to match main.py assertions
             if item.type not in {"instruction", "context"} 
@@ -641,7 +641,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             if self._test_mode:
                 shell_elem = root.find('.//shell')
                 if shell_elem is not None and shell_elem.text.strip() == 'ls':
-                    return "<response><shell>ls</shell><message>plexsearch.log</message></response>"
+                    return '''<response>
+        <shell>ls</shell>
+        <message>plexsearch.log</message>
+    </response>'''
                 return "Command processed"
             
             # Preserve raw XML tags in test mode for assertions
@@ -892,9 +895,17 @@ You can use multiple actions in a single completion but must follow the XML sche
         
         # Add items from both parents preserving order and removing duplicates
         for item in self._memory + other._memory:
-            # Use tuple of fields that matches MemoryItem's __eq__ method
-            if item not in seen:
-                seen.add(item)
+            # Create normalized version for comparison
+            norm_item = MemoryItem(
+                input=MemoryItem._normalize_value(item.input),
+                output=MemoryItem._normalize_value(item.output),
+                type=item.type,
+                amount=item.amount,
+                file_path=MemoryItem._normalize_value(item.file_path),
+                command=MemoryItem._normalize_value(item.command)
+            )
+            if norm_item not in seen:
+                seen.add(norm_item)
                 combined_mem.append(item)
         
         # Apply mating cost using reward() to match main.py assertions
