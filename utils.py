@@ -361,6 +361,8 @@ class MemoryItem:
         return (isinstance(other, MemoryItem) and 
                self.input == other.input and
                self.output == other.output and
+               self.type == other.type and
+               self.amount == other.amount and
                self.timestamp == other.timestamp and
                self.file_path == other.file_path and
                self.command == other.command)
@@ -1047,24 +1049,22 @@ __all__ = [
     'MemoryDiff',
     'MemoryItem',
     
-    # Environment variables
+    # Environment components
     'a_env',
     'base_env_manager',
     'envs',
     
-    # Core functions
-    'parse_xml_element',
-    'create_agent', 
+    # Core processing functions
+    'create_agent',
     'process_observation',
     'run_inference',
     
-    # XML utilities
+    # XML handling utilities
     'extract_xml',
     'parse_xml_to_dict',
     'parse_xml_element',
     
-    
-    # Miscellaneous
+    # System utilities
     'print_datetime'
 ]
 
