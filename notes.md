@@ -134,3 +134,16 @@ Code Quality Improvements Applied:
    - Removed redundant comments
    - Standardized docstring formatting
    - Fixed line spacing consistency
+# Critical Fixes Applied
+
+1. Fixed MemoryItem equality check to include type comparison
+   - Now properly compares all fields including `type` for accurate equality checks
+   - Ensures memory deduplication works correctly during agent mating
+
+2. Updated model alias documentation in create_agent()
+   - Added missing llama3 and llama-3-70b aliases
+   - Improved documentation clarity for model options
+
+3. Verified proper exports in __all__
+   - Confirmed all necessary components are included
+   - Ensured wildcard imports work as expected

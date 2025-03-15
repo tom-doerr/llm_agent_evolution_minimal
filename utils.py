@@ -373,7 +373,8 @@ class MemoryItem:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
             return False
-        return (self._normalize_value(self.input) == self._normalize_value(other.input) and
+        return (self.type == other.type and
+                self._normalize_value(self.input) == self._normalize_value(other.input) and
                 self._normalize_value(self.output) == self._normalize_value(other.output) and
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
@@ -1030,7 +1031,7 @@ def create_agent(model: str = 'deepseek-chat',
     - pro | gemini-pro: openrouter/google/gemini-2.0-pro 
     - gpt-3.5: openrouter/openai/gpt-3.5-turbo
     - gpt-4: openrouter/openai/gpt-4
-    - llama-3: openrouter/meta-llama/llama-3-70b-instruct
+    - llama-3 | llama3 | llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         
