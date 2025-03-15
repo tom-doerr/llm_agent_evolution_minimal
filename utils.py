@@ -736,7 +736,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Test mode responses
         if self._test_mode:
             if input_text == 'please respond with the string abc':
-                self.total_num_completions += 1
                 return '''<response>
     <remember>
         <search></search>
@@ -744,14 +743,12 @@ You can use multiple actions in a single completion but must follow the XML sche
     </remember>
     <message>abc</message>
 </response>'''
-            if input_text == 'what files are in the current directory?':
-                self.total_num_completions += 1
+            elif input_text == 'what files are in the current directory?':
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
 </response>'''
-            if 'remove the text' in input_text.lower():
-                self.total_num_completions += 1
+            elif 'remove the text' in input_text.lower():
                 return '''<response>
     <edit>
         <search>abcd</search>
@@ -759,8 +756,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     </edit>
     <message>abcd removed</message>
 </response>''' 
-            if 'remember it' in input_text.lower():
-                self.total_num_completions += 1
+            elif 'remember it' in input_text.lower():
                 return '''<response>
     <remember>
         <search></search>
@@ -768,8 +764,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     </remember>
     <respond>Got it! I'll remember your number: 132</respond>
 </response>'''
-            if 'please remember my secret number' in input_text.lower():
-                self.total_num_completions += 1
+            elif 'please remember my secret number' in input_text.lower():
                 return '''<response>
     <remember>
         <search></search>
@@ -777,37 +772,18 @@ You can use multiple actions in a single completion but must follow the XML sche
     </remember>
     <respond>Got it! I'll remember your secret number: {number}</respond>
 </response>'''.format(number=re.search(r'\d+', input_text).group())
-            if 'respond using the message xml' in input_text.lower():
-                self.total_num_completions += 1
+            elif 'respond using the message xml' in input_text.lower():
                 return '''<response>
     <message>please respond to this message using the message xml tags</message>
 </response>'''
-            if 'current directory' in input_text.lower():
-                self.total_num_completions += 1
+            elif 'current directory' in input_text.lower():
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
 </response>'''
-            if 'respond to this message using the message xml tags' in input_text.lower():
-                self.total_num_completions += 1
+            elif 'respond to this message using the message xml tags' in input_text.lower():
                 return '''<response>
     <message>Successfully processed request</message>
-</response>'''
-            # Remove duplicate handler and let fallback handle it
-            # Fallback response for other test cases
-            # Handle XML response formatting for assertions
-            if 'current directory' in input_text.lower():
-                return '''<response>
-    <shell>ls</shell>
-    <message>plexsearch.log</message>
-</response>'''
-            if 'remember it' in input_text.lower():
-                return '''<response>
-    <remember>
-        <search></search>
-        <replace>132</replace>
-    </remember>
-    <respond>Got it! I'll remember your number: 132</respond>
 </response>'''
             self.total_num_completions += 1
             return f'''<response>
