@@ -59,8 +59,8 @@ class MemoryDiff:
         return (
             self.type == other.type and
             self.key == other.key and
-            (self.old_value or None) == (other.old_value or None) and
-            (self.new_value or None) == (other.new_value or None)
+            self._normalize_value(self.old_value) == self._normalize_value(other.old_value) and
+            self._normalize_value(self.new_value) == self._normalize_value(other.new_value)
         )
 
     @staticmethod
@@ -736,8 +736,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             # Store both raw and processed responses for assertions
             self.completions.append(raw_response)  # Store raw XML
             self.completions.append(clean_output)   # Store cleaned text
-            # Update completion count after successful processing
+            # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
+            if hasattr(self, 'completions'):
+                self.completions.append(raw_response)
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -884,8 +886,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._memory = unique_memory
         new_agent._context_instructions = self._context_instructions.copy()
         
-        # Apply mating cost only to self parent per main.py assertion
-        self.reward(-base_env_manager.mating_cost)
+        # Apply mating cost only to self parent per main.py assertion 
+        # Convert to float to match type hints in reward()
+        self.reward(float(-base_env_manager.mating_cost))
         
         return new_agent
 
