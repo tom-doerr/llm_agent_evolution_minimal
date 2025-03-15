@@ -63,7 +63,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
                 return choice.message.content
             elif hasattr(choice, 'text'):
                 return choice.text
-        
+            
         return ""
     except ImportError:
         return "Error: litellm not installed"
