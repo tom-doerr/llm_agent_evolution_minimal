@@ -944,13 +944,19 @@ def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
                 diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
             except KeyError:
                 continue  # Skip invalid diff types
-            
-        diffs.append(MemoryDiff(
-            type=diff_type,
-            key=diff_elem.findtext('key', ''),
-            old_value=diff_elem.findtext('old_value', None),
-            new_value=diff_elem.findtext('new_value', None)
-        ))
+                
+            key = diff_elem.findtext('key', '').strip()
+            if not key:  # Skip entries with empty keys
+                continue
+                
+            diffs.append(MemoryDiff(
+                type=diff_type,
+                key=key,
+                old_value=diff_elem.findtext('old_value', None),
+                new_value=diff_elem.findtext('new_value', None)
+            ))
+    except ET.ParseError:
+        return []
     return diffs
 
 def _validate_xml_response(xml_content: str) -> None:
