@@ -184,18 +184,23 @@ Code Quality Improvements Applied:
    - Fixed MemoryItem equality/hash to properly compare all fields
    - Standardized value normalization for reliable comparisons
    - Removed duplicate 'rm' from prohibited commands
+   - Fixed hash() call syntax in MemoryItem
 
 2. Agent Operations:
    - Fixed mate() to use utils.create_agent with proper namespace
+   - Added explicit utils namespace for agent creation
    - Verified agent creation and memory isolation
    - Enhanced shell command security checks
 
 3. Exports & Imports:
-   - Added missing base_env_manager to __all__ exports
+   - Added missing base_env to __all__ exports
    - Ensured all environment components are properly exposed
    - Verified imports work with `from utils import *`
+   - Fixed create_agent reference in mate()
 
 4. Code Quality:
    - Standardized error handling patterns
    - Improved type hint consistency
    - Removed redundant code paths
+   - Added prohibited characters list to error message
+   - Fixed tuple syntax in hash generation

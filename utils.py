@@ -386,7 +386,7 @@ class MemoryItem:
     
 
     def __hash__(self) -> int:
-        return hash((
+        return hash(
             self._normalize_value(self.input),
             self._normalize_value(self.output),
             self.type,
@@ -394,7 +394,7 @@ class MemoryItem:
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
             self._normalize_value(self.command)
-        ))
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
@@ -582,8 +582,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Validate and sanitize command
         cmd_text = command_elem.text.strip()
-        if any(c in cmd_text for c in (';', '&', '|', '$', '`')):
-            return "<message>Error: Invalid characters in command</message>"
+        # Validate against prohibited characters
+        prohibited_chars = (';', '&', '|', '$', '`')
+        if any(c in cmd_text for c in prohibited_chars):
+            return f"<message>Error: Invalid characters in command: {prohibited_chars}</message>"
                 
         cmd = cmd_text.split()[0]
         if cmd not in self.allowed_shell_commands:
@@ -725,13 +727,15 @@ You can use multiple actions in a single completion but must follow the XML sche
         - Test mode from either parent
         - Model name from self
         - Max tokens from self
-        - Environment configurations"""
+        - Environment configurations
+        """
+        # Use utils.create_agent to ensure proper initialization
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1093,7 +1097,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env_manager', 'a_env',
+    'envs', 'base_env_manager', 'a_env', 'base_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
