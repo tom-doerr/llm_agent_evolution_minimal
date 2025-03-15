@@ -626,7 +626,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model and propagate test mode only if both parents have it
-        new_test_mode = bool(self._test_mode and other._test_mode)
+        new_test_mode = bool(self._test_mode) and bool(other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -870,7 +870,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         model: Model to use ('flash', 'pro', 'deepseek-chat' or full model name)
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
-        test_mode: Boolean flag for testing mode
+        test_mode: Enable testing mode (skips real LLM calls)
         
     Returns:
         Initialized Agent instance
@@ -919,7 +919,7 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'base_env_manager',
     'create_agent',
