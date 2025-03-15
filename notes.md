@@ -23,3 +23,7 @@ Code Quality Improvements & Fixes:
 22. Added proper test_mode propagation in mate()
 23. Added missing parse_xml_to_dict to __all__ exports
 24. Fixed XML shell command validation edge cases
+25. Fixed max_tokens initialization in Agent class
+26. Corrected deepseek-reasoner model mapping
+27. Added proper test_mode propagation in mate()
+28. Updated default model to openrouter format

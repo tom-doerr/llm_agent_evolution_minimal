@@ -379,7 +379,7 @@ class Agent:
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh'}
         self._memory = []
         self._context_instructions = []
-        self.max_tokens = 50
+        self.max_tokens = max_tokens
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -609,9 +609,9 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Create new agent with same model and test mode
         new_agent = create_agent(
-            model=self.model_name, 
+            model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode
+            test_mode=self._test_mode or other._test_mode
         )
         
         # Combine memories from both parents
@@ -653,9 +653,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         ))
 
 def process_observation(
-    current_memory: str, 
+    current_memory: str,
     observation: str,
-    model: str = "deepseek/deepseek-reasoner"
+    model: str = "openrouter/deepseek/deepseek-chat"
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
     """Process observation and return memory diffs with optional action"""
     try:
@@ -864,9 +864,9 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     # Get model name with default fallback
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro',
+        'pro': 'openrouter/google/gemini-2.0-pro', 
         'deepseek': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'deepseek/deepseek-reasoner'
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
     
