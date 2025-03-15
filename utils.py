@@ -29,7 +29,6 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
     return value[:max_length] + "..."
 
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") -> str:
-    """Run inference using the specified model."""
     try:
         import litellm
         
@@ -49,7 +48,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str) -> str:
-    """Extract XML data from a string."""
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -71,7 +69,6 @@ def extract_xml(xml_string: str) -> str:
         return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
-    """Parse XML string into a dictionary structure."""
     if not is_non_empty_string(xml_string):
         return {}
     
@@ -85,3 +82,23 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         return result
     except ET.ParseError:
         return {}
+
+def create_agent(model_type: str):
+    """Create an agent with the specified model type."""
+    model_mapping = {
+        'flash': 'openrouter/google/gemini-2.0-flash-001',
+        'pro': 'openrouter/google/gemini-2.0-pro-001',
+        'deepseek': 'deepseek/deepseek-reasoner',
+        'default': 'openrouter/google/gemini-2.0-flash-001'
+    }
+    
+    model_name = model_mapping.get(model_type.lower(), model_mapping['default'])
+    
+    try:
+        import dspy
+        return dspy.LM(model_name)
+    except ImportError:
+        # Fallback if dspy is not installed
+        return f"Agent with model: {model_name} (dspy not installed)"
+    except Exception as e:
+        return f"Error creating agent: {str(e)}"
