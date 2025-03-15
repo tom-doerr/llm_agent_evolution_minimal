@@ -63,7 +63,8 @@ def is_valid_xml_tag(tag: str) -> bool:
     """True if string is a valid XML tag name"""
     return (is_non_empty_string(tag) 
             and tag[0].isalpha() 
-            and all(c.isalnum() or c in ('-', '_', '.') for c in tag))
+            and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
+            and not tag.startswith(('xml', 'XML')))  # Prevent reserved names
 
 def is_valid_model_name(model: str) -> bool:
     # Check if model name is valid (contains non-empty string with slash)
@@ -468,8 +469,12 @@ You can use multiple actions in a single completion but must follow the XML sche
     def _handle_shell_commands(self, response: str) -> str:
         # Extract and validate command
         command = extract_xml(response)
-        root = ET.fromstring(command)
-        command_elem = root.find('.//run')
+        try:
+            root = ET.fromstring(command)
+        except ET.ParseError:
+            return "Invalid XML format for command"
+            
+        command_elem = root.find('.//shell')
         if not command_elem or not command_elem.text:
             return "Invalid command format"
             
@@ -860,22 +865,27 @@ __all__ = [
     'print_datetime',
     'create_agent',
     'process_observation',
-            
+    
     # Data classes
     'MemoryItem',
     'MemoryDiff',
     'Action',
-            
+    
     # Enum
     'DiffType',
-        
+    
     # Core classes
     'Agent',
-        
+    
     # Environment configs
     'base_env_manager',
     'envs',
     
     # XML processing
-    'extract_xml'
+    'extract_xml',
+    
+    # Additional exports for public API
+    'MemoryDiff',
+    'Action',
+    'DiffType'
 ]
