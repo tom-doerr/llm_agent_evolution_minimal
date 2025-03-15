@@ -46,10 +46,8 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        # Full equality check of all fields
-        if not isinstance(other, MemoryDiff):
-            return False
-        return (self.type == other.type and 
+        return (isinstance(other, MemoryDiff) and 
+                self.type == other.type and 
                 self.key == other.key and
                 self.old_value == other.old_value and
                 self.new_value == other.new_value)
@@ -620,11 +618,11 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Create new agent with same model and propagate test mode only if both parents have it
         new_test_mode = bool(bool(self._test_mode) and bool(other._test_mode))
-        # Ensure proper test mode propagation
+        # Ensure proper test mode propagation with explicit boolean casting
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=new_test_mode
+            test_mode=bool(new_test_mode)
         )
         
         # Combine memories from both parents
@@ -915,7 +913,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType',
+    'DiffType', 
     'MemoryDiff',
     'MemoryItem',
     'base_env_manager',
