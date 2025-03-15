@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import datetime
 import os
 from typing import Any, Dict, List, Optional, Union, Tuple
+from dataclasses import dataclass
 
 def is_non_empty_string(value: Any) -> bool:
     # Check if value is a non-empty string after stripping whitespace
@@ -269,15 +270,23 @@ def print_datetime() -> None:
     current_time = datetime.datetime.now()
     print(f"Current date and time: {current_time.isoformat(sep=' ', timespec='seconds')}")
 
+@dataclass
+class MemoryItem:
+    input: str
+    output: str
+    type: Optional[str] = None
+    amount: Optional[float] = None
+    timestamp: Optional[str] = None
+
 class Agent:
     def __init__(self, model_name: str) -> None:
         if not isinstance(model_name, str):
             raise ValueError("model_name must be a string")
             
         self.model_name = model_name
-        self.memory: List[Dict[str, str]] = []
+        self.memory: List[MemoryItem] = []
         self._test_mode = model_name.startswith("flash")
-        self.lm: Optional[Any] = None
+        self.lm: Optional[Any] = None  # Language model instance
         self.max_tokens = 50  # Default value
     
     def __str__(self) -> str:
@@ -303,10 +312,10 @@ class Agent:
             if not is_non_empty_string(result):
                 result = ""
                 
-            self.memory.append({
-                "input": truncate_string(input_text),
-                "output": truncate_string(result)
-            })
+            self.memory.append(MemoryItem(
+                input=truncate_string(input_text),
+                output=truncate_string(result)
+            ))
             return result
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -317,6 +326,14 @@ class Agent:
             return error_msg
     
     def run(self, input_text: str) -> str:
+        """Run the agent on input text.
+        
+        Args:
+            input_text: Text input to process
+            
+        Returns:
+            Processed output text
+        """
         if not is_non_empty_string(input_text):
             return ""
         
@@ -361,11 +378,11 @@ class Agent:
             raise ValueError("Reward amount must be a positive number")
         # In a real implementation this would modify some internal state
         # For now just log the reward
-        self.memory.append({
-            "type": "reward",
-            "amount": float(amount),
-            "timestamp": datetime.datetime.now().isoformat()
-        })
+        self.memory.append(MemoryItem(
+            type="reward",
+            amount=float(amount),
+            timestamp=datetime.datetime.now().isoformat()
+        ))
 
 def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     """Create an agent with specified model.
