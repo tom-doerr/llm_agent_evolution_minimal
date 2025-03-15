@@ -87,8 +87,11 @@ def is_valid_xml_tag(tag: str) -> bool:
         raise ValueError(
             f"Invalid XML tag: {tag}. Tags must:\n"
             "1. Start with a letter or underscore\n"
-            "2. Contain only a-z, 0-9, -, _, or .\n"
-            "3. Not contain spaces or special characters"
+            "2. Contain only a-z, 0-9, -, _, or .\n" 
+            "3. Not contain spaces or special characters\n"
+            "4. Not start with 'xml' (case-insensitive)\n"
+            "5. Not end with hyphen\n"
+            "6. Be between 1-255 characters"
         )
     
     if not 1 <= len(tag) <= 255:
@@ -988,13 +991,21 @@ def process_observation(
         print(f"Critical error processing observation: {str(e)}")
         return [], None
 
-def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
+def create_agent(model: str = 'deepseek-chat',
                 max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
     Args:
-        model: Model identifier string (see supported models below)
+        model: Model identifier string. Valid options:
+            - deepseek-chat (default): openrouter/deepseek/deepseek-chat
+            - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
+            - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+            - pro/gemini-pro: openrouter/google/gemini-2.0-pro
+            - gpt-3.5: openrouter/openai/gpt-3.5-turbo
+            - gpt-4: openrouter/openai/gpt-4
+            
+        Requires OPENROUTER_API_KEY environment variable.
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -1081,20 +1092,17 @@ __all__ = [
     # Core components
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
-    # Environments
-    'a_env', 'base_env_manager', 'envs',
+    # Environment configuration
+    'base_env_manager', 'envs', 'a_env',
     
-    # Processing functions
+    # Core processing
     'create_agent', 'process_observation', 'run_inference',
     
-    # XML handling 
+    # XML utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
-    # Utilities
-    'print_datetime',
-    
-    # Environment config
-    'base_env_manager', 'envs'
+    # Helper functions
+    'print_datetime'
 ]
 
 # Remove duplicates and ensure all required exports
