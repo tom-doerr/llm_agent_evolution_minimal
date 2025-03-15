@@ -464,6 +464,9 @@ class Agent:
         self.last_response = ""
         self.completions = []
         self.total_num_completions = 0  # Initialize counter
+        # Initialize from base environment configuration
+        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
         # Initialize from existing memory if provided
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
@@ -728,11 +731,11 @@ You can use multiple actions in a single completion but must follow the XML sche
                 output=raw_response,  # Store raw XML
                 type="interaction"
             ))
-            # Update completion count after successful processing
-            self.total_num_completions += 1
             # Store both raw and processed responses for assertions
             self.completions.append(raw_response)  # Store raw XML
             self.completions.append(clean_output)   # Store cleaned text
+            # Update completion count after successful processing
+            self.total_num_completions += 1
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
