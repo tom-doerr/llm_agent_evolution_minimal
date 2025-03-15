@@ -785,7 +785,6 @@ You can use multiple actions in a single completion but must follow the XML sche
                 return '''<response>
     <message>Successfully processed request</message>
 </response>'''
-            self.total_num_completions += 1
             return f'''<response>
     <respond>{input_text}</respond>
 </response>'''
