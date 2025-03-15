@@ -1047,12 +1047,13 @@ __all__ = [
     'MemoryDiff',
     'MemoryItem',
     
-    # Environment components
+    # Environment variables
     'a_env',
     'base_env_manager',
     'envs',
     
     # Core functions
+    'parse_xml_element',
     'create_agent', 
     'process_observation',
     'run_inference',
@@ -1061,6 +1062,7 @@ __all__ = [
     'extract_xml',
     'parse_xml_to_dict',
     'parse_xml_element',
+    
     
     # Miscellaneous
     'print_datetime'
