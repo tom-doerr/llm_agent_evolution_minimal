@@ -359,14 +359,15 @@ class MemoryItem:
     output: str = field(default="")
     
     def __eq__(self, other: object) -> bool:
-        return (isinstance(other, MemoryItem) and 
-               self._normalize_value(self.input) == self._normalize_value(other.input) and
-               self._normalize_value(self.output) == self._normalize_value(other.output) and
-               self.type == other.type and
-               self.amount == other.amount and
-               self.timestamp == other.timestamp and
-               self.file_path == other.file_path and
-               self.command == other.command)
+        if not isinstance(other, MemoryItem):
+            return False
+        return (self._normalize_value(self.input) == self._normalize_value(other.input) and
+                self._normalize_value(self.output) == self._normalize_value(other.output) and
+                self.type == other.type and
+                self.amount == other.amount and
+                self.timestamp == other.timestamp and
+                self.file_path == other.file_path and
+                self.command == other.command)
 
     @staticmethod
     def _normalize_value(value: Any) -> Any:
@@ -1066,7 +1067,7 @@ __all__ = [
     'extract_xml',
     'parse_xml_to_dict', 
     'parse_xml_element',
-    
+
     # System utilities
     'print_datetime'
 ]
