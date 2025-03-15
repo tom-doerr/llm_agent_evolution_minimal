@@ -7,19 +7,21 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from types import SimpleNamespace
 
-# Environment configurations
+# Environment configuration and constants
 base_env_manager = SimpleNamespace(
     mating_cost=50  # Cost for agent mating operation
 )
+"""Manages base environment settings for agent evolution"""
 
 def a_env(input_str: str) -> int:
     """Count 'a's in string and return reward"""
     return sum(1 for c in str(input_str) if c.lower() == 'a')
 
-envs = SimpleNamespace(
-    a_env=a_env,
-    base_env=SimpleNamespace(description="Base environment configuration")
-)
+envs = {
+    'a_env': a_env,
+    'base_env': SimpleNamespace(description="Base environment configuration")
+}
+"""Collection of available environments with their reward functions"""
 
 class DiffType(Enum):
     ADD = auto()
@@ -913,7 +915,6 @@ __all__ = [
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
-    'parse_xml_element',
     'base_env_manager',
     'create_agent',
     'envs',
