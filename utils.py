@@ -331,7 +331,7 @@ class Agent:
         self._memory: List[MemoryItem] = [
             MemoryItem(
                 input="",
-                output="You can edit your memory using the following xml action:",
+                output="Explanation: You can edit your memory using the following xml action:",
                 type="instruction"
             )
         ]
@@ -456,6 +456,7 @@ def process_observation(
     observation: str,
     model: str = "deepseek/deepseek-reasoner"
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
+    """Process observation and return memory diffs with optional action"""
     """Process observation and return memory diffs with optional action"""
     _validate_inputs(current_memory, observation, model)
     prompt = _prepare_prompt(current_memory, observation)
