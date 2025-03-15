@@ -35,7 +35,9 @@ def _create_prompt_body() -> str:
     return """<response>\n  <memory_diff>\n    <!-- 1+ SEARCH/REPLACE diffs -->\n    <file_path>filename.ext</file_path>\n    <search>EXACT existing code/text</search>\n    <replace>NEW code/text</replace>\n  </memory_diff>\n  <action name="action_name">\n    <!-- 0+ parameters -->\n    <param_name>value</param_name>\n  </action>\n</response>\n"""
 
 def _create_prompt_examples() -> str:
-    return """Examples:\n1. File edit with action:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n\n2. Multiple files:\n<response>\n  <memory_diff>\n    <file_path>app.py</file_path>\n    <search>debug=True</search>\n    <replace>debug=False</replace>\n    <file_path>README.md</file_path>\n    <search>Old feature list</search>\n    <replace>New feature list</replace>\n  </memory_diff>\n</response>"""
+    example1 = """1. File edit with action:\n<response>\n  <memory_diff>\n    <file_path>config.py</file_path>\n    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>\n    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>\n  </memory_diff>\n  <action name="reload_config">\n    <module>config</module>\n  </action>\n</response>\n"""
+    example2 = """2. Multiple files:\n<response>\n  <memory_diff>\n    <file_path>app.py</file_path>\n    <search>debug=True</search>\n    <replace>debug=False</replace>\n    <file_path>README.md</file_path>\n    <search>Old feature list</search>\n    <replace>New feature list</replace>\n  </memory_diff>\n</response>"""
+    return "Examples:\n" + example1 + example2
 
 def _prepare_prompt(current_memory: str, observation: str) -> str:
     header = _create_prompt_header(current_memory, observation)
