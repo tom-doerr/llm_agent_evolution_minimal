@@ -33,8 +33,8 @@ class MemoryDiff:
     new_value: Optional[Any] = None
 
     def __post_init__(self):
-        if not self.key.strip():
-            raise ValueError("MemoryDiff key cannot be empty")
+        if not isinstance(self.key, str) or not self.key.strip():
+            raise ValueError("MemoryDiff key must be a non-empty string")
         if not isinstance(self.type, DiffType):
             raise TypeError(f"Invalid DiffType: {type(self.type)}")
 
@@ -862,6 +862,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -897,8 +898,6 @@ __all__ = [
     'Action',
     'DiffType',
     'Agent',
-    'base_env_manager',
-    'envs',
     'base_env_manager',
     'envs'
 ]

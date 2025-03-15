@@ -13,9 +13,9 @@ Code Quality Improvements & Fixes:
 12. Fixed test mode initialization in Agent class
 13. Corrected shell command XML handling
 14. Removed redundant environment configs from exports
-15. Added missing environment config exports to __all__
-16. Removed duplicate _test_mode initialization
-17. Fixed base_env_manager accessibility
-18. Added missing XML action type validation
-19. Fixed environment config initialization
-20. Added test mode propagation in agent creation
+15. Fixed __all__ exports to remove duplicates
+16. Added missing XML shell command handling
+17. Fixed MemoryDiff key validation
+18. Added explicit test_mode handling in Agent creation
+19. Fixed model name mapping in create_agent()
+20. Removed duplicate base_env_manager/envs exports
