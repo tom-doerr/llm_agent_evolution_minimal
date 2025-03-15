@@ -447,11 +447,9 @@ class MemoryItem:
             MemoryItem._normalize_value(self.output) == MemoryItem._normalize_value(other.output) and
             self.type == other.type and
             # Compare amounts with tolerance for numeric types
-            (float(self.amount) if self.amount is not None else 0.0) == 
-            (float(other.amount) if other.amount is not None else 0.0) and
+            abs((self.amount or 0.0) - (other.amount or 0.0)) < 0.001 and
             # Compare optional fields with None handling
-            (self.file_path or "") == (other.file_path or "") and
-            (self.command or "") == (other.command or "")
+            (self.file_path or "") == (other.file_path or "") 
         )
 
 class Agent:
@@ -867,8 +865,9 @@ You can use multiple actions in a single completion but must follow the XML sche
                 seen.add(item_key)
                 combined_mem.append(item)
         
-        # Apply mating cost only to self parent per main.py assertion
+        # Apply mating cost using reward() to match main.py assertions
         self.reward(-base_env_manager.mating_cost)
+        
         
         return new_agent
 
@@ -893,7 +892,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             output=f"Net worth changed by {total}",
             type="reward",
             amount=total,
-            timestamp=datetime.datetime.now().isoformat(timespec='milliseconds')
+            timestamp=datetime.datetime.now().isoformat(timespec='milliseconds').replace('T', ' '))
         ))
 
 
