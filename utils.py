@@ -22,12 +22,8 @@ def a_env(input_str: str) -> int:
 
 envs = {
     'a_env': a_env,
-    'base_env': SimpleNamespace(
-        description="Base environment configuration",
-        mating_cost=50
-    ),
-    'base_env_manager': base_env_manager,
-    'base_env': base_env
+    'base_env': base_env,
+    'base_env_manager': base_env_manager
 }
 
 class DiffType(Enum):
