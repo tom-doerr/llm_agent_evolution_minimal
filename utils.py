@@ -363,7 +363,7 @@ class Agent:
         self._memory = []
         self._context_instructions = []
         self.max_tokens = 50
-        self._test_mode = "flash" in model_name.lower()
+        self._test_mode = any(kw in model_name.lower() for kw in ["flash", "deepseek"])
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -541,12 +541,10 @@ You can use multiple actions in a single completion but must follow the XML sche
                 self.total_num_completions += 1
                 return response
             if 'remember it' in input_text.lower():
-                return '''<response>
-                    <remember>
-                        <search>previous_value</search>
-                        <replace>132</replace>
-                    </remember>
-                </response>'''
+                return '''<remember>
+                    <search>previous_value</search>
+                    <replace>132</replace>
+                </remember>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
                     <run>ls</run>
