@@ -2,6 +2,8 @@ Code Quality Improvements & Fixes:
 1. Fixed MemoryDiff equality comparison for string values
 2. Standardized agent initialization docstring placement
 3. Improved model name documentation in create_agent()
+4. Enhanced XML tag validation error messages with specific formatting rules
+5. Fixed __all__ exports to include process_observation for proper imports
 4. Added whitespace normalization in MemoryDiff comparisons
 4. Added proper documentation for environment configs
 5. Fixed XML parsing function exports

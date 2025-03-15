@@ -310,11 +310,13 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[An
     """Parse XML element recursively into dict or string"""
     if not is_valid_xml_tag(element.tag):
         raise ValueError(
-            f"Invalid XML tag: {element.tag}. Tags must: "
-            f"- Start with a letter\n"
-            f"- Contain only alphanumerics, hyphens, underscores or dots\n"
-            f"- Not contain spaces or colons\n"
-            f"- Not start with 'xml' (case-insensitive)"
+            f"Invalid XML tag: {element.tag}. Tags must:\n"
+            f"1. Start with a letter\n"
+            f"2. Contain only a-z, 0-9, -, _, or .\n" 
+            f"3. Not contain spaces or colons\n"
+            f"4. Not start with 'xml' (case-insensitive)\n"
+            f"5. Not end with hyphen\n"
+            f"6. Be between 1-255 characters"
         )
     if len(element) == 0:
         # Return text with attributes if any
@@ -1022,4 +1024,6 @@ __all__ = [
     'process_observation',
     'run_inference'
 ]
+
+# Added process_observation to exports for proper from utils import *
 
