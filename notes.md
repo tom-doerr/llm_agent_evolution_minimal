@@ -24,9 +24,11 @@ Code Quality Improvements & Fixes:
 22. Fixed test_mode propagation in mate() to use AND instead of OR
 23. Added missing process_observation to __all__ exports
 24. Simplified test_mode propagation logic in mate()
-22. Standardized environment configurations 
-23. Improved error messages for XML parsing
-24. Fixed mate() test_mode initialization
+22. Standardized environment configurations
+23. Improved error messages for XML parsing with regex sanitization
+24. Fixed mate() test_mode initialization using strict AND logic
+25. Added proper command sanitization using regex patterns
+26. Fixed model default values to use full OpenRouter paths
 25. Removed redundant __all__ exports
 26. Updated create_agent() docstring with accurate model names
 24. Added proper input validation for all public functions

@@ -126,7 +126,7 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
         return value
     return value[:max_length] + "..."
 
-def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+def run_inference(input_string: str, model: str = "openrouter/deepseek/deepseek-chat", stream: bool = False) -> str:
     """Run inference using the specified model.
     
     Args:
@@ -151,7 +151,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     
     # Validate and normalize model name
     if not is_valid_model_name(model):
-        model = "deepseek/deepseek-reasoner"
+        model = "openrouter/deepseek/deepseek-chat"
             
     # Check for required API keys
     if model.startswith("openrouter/") and "OPENROUTER_API_KEY" not in os.environ:
@@ -543,8 +543,9 @@ You can use multiple actions in a single completion but must follow the XML sche
                 if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
                     return "<message>Error: Invalid characters in command</message>"
                 
-            # Validate command structure before execution
-            cmd_parts = command_elem.text.strip().split()
+            # Validate and sanitize command structure
+            sanitized_text = re.sub(r'[;&|$`]', '', command_elem.text)
+            cmd_parts = sanitized_text.strip().split()
             if len(cmd_parts) == 0:
                 return "<message>Error: Empty shell command</message>"
                 
@@ -989,8 +990,8 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType', 
-    'MemoryDiff',
+    'DiffType',
+    'MemoryDiff', 
     'MemoryItem',
     'base_env_manager',
     'create_agent',
@@ -998,6 +999,7 @@ __all__ = [
     'extract_xml',
     'print_datetime',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'a_env'
 ]
 
