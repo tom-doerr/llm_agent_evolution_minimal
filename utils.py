@@ -378,7 +378,7 @@ class Agent:
             output=output,
             type=type_
         ))
-        self._test_mode = model_name.startswith("flash")
+        self._test_mode = self.model_name.startswith("flash")
         self.lm: Optional[Any] = None  # Language model instance
         self.max_tokens = 50  # Default value
     
