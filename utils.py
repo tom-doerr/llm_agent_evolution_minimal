@@ -608,7 +608,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode and other._test_mode  # Both parents must be in test mode
+            test_mode=self._test_mode or other._test_mode  # Inherit test mode from either parent
         )
         
         # Combine memories from both parents
@@ -864,6 +864,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat',
         'deepseek': 'openrouter/deepseek/deepseek-chat'
@@ -896,7 +897,7 @@ __all__ = [
     'Agent',
     'Action',
     'base_env_manager',
-    'create_agent', 
+    'create_agent',
     'DiffType',
     'envs',
     'extract_xml',
