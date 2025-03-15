@@ -185,7 +185,7 @@ Code Quality Improvements Applied:
    - Grouped environment components
    - Added missing a_env export
    - Organized into logical groups
-2. Fixed mate() method to use utils.create_agent
+2. Fixed mate() method to use create_agent directly
 3. Removed duplicate 'rm' in prohibited commands
 4. Added docstring to Agent.__init__
 5. Verified all exports have implementations
