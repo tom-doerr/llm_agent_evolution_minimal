@@ -229,7 +229,6 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
                         continue
             
             # Try to find any well-formed XML fragment
-            import re
             xml_pattern = r'<([a-zA-Z][a-zA-Z0-9]*)(?:\s+[^>]*)?(?:/>|>.*?</\1>)'
             matches = re.finditer(xml_pattern, xml_string, re.DOTALL)
             for match in matches:
@@ -557,18 +556,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             if 'respond using the respond xml' in input_text.lower():
                 return '''<response>
                     <respond>Successfully processed request</respond>
-                </response>'''
-        # Handle test mode responses
-        if self._test_mode:
-            if 'remember it' in input_text.lower():
-                return '''<remember>
-                    <search>previous_value</search>
-                    <replace>132</replace>
-                </remember>'''
-            if 'current directory' in input_text.lower():
-                return '''<response>
-                    <run>ls</run>
-                    <respond>plexsearch.log</respond>
                 </response>'''
 
         # Use streaming for DeepSeek models to properly handle reasoning content
