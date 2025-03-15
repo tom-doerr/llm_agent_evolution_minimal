@@ -41,8 +41,10 @@ Code Quality Improvements & Fixes:
 39. Fixed overstrict MemoryDiff equality check that caused test failures
 64. Simplified MemoryDiff equality check implementation
 71. Fixed test_mode propagation in mate() to require both parents
-72. Cleaned up __all__ exports formatting
+72. Cleaned up __all__ exports formatting and removed duplicates
 73. Verified MemoryDiff equality comparison
+74. Added missing parse_xml_element to __all__ exports
+75. Enforced boolean type for test_mode initialization
 65. Added missing parse_xml_element to __all__ exports
 66. Removed final duplicate from __all__ exports
 67. Verified deepseek model mapping format

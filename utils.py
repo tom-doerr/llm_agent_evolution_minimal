@@ -42,7 +42,9 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, MemoryDiff) and self.type == other.type and self.key == other.key
+        if not isinstance(other, MemoryDiff):
+            return False
+        return self.type == other.type and self.key == other.key
 
 @dataclass
 class Action:
@@ -608,7 +610,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode and other._test_mode
+            test_mode=bool(self._test_mode and other._test_mode)
         )
         
         # Combine memories from both parents
@@ -895,15 +897,15 @@ def create_agent(model: str = 'flash', max_tokens: int = 50,
 __all__ = [
     'Agent',
     'Action',
-    'base_env_manager',
-    'create_agent',
-    'DiffType', 
-    'envs',
-    'extract_xml',
+    'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    'base_env_manager',
+    'create_agent',
+    'envs',
+    'extract_xml',
     'parse_xml_element',
-    'parse_xml_to_dict',
+    'parse_xml_to_dict', 
     'process_observation',
     'run_inference'
 ]
