@@ -30,12 +30,12 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
     return value[:max_length] + "..."
 
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+    if not is_non_empty_string(input_string):
+        return ""
+        
     try:
         import litellm
         import os
-        
-        if not is_non_empty_string(input_string):
-            return ""
             
         if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
             return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
@@ -106,9 +106,10 @@ def extract_xml(xml_string: str) -> str:
                             return ET.tostring(root, encoding='unicode')
                         except ET.ParseError:
                             continue
-                            
-                # Try to find any well-formed XML fragment
+                
+                # Import re only when needed
                 import re
+                # Try to find any well-formed XML fragment
                 xml_pattern = r'<([a-zA-Z][a-zA-Z0-9]*)(?:\s+[^>]*)?(?:/>|>.*?</\1>)'
                 matches = re.finditer(xml_pattern, xml_string, re.DOTALL)
                 for match in matches:
@@ -131,8 +132,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         if not extracted:
             return {}
             
-        xml_string = extracted
-        root = ET.fromstring(xml_string)
+        root = ET.fromstring(extracted)
         result = {}
         
         # Include root attributes if any
@@ -211,6 +211,7 @@ class Agent:
             except Exception as e:
                 return f"Error using DSPy LM: {str(e)}"
         
+        # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
         return run_inference(input_text, self.model_name, stream=use_stream)
     
@@ -236,8 +237,10 @@ def create_agent(model_type: str) -> Agent:
         import dspy
         agent.lm = dspy.LM(model_name)
     except ImportError:
+        # Silently continue without DSPy
         pass
     except Exception as e:
+        # Mark the model name with the error for debugging
         agent.model_name = f"{model_name} (Error: {str(e)})"
     
     return agent
