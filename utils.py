@@ -52,10 +52,8 @@ class MemoryDiff:
 
     def __eq__(self, other: object) -> bool:
         return (isinstance(other, MemoryDiff) and 
-                self.type == other.type and
-                self.key == other.key and
-                (self.old_value == other.old_value if self.old_value is not None else other.old_value is None) and
-                (self.new_value == other.new_value if self.new_value is not None else other.new_value is None))
+                (self.type, self.key, self.old_value, self.new_value) == 
+                (other.type, other.key, other.old_value, other.new_value))
 
 @dataclass
 class Action:
@@ -654,7 +652,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         self.reward(-base_env_manager.mating_cost)
         other.reward(-base_env_manager.mating_cost)
         
-        # Remove duplicate memories using serialized representation
+        # Remove duplicate memories
         seen = set()
         unique_memory = []
         for item in new_agent._memory:
@@ -938,10 +936,11 @@ __all__ = [
     'create_agent',
     'envs',
     'a_env',
-    'extract_xml', 
+    'extract_xml',
     'parse_xml_element',
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'parse_xml_to_dict'
 ]
