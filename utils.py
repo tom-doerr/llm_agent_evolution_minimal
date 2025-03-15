@@ -13,11 +13,15 @@ base_env_manager = SimpleNamespace(
 )
 
 def a_env(input_str: str) -> int:
+    # Count occurrences of 'a' (case-insensitive)
     return sum(1 for c in str(input_str) if c.lower() == 'a')
 
 envs = {
     'a_env': a_env,
-    'base_env': SimpleNamespace(description="Base environment configuration")
+    'base_env': SimpleNamespace(
+        description="Base environment configuration",
+        mating_cost=50
+    )
 }
 
 class DiffType(Enum):
@@ -1099,4 +1103,7 @@ __all__ = [
     # Helper functions
     'print_datetime'
 ]
+
+# Ensure all exported symbols are defined
+__all__ = [name for name in __all__ if globals().get(name) is not None]
 

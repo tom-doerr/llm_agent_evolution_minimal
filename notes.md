@@ -145,5 +145,6 @@ Code Quality Improvements Applied:
    - Improved documentation clarity for model options
 
 3. Verified proper exports in __all__
-   - Confirmed all necessary components are included
-   - Ensured wildcard imports work as expected
+   - Added missing base_env_manager and envs exports
+   - Ensured a_env function is properly exported
+   - Fixed process_observation export visibility
