@@ -341,6 +341,7 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str) -> None:
+        """Initialize agent with model name and default settings"""
         self.last_response: str = ""
         self.completions: List[str] = []
         if not isinstance(model_name, str):
@@ -508,7 +509,7 @@ class Agent:
             if item.type == "reward" and item.amount is not None
         )
         
-    def mate(self, other: 'Agent') -> 'Agent':
+    def mate(self, other: Agent) -> Agent:
         """Create new agent by combining memories from both parents"""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
@@ -736,5 +737,6 @@ __all__ = [
     'MemoryDiff',
     'Action', 
     'DiffType',
-    'process_observation'
+    'process_observation',
+    'base_env_manager'
 ]
