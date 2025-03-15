@@ -907,7 +907,7 @@ __all__ = [
     'MemoryDiff',
     'MemoryItem',
     'parse_xml_to_dict',
-    'parse_xml_element', 
+    'parse_xml_element',
     'process_observation',
     'run_inference'
 ]
