@@ -885,7 +885,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._context_instructions = self._context_instructions.copy()
         
         # Apply mating cost only to self parent per main.py assertion
-        self.reward(-mating_cost)
+        self.reward(-base_env_manager.mating_cost)
         
         return new_agent
 
