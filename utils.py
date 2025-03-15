@@ -307,17 +307,8 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
         return {"error": f"Unexpected error: {str(e)}", "xml_input": xml_string}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
-    """Parse XML element recursively into dict or string"""
     if not is_valid_xml_tag(element.tag):
-        raise ValueError(
-            f"Invalid XML tag: {element.tag}. Tags must:\n"
-            f"1. Start with a letter\n"
-            f"2. Contain only a-z, 0-9, -, _, or .\n" 
-            f"3. Not contain spaces or colons\n"
-            f"4. Not start with 'xml' (case-insensitive)\n"
-            f"5. Not end with hyphen\n"
-            f"6. Be between 1-255 characters"
-        )
+        raise ValueError(f"Invalid XML tag: {element.tag}. Must match [a-zA-Z][a-zA-Z0-9_.-]*")
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -359,7 +350,6 @@ class MemoryItem:
     output: str = field(default="")
     
     def __eq__(self, other: object) -> bool:
-        """Equality check comparing all fields"""
         return (isinstance(other, MemoryItem) and 
                self.input == other.input and
                self.output == other.output and
@@ -509,11 +499,11 @@ You can use multiple actions in a single completion but must follow the XML sche
 
     @property
     def context(self) -> str:
-        """Get context from dedicated instructions list"""
         context_str = "\n".join(item.output for item in self._context_instructions)
-        # Ensure core instructions are properly included
         if 'Explanation of all the available XML actions' not in context_str:
             context_str = "Explanation of all the available XML actions:\n" + context_str
+        if 'Examples of how to use the XML actions:' not in context_str:
+            context_str += "\nExamples of how to use the XML actions:"
         return context_str
 
     @property
@@ -1043,28 +1033,19 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default to
 
 # Control exported symbols for from utils import *
 __all__ = [
-    # Core classes
     'Action',
     'Agent',
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
-    
-    # Environment configuration
     'a_env',
     'base_env_manager',
     'envs',
-    
-    # Factory functions
     'create_agent',
-    
-    # XML processing
     'extract_xml',
     'parse_xml_element',
-    'parse_xml_to_dict', 
+    'parse_xml_to_dict',
     'process_observation',
-    
-    # Utility functions
     'print_datetime',
     'run_inference'
 ]
