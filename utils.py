@@ -586,7 +586,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                     return "<message>Error: Invalid characters in command</message>"
                 
             # Validate and sanitize command structure
-            sanitized_text = re.sub(r'[;&|$`]', '', command_elem.text)
+            sanitized_text = re.sub(r'[;&|$`]', '', command_elem.text).strip()
             cmd_parts = sanitized_text.strip().split()
             if len(cmd_parts) == 0:
                 return "<message>Error: Empty shell command</message>"
