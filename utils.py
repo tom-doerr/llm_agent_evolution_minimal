@@ -1,31 +1,14 @@
 import xml.etree.ElementTree as ET
 import datetime
 import os
-import re
 from typing import Any, Dict, List, Optional, Union, Tuple
-from dataclasses import dataclass
-from enum import Enum
 
 def is_non_empty_string(value: Any) -> bool:
-    """Check if value is a non-empty string after stripping whitespace.
-    
-    Args:
-        value: Value to check
-        
-    Returns:
-        bool: True if value is a non-empty string, False otherwise
-    """
+    """Check if value is a non-empty string after stripping whitespace."""
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml(xml_string: str) -> bool:
-    """Check if string contains valid XML.
-    
-    Args:
-        xml_string: String to validate
-        
-    Returns:
-        bool: True if valid XML, False otherwise
-    """
+    """Check if string contains valid XML."""
     if not is_non_empty_string(xml_string):
         return False
     try:
@@ -35,54 +18,25 @@ def is_valid_xml(xml_string: str) -> bool:
         return False
 
 def safe_int_conversion(value: Any) -> Optional[int]:
-    """Safely convert value to integer.
-    
-    Args:
-        value: Value to convert
-        
-    Returns:
-        Optional[int]: Converted integer or None if conversion fails
-    """
+    """Safely convert value to integer."""
     try:
         return int(value)
     except (ValueError, TypeError):
         return None
 
 def safe_float_conversion(value: Any) -> Optional[float]:
-    """Safely convert value to float.
-    
-    Args:
-        value: Value to convert
-        
-    Returns:
-        Optional[float]: Converted float or None if conversion fails
-    """
+    """Safely convert value to float."""
     try:
         return float(value)
     except (ValueError, TypeError):
         return None
 
 def is_valid_number(value: Any) -> bool:
-    """Check if value is a valid number (int/float but not bool).
-    
-    Args:
-        value: Value to check
-        
-    Returns:
-        bool: True if valid number, False otherwise
-    """
+    """Check if value is a valid number (int/float but not bool)."""
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 def truncate_string(value: Any, max_length: int = 100) -> str:
-    """Truncate string to specified length with ellipsis.
-    
-    Args:
-        value: Value to truncate
-        max_length: Maximum length of string
-        
-    Returns:
-        str: Truncated string
-    """
+    """Truncate string to specified length with ellipsis."""
     if not isinstance(value, str):  # Handle non-string inputs gracefully
         return ""
     if len(value) <= max_length:
