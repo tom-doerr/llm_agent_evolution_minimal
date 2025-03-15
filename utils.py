@@ -4,6 +4,12 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from types import SimpleNamespace
+
+# Environment configuration
+base_env_manager = SimpleNamespace(
+    mating_cost=50  # Cost for agent mating operation
+)
 
 class DiffType(Enum):
     ADD = auto()
@@ -22,8 +28,10 @@ class MemoryDiff:
             return False
         return (self.type == other.type and 
                 self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                (self.old_value == other.old_value or 
+                 (self.old_value is None and other.old_value is None)) and
+                (self.new_value == other.new_value or 
+                 (self.new_value is None and other.new_value is None)))
 
 @dataclass
 class Action:
@@ -34,7 +42,8 @@ class Action:
         if not isinstance(other, Action):
             return False
         return (self.type == other.type and 
-                self.params == other.params)
+                self.params == other.params and
+                len(self.params) == len(other.params))
 
 
 
@@ -499,6 +508,23 @@ class Agent:
             if item.type == "reward" and item.amount is not None
         )
         
+    def mate(self, other: 'Agent') -> 'Agent':
+        """Create new agent by combining memories from both parents"""
+        if not isinstance(other, Agent):
+            raise ValueError("Can only mate with another Agent")
+            
+        # Create new agent with same model
+        new_agent = Agent(self.model_name)
+        
+        # Combine memories (simple concatenation)
+        new_agent._memory = self._memory + other._memory
+        
+        # Apply mating cost to original agents
+        self.reward(-base_env_manager.mating_cost)
+        other.reward(-base_env_manager.mating_cost)
+        
+        return new_agent
+
     def reward(self, amount: Union[int, float]) -> None:
         """Reward the agent with a positive amount (mock implementation).
         
