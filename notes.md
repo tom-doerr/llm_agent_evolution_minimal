@@ -44,7 +44,10 @@ Code Quality Improvements & Fixes:
 42. Fixed __all__ exports formatting and removed duplicate entries
 43. Added proper error propagation for shell command handling
 Code Quality Improvements & Fixes:
-44. Fixed __all__ exports to remove duplicates and redundant environment configs
-45. Corrected MemoryDiff equality check to compare old/new values
-46. Improved XML shell command handling with better error messages  
-47. Fixed deepseek model name mapping in create_agent()
+44. Fixed MemoryDiff equality check type comparison
+45. Fixed model name mapping validation in create_agent()
+46. Cleaned up __all__ exports formatting and ordering
+47. Fixed test_mode propagation in mate() method
+48. Added proper test_mode handling in agent creation
+49. Fixed XML response validation edge cases
+50. Improved MemoryDiff hash and equality consistency
