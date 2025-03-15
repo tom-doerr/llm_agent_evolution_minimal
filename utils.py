@@ -686,11 +686,16 @@ You can use multiple actions in a single completion but must follow the XML sche
         
     def mate(self, other: 'Agent') -> 'Agent':
         """Create new agent by combining memories from both parents.
-        Applies mating cost to both parents."""
+        Applies mating cost to both parents.
+        
+        Inherits:
+        - Test mode from either parent
+        - Model name from self
+        - Max tokens from self"""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # Inherit test mode from either parent for testing flexibility
+        # Inherit test mode from either parent (logical OR)
         new_test_mode = bool(self._test_mode or other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
@@ -985,8 +990,11 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
     - openrouter/openai/gpt-4
     
     Model aliases:
-    - flash: openrouter/google/gemini-2.0-flash-001
-    - gemini-flash: openrouter/google/gemini-2.0-flash-001
+    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+    - pro/gemini-pro: openrouter/google/gemini-2.0-pro
+    - gpt-3.5: openrouter/openai/gpt-3.5-turbo
+    - gpt-4: openrouter/openai/gpt-4
+    - deepseek-chat: openrouter/deepseek/deepseek-chat
     - pro: openrouter/google/gemini-2.0-pro
     - gemini-pro: openrouter/google/gemini-2.0-pro
     - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
@@ -1060,10 +1068,19 @@ __all__ = [
 
 # Remove duplicate parse_xml_element and add missing process_observation
 __all__ = [
+    # Core components
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
+    
+    # Environments
     'a_env', 'base_env_manager', 'envs',
+    
+    # Processing functions
     'create_agent', 'process_observation', 'run_inference',
+    
+    # XML handling 
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
+    
+    # Utilities
     'print_datetime'
 ]
 
