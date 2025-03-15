@@ -1,9 +1,11 @@
 import pytest
 from memdiff.memory import MemoryDiff, Action, process_observation, DiffType
+from typing import List, Optional, Tuple, Dict
 from unittest.mock import patch, MagicMock
 from litellm import ValueError
 
 def test_memory_diff_initialization():
+    """Tests the initialization of the MemoryDiff class."""
     diff = MemoryDiff(
         file_path="test.py",
         search="old",
@@ -16,6 +18,7 @@ def test_memory_diff_initialization():
 
 @patch('memdiff.memory.litellm.completion')
 def test_process_observation_valid_response(mock_completion):
+    """Tests process_observation with a valid XML response."""
     # Define the mock response
     mock_response = MagicMock()
     mock_response.choices = [MagicMock(delta=MagicMock(content='''
@@ -49,6 +52,7 @@ def test_process_observation_valid_response(mock_completion):
 
 @patch('litellm.completion')
 def test_process_observation_no_diffs_no_action(mock_complete):
+    """Tests process_observation with no memory diffs and no action."""
     # Create a mock response with no memory diffs and no action
     mock_chunk = MagicMock()
     mock_chunk.choices = [MagicMock()]
@@ -62,6 +66,7 @@ def test_process_observation_no_diffs_no_action(mock_complete):
 
 @patch('litellm.completion')
 def test_process_observation_no_action(mock_complete):
+    """Tests process_observation with memory diffs but no action."""
     # Create a mock response with memory diffs but no action
     mock_chunk = MagicMock()
     mock_chunk.choices = [MagicMock()]
@@ -85,6 +90,7 @@ def test_process_observation_no_action(mock_complete):
 
 @patch('litellm.completion')
 def test_process_observation_invalid_xml(mock_complete):
+    """Tests process_observation with invalid XML, expecting a ValueError."""
     mock_chunk = MagicMock()
     mock_chunk.choices = [MagicMock()]
     mock_chunk.choices[0].delta = MagicMock()
@@ -106,6 +112,7 @@ def test_process_observation_invalid_xml(mock_complete):
 
 
 def test_xml_parsing_error_handling():
+    """Tests error handling when XML parsing fails."""
     with patch('litellm.completion') as mock_complete:
         mock_complete.side_effect = ValueError("API error")
         with pytest.raises(ValueError, match="Error during litellm completion"):
