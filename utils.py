@@ -21,7 +21,7 @@ envs = {
     'a_env': a_env,
     'base_env': SimpleNamespace(description="Base environment configuration")
 }
-"""Collection of available environments with their reward functions"""
+"""Collection of available environments with their reward functions and configurations"""
 
 class DiffType(Enum):
     ADD = auto()
@@ -917,7 +917,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 # Control exported symbols for from utils import *
 __all__ = [
     'Action',
-    'Agent', 
+    'Agent',
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
