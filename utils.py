@@ -70,10 +70,10 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     except ImportError:
         # Return mock response if litellm not installed
         return "Mock response (litellm not installed)"
-            
-        # Validate and normalize model name
-        if not is_valid_model_name(model):
-            model = "deepseek/deepseek-reasoner"
+    
+    # Validate and normalize model name
+    if not is_valid_model_name(model):
+        model = "deepseek/deepseek-reasoner"
             
         # Check for required API keys
         if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
@@ -264,8 +264,7 @@ class Agent:
             
         self.model_name = model_name
         self.memory: List[Dict[str, str]] = []
-        self.lm = None
-        self._test_mode = False
+        self._test_mode = model_name.startswith("flash")
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -303,7 +302,7 @@ class Agent:
             })
             return error_msg
     
-    def run(self, input_text: str) -> str:  # type: ignore
+    def run(self, input_text: str) -> str:
         if not is_non_empty_string(input_text):
             return ""
         
@@ -329,15 +328,8 @@ class Agent:
         """Clear the agent's memory"""
         self.memory = []
 
-def create_agent(model_type: str = 'flash') -> Agent:
-    """Create an agent with the specified model type.
-    
-    Args:
-        model_type: Type of model to use ('flash', 'pro', 'deepseek', or 'default')
-        
-    Returns:
-        Agent instance configured with the specified model
-    """
+def create_agent(model_type: str = 'flash', max_tokens: int = 50) -> Agent:
+    # Create agent with specified model type and token limit
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
@@ -348,8 +340,5 @@ def create_agent(model_type: str = 'flash') -> Agent:
     # Get model name with default fallback
     model_name = model_mapping.get(model_type.lower(), model_mapping['default'])
     agent = Agent(model_name)
-    
-    # Set test mode for flash model
-    agent._test_mode = model_type.lower() == 'flash'
     
     return agent
