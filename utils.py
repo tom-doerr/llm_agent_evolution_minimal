@@ -7,16 +7,12 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from types import SimpleNamespace
 
-# Environment configuration and constants
+# Environment configuration
 base_env_manager = SimpleNamespace(
-    mating_cost=50  # Base cost for agent mating operation
+    mating_cost=50
 )
-"""Manages evolution environment settings including:
-- mating_cost: Energy cost for reproduction
-"""
 
 def a_env(input_str: str) -> int:
-    """Count 'a's in string and return reward"""
     return sum(1 for c in str(input_str) if c.lower() == 'a')
 
 envs = {
@@ -76,14 +72,14 @@ def is_non_empty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
-    """True if string is a valid XML tag name"""
     return (is_non_empty_string(tag) 
             and tag[0].isalpha()
             and tag[-1] != '-'
             and all(c.isalnum() or c in ('-', '_', '.') for c in tag[1:])
             and not tag.lower().startswith('xml')
             and ':' not in tag
-            and ' ' not in tag)
+            and ' ' not in tag
+            and not any(c.isspace() for c in tag))
 
 def is_valid_model_name(model: str) -> bool:
     """Validate model name format"""
@@ -128,7 +124,7 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
         return value
     return value[:max_length] + "..."
 
-def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> Union[str, str]:
+def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
     """Run inference using the specified model.
     
     Args:
@@ -992,10 +988,9 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType', 
+    'DiffType',
     'MemoryDiff',
     'MemoryItem',
-    'a_env',
     'base_env_manager',
     'create_agent',
     'envs',
