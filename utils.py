@@ -1028,12 +1028,11 @@ def create_agent(model: str = 'deepseek-chat',
     Required: OPENROUTER_API_KEY environment variable
     
     Model aliases:
-    - deepseek-chat/deepseek-chat: openrouter/deepseek/deepseek-chat (default)
-    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
-    - pro/gemini-pro: openrouter/google/gemini-2.0-pro
-    - gpt-3.5: openrouter/openai/gpt-3.5-turbo
-    - gpt-4: openrouter/openai/gpt-4
+    - deepseek-chat: openrouter/deepseek/deepseek-chat (default)
     - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
+    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+    - pro/gemini-pro: openrouter/google/gemini-2.0-pro 
+    - gpt-3.5: openrouter/openai/gpt-3.5-turbo
     - gpt-4: openrouter/openai/gpt-4
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
@@ -1099,9 +1098,6 @@ __all__ = [
     # Helper functions
     'print_datetime'
 ]
-
-# Ensure unique exports while preserving order
-__all__ = list(dict.fromkeys(__all__))
 
 # Ensure unique exports while preserving order
 __all__ = list(dict.fromkeys(__all__))

@@ -102,9 +102,11 @@ Code Quality Improvements Applied:
 # Import Fixes and Code Cleanup
 
 1. Fixed __all__ exports in utils.py:
-   - Removed duplicate entries
+   - Removed duplicate entries and validation blocks
    - Ensured all referenced symbols are exported
    - Added proper grouping of related components
+   - Fixed duplicate MemoryItem equality check
+   - Improved model alias documentation
 
 2. Updated create_agent() documentation:
    - Added missing model aliases (gpt-3.5, gpt-4)
