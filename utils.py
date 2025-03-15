@@ -612,6 +612,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Create new agent with same model and propagate test mode only if both parents have it
         test_mode = bool(self._test_mode and other._test_mode)
+            test_mode = bool(test_mode)  # Ensure boolean type
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -856,9 +857,6 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Boolean flag for testing mode
-        model: Model to use ('flash', 'pro', 'deepseek' or full model name)
-        max_tokens: Maximum number of tokens for responses
-        load: Path to load agent state from
         
     Returns:
         Initialized Agent instance
@@ -914,7 +912,7 @@ __all__ = [
     'envs',
     'extract_xml',
     'parse_xml_to_dict',
-    'parse_xml_element',  # Added missing export
+    'parse_xml_element',
     'process_observation',
     'run_inference'
 ]
