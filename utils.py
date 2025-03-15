@@ -844,7 +844,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         # - Model name from self
         # - Max tokens from self
         # - Environment configurations
-        """
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
@@ -917,16 +916,14 @@ def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
 
 def _create_prompt_header(current_memory: str, observation: str) -> str:
     # Create header section of prompt
-    return f"""Current Memory:
-{current_memory}
-
-New Observation:
-{observation}
-
-Instructions:
-1. Analyze the observation
-2. Update memory with specific diffs
-3. Optional: Suggest an action"""
+    return (
+        f"Current Memory:\n{current_memory}\n\n"
+        f"New Observation:\n{observation}\n\n"
+        "Instructions:\n"
+        "1. Analyze the observation\n"
+        "2. Update memory with specific diffs\n"
+        "3. Optional: Suggest an action"
+    )
 
 def _prepare_prompt(current_memory: str, observation: str) -> str:
     """Combine all prompt sections"""
@@ -934,45 +931,47 @@ def _prepare_prompt(current_memory: str, observation: str) -> str:
 
 def _create_prompt_body() -> str:
     # Return fixed prompt body with examples
-    return """\nFormat response as XML with <diffs> and <action> sections\n
-Example valid response:
-<response>
-  <diffs>
-    <diff type="MODIFY">
-      <key>user_number</key>
-      <old_value>None</old_value>
-      <new_value>132</new_value>
-    </diff>
-  </diffs>
-  <action type="remember">
-    <key>user_number</key>
-    <value>132</value>
-  </action>
-</response>"""
+    return (
+        "\nFormat response as XML with <diffs> and <action> sections\n\n"
+        "Example valid response:\n"
+        "<response>\n"
+        "  <diffs>\n"
+        "    <diff type=\"MODIFY\">\n"
+        "      <key>user_number</key>\n"
+        "      <old_value>None</old_value>\n"
+        "      <new_value>132</new_value>\n"
+        "    </diff>\n"
+        "  </diffs>\n"
+        "  <action type=\"remember\">\n"
+        "    <key>user_number</key>\n"
+        "    <value>132</value>\n"
+        "  </action>\n"
+        "</response>"
+    )
 
 def _create_prompt_examples() -> str:
     # Return additional examples for prompt
-    return """\nMore Examples:
-    
-1. Simple addition:
-<response>
-  <diffs>
-    <diff type="ADD">
-      <key>new_item</key>
-      <new_value>example</new_value>
-    </diff>
-  </diffs>
-</response>
-
-2. Removal example:
-<response>
-  <diffs>
-    <diff type="REMOVE">
-      <key>old_item</key>
-      <old_value>deprecated</old_value>
-    </diff>
-  </diffs>
-</response>"""
+    return (
+        "\nMore Examples:\n    \n"
+        "1. Simple addition:\n"
+        "<response>\n"
+        "  <diffs>\n"
+        "    <diff type=\"ADD\">\n"
+        "      <key>new_item</key>\n"
+        "      <new_value>example</new_value>\n"
+        "    </diff>\n"
+        "  </diffs>\n"
+        "</response>\n\n"
+        "2. Removal example:\n"
+        "<response>\n"
+        "  <diffs>\n"
+        "    <diff type=\"REMOVE\">\n"
+        "      <key>old_item</key>\n"
+        "      <old_value>deprecated</old_value>\n"
+        "    </diff>\n"
+        "  </diffs>\n"
+        "</response>"
+    )
 
 def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
     # Get response from LiteLLM API
