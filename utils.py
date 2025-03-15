@@ -720,7 +720,7 @@ You can use multiple actions in a single completion but must follow the XML sche
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
-    <message>Successfully processed request</message>
+    <message>please respond to this message using the message xml tags</message>
 </response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
