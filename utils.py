@@ -3,8 +3,18 @@ import datetime
 from typing import Any, Dict, List, Optional, Union
 
 def is_non_empty_string(value: Any) -> bool:
-    # Check if value is a non-empty string after stripping whitespace
+    """Check if value is a non-empty string after stripping whitespace"""
     return isinstance(value, str) and bool(value.strip())
+
+def is_valid_xml(xml_string: str) -> bool:
+    """Check if string contains valid XML"""
+    if not is_non_empty_string(xml_string):
+        return False
+    try:
+        ET.fromstring(xml_string)
+        return True
+    except ET.ParseError:
+        return False
 
 def safe_int_conversion(value: Any) -> Optional[int]:
     try:
@@ -80,6 +90,10 @@ def extract_xml(xml_string: str) -> str:
     """Extract valid XML content from a string that might contain other text"""
     if not is_non_empty_string(xml_string):
         return ""
+    
+    # First check if the entire string is valid XML
+    if is_valid_xml(xml_string):
+        return xml_string
     
     try:
         # First try to parse the entire string as XML
@@ -194,6 +208,7 @@ class Agent:
         self.model_name = model_name
         self.memory: List[Dict[str, str]] = []
         self.lm = None
+        self._test_mode = False  # Initialize test mode flag
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -232,7 +247,15 @@ class Agent:
         """Clear the agent's memory"""
         self.memory = []
 
-def create_agent(model_type: str) -> Agent:
+def create_agent(model_type: str = 'flash') -> Agent:
+    """Create an agent with the specified model type.
+    
+    Args:
+        model_type: Type of model to use ('flash', 'pro', 'deepseek', or 'default')
+    
+    Returns:
+        Agent instance configured with the specified model
+    """
     if not is_non_empty_string(model_type):
         model_type = 'default'
         
