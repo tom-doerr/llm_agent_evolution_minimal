@@ -383,7 +383,6 @@ class Agent:
         self._memory = []
         self._context_instructions = []
         self.max_tokens = max_tokens
-        self._test_mode = test_mode
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
