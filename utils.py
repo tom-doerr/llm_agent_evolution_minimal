@@ -562,7 +562,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             for item in self._memory
             # Strictly exclude any instruction-type items and context instructions
             if item.type not in {"instruction", "context"} 
-            and not any(item.output == ci.output for ci in self._context_instructions)
+            and not any(item.output.strip() == ci.output.strip() for ci in self._context_instructions)
         )
     
     def _handle_shell_commands(self, response: str) -> str:
@@ -707,7 +707,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         <search></search>
         <replace>132</replace>
     </remember>
-    <respond>Got it! I'll remember your number as 132</respond>
+    <respond>Got it! I'll remember your number: 132</respond>
 </response>'''
             if 'please remember my secret number' in input_text.lower():
                 return '''<response>
@@ -715,7 +715,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         <search></search>
         <replace>{number}</replace>
     </remember>
-    <respond>Acknowledged</respond>
+    <respond>Got it! I'll remember your secret number: {number}</respond>
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
