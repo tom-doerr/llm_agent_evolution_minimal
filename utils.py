@@ -409,16 +409,14 @@ class MemoryItem:
     file_path: Optional[str] = field(default=None, metadata={"description": "Path to file for edit operations"})
     command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
 
-    def __post_init__(self, test_mode: bool = False) -> None:
+    def __post_init__(self) -> None:
         # Validate and normalize fields
         object.__setattr__(self, 'input', str(self.input))
         object.__setattr__(self, 'output', str(self.output))
         if self.amount is not None:
             object.__setattr__(self, 'amount', float(self.amount))
         if self.timestamp is None:
-            # Use fixed timestamp for test mode to match main.py assertions
-            ts = "2025-03-15T23:05:34.000" if test_mode else datetime.datetime.now().isoformat(sep='T', timespec='milliseconds')
-            object.__setattr__(self, 'timestamp', ts)
+            object.__setattr__(self, 'timestamp', datetime.datetime.now().isoformat(sep='T', timespec='milliseconds'))
         
         # Normalize empty strings to None for optional fields
         for field in ['file_path', 'command']:
@@ -545,8 +543,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             item = MemoryItem(
                 input=input_,
                 output=text,
-                type=type_,
-                test_mode=self._test_mode  # Pass test mode to control timestamp
+                type=type_
             )
             self._context_instructions.append(item)
 
