@@ -71,7 +71,7 @@ def is_valid_xml_tag(tag: str) -> bool:
             and ' ' not in tag)
 
 def is_valid_model_name(model: str) -> bool:
-    # Check if model name is valid (contains non-empty string with slash)
+    """Validate model name format"""
     return isinstance(model, str) and bool(model.strip()) and '/' in model
 
 def is_valid_xml(xml_string: str) -> bool:
@@ -249,14 +249,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], List[Any]]]:
-    """Parse XML string into a nested dictionary structure.
-    
-    Args:
-        xml_string: XML string to parse
-        
-    Returns:
-        Dictionary representation of the XML structure
-    """
+    """Parse XML string into a nested dictionary structure."""
     if not is_non_empty_string(xml_string):
         return {}
     
@@ -907,7 +900,7 @@ __all__ = [
     'envs',
     'extract_xml',
     'MemoryDiff',
-    'MemoryItem',
+    'MemoryItem', 
     'parse_xml_to_dict',
     'parse_xml_element',
     'process_observation',
