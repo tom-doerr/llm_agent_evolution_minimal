@@ -682,80 +682,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             timestamp=datetime.datetime.now().isoformat()
         ))
 
-def process_observation(
-    current_memory: str,
-    observation: str,
-    model: str = "openrouter/deepseek/deepseek-chat"
-) -> Tuple[List[MemoryDiff], Optional[Action]]:
-    """Process observation and return memory diffs with optional action"""
-    try:
-        _validate_inputs(current_memory, observation, model)
-        prompt = _prepare_prompt(current_memory, observation)
-        response, error = _get_litellm_response(model, prompt)
-        
-        if error:
-            print(f"API Error: {error}")
-            return [], None
-        
-        if not response:
-            print("Empty response from API")
-            return [], None
-            
-        try:
-            # Validate and parse XML
-            _validate_xml_response(response)
-            root = ET.fromstring(response)
-            
-            # Parse diffs
-            diffs = []
-            for diff_elem in root.findall('.//diff'):
-                try:
-                    diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
-                except KeyError:
-                    continue  # Skip invalid diff types
-                    
-                key = diff_elem.findtext('key', '').strip()
-                if not key:  # Skip entries with empty keys
-                    continue
-                    
-                old_val = diff_elem.findtext('old_value', None)
-                new_val = diff_elem.findtext('new_value', None)
-                
-                diffs.append(MemoryDiff(
-                    type=diff_type,
-                    key=key,
-                    old_value=old_val,
-                    new_value=new_val
-                ))
-            
-            # Parse action if present
-            action = None
-            action_elem = root.find('.//action')
-            if action_elem is not None:
-                action_type = action_elem.get('type', '').strip()
-                params = {child.tag: (child.text or '').strip()
-                         for child in action_elem if child.text is not None}
-                
-                action = Action(
-                    type=action_type,
-                    params=params
-                )
-            
-            return diffs, action
-            
-        except ET.ParseError as e:
-            print(f"XML parsing error in response: {str(e)}\nResponse content: {response}")
-            return [], None
-        except KeyError as e:
-            print(f"Invalid diff type: {str(e)}")
-            return [], None
-        except Exception as e:
-            print(f"Processing error: {str(e)}\nOriginal input: {observation}")
-            return [], None
-            
-    except Exception as e:
-        print(f"Critical error processing observation: {str(e)}")
-        return [], None
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
     """Validate input types and values"""
@@ -873,6 +799,81 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         )
     return None
 
+def process_observation(
+    current_memory: str,
+    observation: str,
+    model: str = "openrouter/deepseek/deepseek-chat"
+) -> Tuple[List[MemoryDiff], Optional[Action]]:
+    """Process observation and return memory diffs with optional action"""
+    try:
+        _validate_inputs(current_memory, observation, model)
+        prompt = _prepare_prompt(current_memory, observation)
+        response, error = _get_litellm_response(model, prompt)
+        
+        if error:
+            print(f"API Error: {error}")
+            return [], None
+        
+        if not response:
+            print("Empty response from API")
+            return [], None
+            
+        try:
+            # Validate and parse XML
+            _validate_xml_response(response)
+            root = ET.fromstring(response)
+            
+            # Parse diffs
+            diffs = []
+            for diff_elem in root.findall('.//diff'):
+                try:
+                    diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+                except KeyError:
+                    continue  # Skip invalid diff types
+                    
+                key = diff_elem.findtext('key', '').strip()
+                if not key:  # Skip entries with empty keys
+                    continue
+                    
+                old_val = diff_elem.findtext('old_value', None)
+                new_val = diff_elem.findtext('new_value', None)
+                
+                diffs.append(MemoryDiff(
+                    type=diff_type,
+                    key=key,
+                    old_value=old_val,
+                    new_value=new_val
+                ))
+            
+            # Parse action if present
+            action = None
+            action_elem = root.find('.//action')
+            if action_elem is not None:
+                action_type = action_elem.get('type', '').strip()
+                params = {child.tag: (child.text or '').strip()
+                         for child in action_elem if child.text is not None}
+                
+                action = Action(
+                    type=action_type,
+                    params=params
+                )
+            
+            return diffs, action
+            
+        except ET.ParseError as e:
+            print(f"XML parsing error in response: {str(e)}\nResponse content: {response}")
+            return [], None
+        except KeyError as e:
+            print(f"Invalid diff type: {str(e)}")
+            return [], None
+        except Exception as e:
+            print(f"Processing error: {str(e)}\nOriginal input: {observation}")
+            return [], None
+            
+    except Exception as e:
+        print(f"Critical error processing observation: {str(e)}")
+        return [], None
+
 def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
@@ -941,6 +942,5 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'parse_xml_to_dict'
+    'run_inference'
 ]
