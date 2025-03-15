@@ -191,7 +191,7 @@ def run_inference(input_string: str, model: str = "openrouter/deepseek/deepseek-
             
     # Check for required API keys
     if model.startswith("openrouter/") and "OPENROUTER_API_KEY" not in os.environ:
-        return f"Error: OPENROUTER_API_KEY environment variable not set for model {model}"
+        raise ValueError(f"OPENROUTER_API_KEY environment variable required for model {model}")
         
     try:
         response = litellm.completion(
@@ -465,9 +465,6 @@ class Agent:
         self.last_response = ""
         self.completions = []
         self.total_num_completions = 0
-        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
-        # Initialize from base environment configuration
         # Initialize from base environment configuration
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
@@ -738,8 +735,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
-            if hasattr(self, 'completions'):
-                self.completions.append(raw_response)
+            self.completions.append(raw_response)
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -1188,7 +1184,7 @@ def create_agent(
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek/deepseek-chat': 'deepseek/deepseek-chat',
+        'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
