@@ -26,7 +26,8 @@ envs = {
         description="Base environment configuration",
         mating_cost=50
     ),
-    'base_env_manager': base_env_manager
+    'base_env_manager': base_env_manager,
+    'base_env': base_env
 }
 
 class DiffType(Enum):
@@ -429,11 +430,11 @@ class MemoryItem:
         return (
             self._normalize_value(self.input) == self._normalize_value(other.input) and
             self._normalize_value(self.output) == self._normalize_value(other.output) and
-            self._normalize_value(self.type) == self._normalize_value(other.type) and
+            self.type == other.type and
             self.amount == other.amount and
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
-            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
-            self._normalize_value(self.command) == self._normalize_value(other.command)
+            (self.file_path or '') == (other.file_path or '') and
+            (self.command or '') == (other.command or '')
         )
 
 class Agent:
@@ -608,32 +609,26 @@ You can use multiple actions in a single completion but must follow the XML sche
         try:
             if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
                 return "<message>Error: Invalid characters in command</message>"
-            
+                
             # Validate and sanitize command structure
             sanitized_text = re.sub(r'[;&|$`]', '', command_elem.text).strip()
             cmd_parts = sanitized_text.strip().split()
             if len(cmd_parts) == 0:
                 return "<message>Error: Empty shell command</message>"
-                
+                    
             # Basic command allowlist validation
             if cmd_parts[0] not in self.allowed_shell_commands:
                 return f"<message>Error: Command {cmd_parts[0]} not allowed</message>"
-            
-        except ET.ParseError as e:
-            return f"<message>XML parsing error: {str(e)}</message>"
                 
             # Execute validated command
-            try:
-                result = subprocess.run(
-                    cmd_parts,
-                    shell=False,
-                    capture_output=True,
-                    text=True,
-                    timeout=5
-                )
-                return f"<shell_output>\n{result.stdout}\n{result.stderr}\n</shell_output>"
-            except Exception as e:
-                return f"<error>{str(e)}</error>"
+            result = subprocess.run(
+                cmd_parts,
+                shell=False,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            return f"<shell_output>\n{result.stdout}\n{result.stderr}\n</shell_output>"
         except Exception as e:
             return f"<error>{str(e)}</error>"
 
