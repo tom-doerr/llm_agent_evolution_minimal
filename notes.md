@@ -58,13 +58,10 @@ Code Quality Improvements & Fixes:
 8. Enhanced model documentation in create_agent()
 9. Fixed missing OpenRouter API key requirement in docs
 10. Added missing parse_xml_element to __all__ exports
-12. Fixed MemoryItem equality check to properly compare command field
-13. Removed invalid memory operation validation from MemoryItem
-14. Fixed duplicate 'rm' in prohibited commands
-15. Removed duplicate validation checks in Agent initialization
-13. Added parse_xml_element to __all__ exports
-14. Cleaned up create_agent docstring and default model documentation
-15. Removed redundant test_mode check in mate()
+12. Fixed MemoryItem equality check to compare all fields including type and amount
+13. Removed duplicate 'rm' in prohibited commands
+14. Added parse_xml_element to __all__ exports
+15. Cleaned up create_agent docstring and default model documentation
 12. Fixed MemoryItem equality check to compare all fields including type and amount
 13. Removed duplicate parse_xml_element from __all__ exports
 14. Organized __all__ exports into logical groups for better import clarity

@@ -965,7 +965,7 @@ def process_observation(
         print(f"Critical error processing observation: {str(e)}")
         return [], None
 
-def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
+def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default: DeepSeek Chat via OpenRouter
                 max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
