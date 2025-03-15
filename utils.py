@@ -734,10 +734,6 @@ You can use multiple actions in a single completion but must follow the XML sche
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
-    <remember>
-        <search></search>
-        <replace>test</replace>
-    </remember>
     <message>Successfully processed request</message>
 </response>'''
             if 'current directory' in input_text.lower():
@@ -810,22 +806,15 @@ You can use multiple actions in a single completion but must follow the XML sche
             and item.input.strip() != ""  # Exclude empty inputs
         ]
         
-        # Remove duplicates while preserving order using all fields
-        seen = set()
-        new_agent._memory = []
+        # Remove duplicates while preserving order using hashes
+        seen_hashes = set()
+        unique_memory = []
         for item in combined_mem:
-            item_repr = (
-                item.input,
-                item.output,
-                item.type,
-                item.amount,
-                item.timestamp,
-                item.file_path,
-                item.command
-            )
-            if item_repr not in seen:
-                seen.add(item_repr)
-                new_agent._memory.append(item)
+            item_hash = hash(item)
+            if item_hash not in seen_hashes:
+                seen_hashes.add(item_hash)
+                unique_memory.append(item)
+        new_agent._memory = unique_memory
         
         # Apply mating cost only to self per main.py assertion
         self.reward(-envs['base_env_manager'].mating_cost)
