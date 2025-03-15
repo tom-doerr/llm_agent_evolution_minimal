@@ -38,8 +38,11 @@ Code Quality Improvements & Fixes:
 37. Fixed None handling in action parameter parsing
 38. Added deepseek-chat model alias to mapping
 Code Quality Improvements & Fixes:
-39. Fixed overstrict MemoryDiff equality check that caused test failures  
+39. Fixed overstrict MemoryDiff equality check that caused test failures
 64. Simplified MemoryDiff equality check implementation
+71. Fixed test_mode propagation in mate() to require both parents
+72. Cleaned up __all__ exports formatting
+73. Verified MemoryDiff equality comparison
 65. Added missing parse_xml_element to __all__ exports
 66. Removed final duplicate from __all__ exports
 67. Verified deepseek model mapping format

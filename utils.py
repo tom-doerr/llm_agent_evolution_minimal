@@ -608,7 +608,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode or other._test_mode  # Inherit test mode from either parent
+            test_mode=self._test_mode and other._test_mode  # Require both parents in test mode
         )
         
         # Combine memories from both parents
@@ -901,7 +901,7 @@ __all__ = [
     'DiffType',
     'envs',
     'extract_xml',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'parse_xml_element',
     'parse_xml_to_dict',
