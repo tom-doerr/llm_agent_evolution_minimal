@@ -433,7 +433,7 @@ class MemoryItem:
             self._normalize_value(self.output) == other._normalize_value(other.output) and
             self.type == other.type and
             self.amount == other.amount and
-            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
+            self._normalize_value(self.timestamp) == other._normalize_value(other.timestamp) and
             (self.file_path or '') == (other.file_path or '') and
             (self.command or '') == (other.command or '')
         )
@@ -760,7 +760,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         
     def mate(self, other: 'Agent') -> 'Agent':
         """Create new agent by combining memories from both parents.
-        Applies mating cost to both parents.
+        Applies mating cost to self parent only.
         
         Args:
             other: Another Agent instance to mate with
@@ -804,24 +804,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         
         # Apply mating cost only to self per main.py assertion
         self.reward(-base_env_manager.mating_cost)
-        
-        # Remove duplicate memories using all fields
-        seen = set()
-        unique_memory = []
-        for item in new_agent._memory:
-            item_repr = (
-                item.input,
-                item.output,
-                item.type,
-                item.amount,
-                item.timestamp,
-                item.file_path,
-                item.command
-            )
-            if item_repr not in seen:
-                seen.add(item_repr)
-                unique_memory.append(item)
-        new_agent._memory = unique_memory
         
         return new_agent
 
