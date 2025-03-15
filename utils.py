@@ -404,6 +404,11 @@ class Agent:
             max_tokens: Maximum response length
             test_mode: Enable testing mode with mocked responses
         """
+        # Validate inputs before initialization
+        if not isinstance(model_name, str):
+            raise ValueError("model_name must be string")
+        if not isinstance(max_tokens, int) or max_tokens <= 0:
+            raise ValueError("max_tokens must be a positive integer")
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
@@ -1055,7 +1060,7 @@ __all__ = [
     'envs',
     
     # Core processing functions
-    'create_agent',
+    'create_agent', 
     'process_observation',
     'run_inference',
     
