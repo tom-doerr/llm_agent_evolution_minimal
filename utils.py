@@ -455,8 +455,6 @@ class Agent:
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
         
-        # Initialize context instructions (not stored in regular memory)
-        self._add_core_context_instructions()
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
@@ -464,14 +462,9 @@ class Agent:
 
         self.model_name = model_name
         self.max_tokens = max_tokens
-        self._test_mode = bool(test_mode)
-        self._memory = []
-        self.last_response = ""
-        self.completions = []
-        self.total_num_completions = 0
-        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
-        self._context_instructions = []
+        
+        # Initialize context instructions (not stored in regular memory)
+        self._add_core_context_instructions()
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
