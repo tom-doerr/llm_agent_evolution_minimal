@@ -391,24 +391,23 @@ class MemoryItem:
 
     def __hash__(self) -> int:
         return hash((
-            self.type,
-            self.amount,
             self._normalize_value(self.input),
             self._normalize_value(self.output),
+            self.type,
+            self.amount,
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
-            self._normalize_value(self.command),
-            self._normalize_value(self.type)
+            self._normalize_value(self.command)
         ))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
             return False
         return (
-            self.type == other.type and
-            self.amount == other.amount and
             self._normalize_value(self.input) == self._normalize_value(other.input) and
             self._normalize_value(self.output) == self._normalize_value(other.output) and
+            self.type == other.type and
+            self.amount == other.amount and
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
             self._normalize_value(self.command) == self._normalize_value(other.command)
@@ -439,9 +438,8 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
-        self._context_instructions: List[MemoryItem] = []
         """Initialize agent with model configuration and memory"""
-        """Initialize agent with model name and default settings"""
+        self._context_instructions: List[MemoryItem] = []
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
@@ -1010,9 +1008,12 @@ def process_observation(
         print(f"Critical error processing observation: {str(e)}")
         return [], None
 
-def create_agent(model: str = 'deepseek-chat',
-                max_tokens: int = 50,
-                load: Optional[str] = None, test_mode: bool = False) -> Agent:
+def create_agent(
+    model: str = 'deepseek-chat',
+    max_tokens: int = 50,
+    test_mode: bool = False,
+    load: Optional[str] = None
+) -> Agent:
     """Create an agent with specified model.
     
     Args:
