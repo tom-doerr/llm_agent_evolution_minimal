@@ -619,7 +619,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             max_tokens=self.max_tokens,
             test_mode=self._test_mode and other._test_mode
         )
-        new_agent._test_mode = self._test_mode or other._test_mode
         
         # Combine memories from both parents
         new_agent._memory.extend(self._memory)
@@ -907,10 +906,10 @@ __all__ = [
     'Action',
     'base_env_manager',
     'create_agent',
-    'DiffType', 
+    'DiffType',
     'envs',
     'extract_xml',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'parse_xml_to_dict',
     'parse_xml_element',
