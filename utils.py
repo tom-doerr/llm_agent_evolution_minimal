@@ -2,7 +2,7 @@ import re
 import xml.etree.ElementTree as ET
 import datetime
 import os
-from typing import Any, Dict, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from types import SimpleNamespace
