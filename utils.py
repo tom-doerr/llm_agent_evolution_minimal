@@ -641,7 +641,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # New agent only in test mode if both parents are in test mode
-        new_test_mode = bool(self._test_mode and other._test_mode)
+        new_test_mode = bool(all((self._test_mode, other._test_mode)))
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -901,11 +901,12 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro', 
+        'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder',
         'default': 'openrouter/deepseek/deepseek-chat',
-        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
+        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'  # Explicit full path
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -935,10 +936,8 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff', 
+    'MemoryDiff',
     'MemoryItem',
-    'a_env',
-    'base_env_manager',
     'create_agent',
     'envs',
     'extract_xml',
