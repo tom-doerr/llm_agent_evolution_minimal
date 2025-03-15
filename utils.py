@@ -51,16 +51,20 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        def normalize(value: Any) -> Any:
-            if isinstance(value, str):
-                return re.sub(r'\s+', ' ', value).strip()
-            return value
+        # Compare memory diffs with whitespace normalization
+        if not isinstance(other, MemoryDiff):
+            return False
             
-        return (isinstance(other, MemoryDiff) and 
-                self.type == other.type and
+        return (self.type == other.type and
                 self.key == other.key and
-                normalize(self.old_value) == normalize(other.old_value) and
-                normalize(self.new_value) == normalize(other.new_value))
+                self._normalize_value(self.old_value) == self._normalize_value(other.old_value) and
+                self._normalize_value(self.new_value) == self._normalize_value(other.new_value))
+
+    @staticmethod
+    def _normalize_value(value: Any) -> Any:
+        if isinstance(value, str):
+            return re.sub(r'\s+', ' ', value).strip()
+        return value
 
 @dataclass
 class Action:
@@ -679,10 +683,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # New agent inherits test mode only if both parents are in test mode
-        new_test_mode = bool(self._test_mode) and bool(other._test_mode)
-        # Explicit boolean cast for clarity
-        new_test_mode = bool(new_test_mode)
+        # New agent only inherits test mode if both parents are in test mode
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -951,7 +953,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
-    Supported OpenRouter models:
+    Supported models (use full OpenRouter paths):
     - openrouter/deepseek/deepseek-chat (default)
     - openrouter/deepseek/deepseek-coder-33b-instruct
     - openrouter/google/gemini-2.0-flash-001
@@ -959,7 +961,12 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     - openrouter/openai/gpt-3.5-turbo
     - openrouter/openai/gpt-4
     
-    Aliases: flash, gemini-flash, pro, gemini-pro
+    Model aliases:
+    - flash/openrouter/google/gemini-2.0-flash-001
+    - gemini-flash -> openrouter/google/gemini-2.0-flash-001
+    - pro -> openrouter/google/gemini-2.0-pro
+    - gemini-pro -> openrouter/google/gemini-2.0-pro
+    - deepseek-coder -> openrouter/deepseek/deepseek-coder-33b-instruct
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         max_tokens: Maximum number of tokens for responses
@@ -1036,6 +1043,4 @@ __all__ = [
     'print_datetime',
     'run_inference'
 ]
-
-# Added process_observation to exports for proper from utils import *
 
