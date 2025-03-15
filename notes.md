@@ -70,6 +70,9 @@ Code Quality Improvements & Fixes:
 13. Removed duplicate 'rm' in prohibited commands
 14. Added proper __hash__ implementation for MemoryItem
 15. Fixed duplicate parse_xml_element in __all__ exports
+16. Added explicit utils namespace for create_agent in mate()
+17. Fixed model documentation formatting in create_agent()
+18. Standardized __all__ exports declaration
 16. Cleaned up create_agent docstring and default model documentation
 12. Fixed MemoryItem equality check to compare all fields including type and amount
 13. Removed duplicate parse_xml_element from __all__ exports

@@ -718,7 +718,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent (logical OR)
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
@@ -1103,6 +1103,9 @@ __all__ = [
     # Helper functions
     'print_datetime'
 ]
+
+# Ensure unique exports while preserving order
+__all__ = list(dict.fromkeys(__all__))
 
 # Ensure unique exports while preserving order
 __all__ = list(dict.fromkeys(__all__))
