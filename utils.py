@@ -306,7 +306,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
         # Process child elements and text content
         if root.text and root.text.strip():
             result["text"] = root.text.strip()
-        
+    
         for child in root:
             if len(child) > 0:
                 result[child.tag] = parse_xml_element(child)
@@ -378,8 +378,7 @@ class MemoryItem:
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command and
-                self.type == other.type)
+                self.command == other.command)
 
     def __hash__(self) -> int:
         return hash((
@@ -409,8 +408,6 @@ class MemoryItem:
         """Validate and normalize MemoryItem fields"""
         if not isinstance(self.input, str):
             self.input = str(self.input)
-        if self.file_path and not os.path.exists(self.file_path):
-            raise FileNotFoundError(f"File path {self.file_path} does not exist")
         if not isinstance(self.output, str):
             self.output = str(self.output)
         if self.amount is not None and not isinstance(self.amount, (int, float)):
@@ -720,7 +717,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent (logical OR)
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
