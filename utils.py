@@ -47,7 +47,7 @@ class MemoryDiff:
         return (self.type == other.type and 
                 self.key == other.key and
                 self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                self.new_value == other.new_value) 
 
 @dataclass
 class Action:
@@ -58,7 +58,7 @@ class Action:
         if not isinstance(other, Action):
             return False
         return (self.type == other.type and 
-                self.params == other.params)
+                self.params == (other.params or {}))
 
 
 
@@ -872,10 +872,11 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek': 'openrouter/deepseek/deepseek-chat',
+        'deepseek': 'openrouter/deepseek/deepseek-reasoner',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
-        'default': 'openrouter/deepseek/deepseek-chat'
+        'default': 'openrouter/deepseek/deepseek-reasoner'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -904,12 +905,13 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 __all__ = [
     'Agent',
     'Action',
-    'create_agent',
+    'create_agent', 
     'DiffType',
     'extract_xml',
     'MemoryDiff',
     'MemoryItem',
     'parse_xml_to_dict',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'parse_xml_element'
 ]

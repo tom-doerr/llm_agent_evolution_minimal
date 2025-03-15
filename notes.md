@@ -52,3 +52,7 @@ Code Quality Improvements & Fixes:
 50. Improved MemoryDiff hash and equality consistency
 51. Corrected deepseek-coder model mapping
 52. Fixed test_mode initialization in Agent class
+53. Fixed __all__ exports to include parse_xml_element
+54. Updated deepseek-reasoner model mapping
+55. Improved Action equality check for None params
+56. Removed redundant equality checks in MemoryDiff
