@@ -384,7 +384,7 @@ class Agent:
     def _add_core_context_instructions(self) -> None:
         """Add required context instructions that should never appear in memory"""
         core_instructions = [
-            ("Explanation of all available XML actions. You can edit your memory using XML actions:", 
+            ("Explanation of all the available XML actions. You can edit your memory using XML actions:", 
              "instruction", ""),
             ("""Available XML actions:
 <respond> - Send response to user  
@@ -459,10 +459,11 @@ You can use multiple actions in a single completion but must follow the XML sche
     @property
     def context(self) -> str:
         """Get context from dedicated instructions list"""
-        return "\n".join(
-            f"{item.output}" 
-            for item in self._context_instructions
-        )
+        context_str = "\n".join(item.output for item in self._context_instructions)
+        # Ensure core instructions are properly included
+        if 'Explanation of all the available XML actions' not in context_str:
+            context_str = "Explanation of all the available XML actions:\n" + context_str
+        return context_str
 
     @property
     def memory(self) -> str:
@@ -864,20 +865,10 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 
 # Ensure __all__ is after all definitions
 __all__ = [
-    # Functions
-    'is_non_empty_string',
-    'is_valid_xml_tag', 
-    'is_valid_model_name',
-    'is_valid_xml',
-    'parse_xml_to_dict',
-    'parse_xml_element',
-    'safe_int_conversion',
-    'safe_float_conversion',
-    'is_valid_number',
-    'truncate_string',
-    'run_inference',
-    'print_datetime',
+    # Core functions
     'create_agent',
+    'run_inference',
+    'extract_xml',
     'process_observation',
     
     # Data classes
@@ -888,13 +879,10 @@ __all__ = [
     # Enum
     'DiffType',
     
-    # Core classes
+    # Core class
     'Agent',
     
     # Environment configs
     'base_env_manager',
-    'envs',
-    
-    # XML processing
-    'extract_xml'
+    'envs'
 ]
