@@ -874,9 +874,6 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     Returns:
         Initialized Agent instance
         
-    Returns:
-        Initialized Agent instance
-        
     Raises:
         ValueError: If max_tokens is not a positive integer
         FileNotFoundError: If load path is specified but doesn't exist
@@ -931,5 +928,6 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'parse_xml_element'  # Explicitly added for star imports
 ]
