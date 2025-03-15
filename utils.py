@@ -20,7 +20,7 @@ class DiffType(Enum):
     REMOVE = auto()
     MODIFY = auto()
 
-@dataclass
+@dataclass(frozen=True)
 class MemoryDiff:
     type: DiffType
     key: str
@@ -373,7 +373,17 @@ class Agent:
 <respond> - Send a response to the user  
 <remember> - Store information in memory
 <recall> - Retrieve information from memory
-<request> - Ask for additional information""", 
+<request> - Ask for additional information
+
+Examples of how to use the XML actions:
+<remember>
+    <search>old_value</search>
+    <replace>new_value</replace>
+</remember>
+
+<respond>
+    Response text here
+</respond>""", 
              "instruction", "XML Actions")
         ]
         
@@ -482,8 +492,6 @@ class Agent:
                     <search>{prev_number}</search>
                     <replace>132</replace>
                 </remember>'''
-                self.total_num_completions += 1
-                return response
             if 'current directory' in input_text.lower():
                 return '''<response>
                     <run>ls</run>
@@ -791,5 +799,8 @@ __all__ = [
     'envs',
     
     # XML parsing functions
-    'parse_xml_element'
+    'parse_xml_element',
+    
+    # Diff types
+    'DiffType'
 ]
