@@ -498,7 +498,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         import subprocess
         try:
             if not is_valid_xml_tag(command_elem.text):
-                return "<message>Error: Invalid command format</message>"
+                if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
+                    return "<message>Error: Invalid characters in command</message>"
+            
+                if not is_valid_xml_tag(command_elem.text):
+                    return "<message>Error: Invalid command format</message>"
                 
             result = subprocess.run(
                 command_elem.text.strip(),
@@ -912,7 +916,7 @@ __all__ = [
     'MemoryDiff',
     'MemoryItem',
     'parse_xml_to_dict',
-    'parse_xml_element',
-    'process_observation', 
+    'parse_xml_to_dict',
+    'process_observation',
     'run_inference'
 ]
