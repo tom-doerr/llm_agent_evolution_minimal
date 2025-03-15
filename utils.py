@@ -355,6 +355,16 @@ class MemoryItem:
             self.input = str(self.input)
         if self.file_path and not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File path {self.file_path} does not exist")
+        # Validate value types
+        if self.old_value is not None and not isinstance(self.old_value, (str, int, float)):
+            raise TypeError("old_value must be string, number or None")
+        if self.new_value is not None and not isinstance(self.new_value, (str, int, float)):
+            raise TypeError("new_value must be string, number or None")
+        # Truncate long values
+        if isinstance(self.old_value, str):
+            self.old_value = truncate_string(self.old_value, 500)
+        if isinstance(self.new_value, str): 
+            self.new_value = truncate_string(self.new_value, 500)
         if not isinstance(self.output, str):
             self.output = str(self.output)
         if self.amount is not None and not isinstance(self.amount, (int, float)):
@@ -655,9 +665,9 @@ You can use multiple actions in a single completion but must follow the XML sche
             test_mode=new_test_mode
         )
         
-        # Combine memories from both parents
-        new_agent._memory.extend(self._memory)
-        new_agent._memory.extend(other._memory)
+        # Combine memories from both parents (using copies to prevent reference issues)
+        new_agent._memory.extend(list(self._memory))
+        new_agent._memory.extend(list(other._memory))
         
         # Apply mating cost once to each parent
         self.reward(-base_env_manager.mating_cost)
@@ -830,7 +840,20 @@ def process_observation(
     observation: str,
     model: str = "openrouter/deepseek/deepseek-chat"
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
-    """Process observation and return memory diffs with optional action"""
+    """Process observation and return memory diffs with optional action
+    
+    Args:
+        current_memory: Current memory state as string
+        observation: New observation to process
+        model: Model to use for processing
+        
+    Returns:
+        Tuple of (list of MemoryDiff objects, optional Action)
+        
+    Raises:
+        ValueError: If input validation fails
+        ET.ParseError: If XML parsing fails
+    """
     try:
         _validate_inputs(current_memory, observation, model)
         prompt = _prepare_prompt(current_memory, observation)
@@ -961,7 +984,7 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'a_env',
     'base_env_manager',
@@ -969,6 +992,7 @@ __all__ = [
     'envs',
     'extract_xml',
     'parse_xml_to_dict',
+    'parse_xml_element',  # Added missing export
     'print_datetime',
     'process_observation',
     'run_inference'
