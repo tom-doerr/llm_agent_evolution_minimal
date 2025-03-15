@@ -1,6 +1,6 @@
 import pytest
 from memdiff.memory import MemoryDiff, Action, process_observation, DiffType
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 def test_memory_diff_initialization():
     diff = MemoryDiff(
@@ -15,23 +15,26 @@ def test_memory_diff_initialization():
 
 @patch('litellm.completion')
 def test_process_observation_valid_response(mock_complete):
-    mock_complete.return_value = [{
-        'choices': [{'delta': {'content': '''
-            <response>
-            <memory_diff>
-            <file_path>test.py</file_path>
-            <search>old</search>
-            <replace>new</replace>
-            </memory_diff>
-            <action name="update">
-                <param1>value1</param1>
-                <param2>value2</param2>
-            </action>
-            </response>
-        '''}}]
-    }]
+    # Create a mock response that simulates a streaming response
+    mock_chunk = MagicMock()
+    mock_chunk.choices = [MagicMock()]
+    mock_chunk.choices[0].delta = MagicMock()
+    mock_chunk.choices[0].delta.content = '''
+        <response>
+        <memory_diff>
+        <file_path>test.py</file_path>
+        <search>old</search>
+        <replace>new</replace>
+        </memory_diff>
+        <action name="update">
+            <param1>value1</param1>
+            <param2>value2</param2>
+        </action>
+        </response>
+    '''
+    mock_complete.return_value = [mock_chunk]
     
-    diffs, action = process_observation("current", "obs", model="test-model")
+    diffs, action, reasoning = process_observation("current", "obs", model="test-model")
     assert len(diffs) == 1
     assert diffs[0].file_path == "test.py"
     assert action.name == "update"
@@ -40,6 +43,7 @@ def test_process_observation_valid_response(mock_complete):
 def test_xml_parsing_error_handling():
     with patch('litellm.completion') as mock_complete:
         mock_complete.side_effect = Exception("API error")
-        diffs, action = process_observation("", "")
+        diffs, action, reasoning = process_observation("", "")
         assert diffs == []
         assert action is None
+        assert reasoning == ""
