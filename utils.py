@@ -369,7 +369,6 @@ class Agent:
         self._memory = []
         self._context_instructions = []
         self.max_tokens = 50
-        self._test_mode = any(kw in model_name.lower() for kw in ["flash", "deepseek-chat"])
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -663,8 +662,15 @@ def process_observation(
             # Parse diffs
             diffs = []
             for diff_elem in root.findall('.//diff'):
-                diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+                try:
+                    diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+                except KeyError:
+                    continue  # Skip invalid diff types
+                    
                 key = diff_elem.findtext('key', '').strip()
+                if not key:  # Skip entries with empty keys
+                    continue
+                    
                 old_val = diff_elem.findtext('old_value', None)
                 new_val = diff_elem.findtext('new_value', None)
                 
