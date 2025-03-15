@@ -379,12 +379,6 @@ class MemoryItem:
         if self.file_path and not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File path {self.file_path} does not exist")
             
-        # Validate memory operation requirements
-        if self.type in ('ADD', 'CREATE') and not self.new_value:
-            raise ValueError(f"{self.type} operations require new_value")
-        if self.type == 'MODIFY' and not (self.old_value and self.new_value):
-            raise ValueError("MODIFY operations require both old and new values")
-            
         # Only truncate non-instruction memory items
         if isinstance(self.output, str) and self.type != 'instruction':
             self.output = truncate_string(self.output, 500)
@@ -405,10 +399,6 @@ class Agent:
             test_mode: Enable testing mode with mocked responses
         """
         # Validate inputs before initialization
-        if not isinstance(model_name, str):
-            raise ValueError("model_name must be string")
-        if not isinstance(max_tokens, int) or max_tokens <= 0:
-            raise ValueError("max_tokens must be a positive integer")
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
