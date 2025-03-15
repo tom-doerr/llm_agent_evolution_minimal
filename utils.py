@@ -465,9 +465,6 @@ class Agent:
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
-        
-        # Initialize context instructions (not stored in regular memory)
-        self._add_core_context_instructions()
 
     def _add_core_context_instructions(self) -> None:
         """Add required context instructions that should never appear in memory"""
@@ -727,12 +724,12 @@ You can use multiple actions in a single completion but must follow the XML sche
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
-    <message>Successfully processed request</message>
+    <respond>Successfully processed request</respond>
 </response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
     <shell>ls</shell>
-    <respond>plexsearch.log</respond>
+    <message>plexsearch.log</message>
 </response>'''
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
@@ -810,8 +807,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._memory = unique_memory
         
         # Apply mating cost only to self per main.py assertion
-        self.reward(-envs['base_env_manager'].mating_cost)
-        # other.reward(-envs['base_env_manager'].mating_cost)  # Disabled per main.py test
+        self.reward(-base_env_manager.mating_cost)
         
         # Remove duplicate memories using all fields
         seen = set()
