@@ -1043,6 +1043,7 @@ def create_agent(model: str = 'deepseek-chat',
       - pro/gemini-pro: openrouter/google/gemini-2.0-pro
     - Meta:
       - llama-3/llama3: openrouter/meta-llama/llama-3-70b-instruct
+      - llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
     - OpenAI:
       - gpt-3.5: openrouter/openai/gpt-3.5-turbo
       - gpt-4: openrouter/openai/gpt-4
