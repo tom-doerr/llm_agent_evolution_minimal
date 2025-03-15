@@ -636,7 +636,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        new_test_mode = self._test_mode and other._test_mode
+        # New agent only in test mode if both parents are in test mode
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -940,9 +941,11 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'a_env'
+    'run_inference'
 ]
 
-# Explicitly export a_env function through envs dict
-envs['a_env'] = a_env
+# Environment configurations
+envs = {
+    'a_env': a_env,
+    'base_env': SimpleNamespace(description="Base environment configuration")
+}
