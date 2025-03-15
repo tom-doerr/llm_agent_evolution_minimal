@@ -8,7 +8,7 @@ Code Quality Improvements & Fixes:
 7. Fixed XML tag validation logic
 8. Added proper test_mode initialization in Agent class
 9. Enhanced MemoryDiff validation checks
-10. Fixed model name mapping in create_agent()
+10. Fixed model name mapping in create_agent() and test_mode handling
 11. Improved XML response validation
 12. Fixed test_mode propagation in mate()
 13. Added missing parse_xml_element to exports

@@ -362,7 +362,6 @@ class Agent:
         self.model_name = model_name
         self.max_tokens = int(max_tokens)
         self._test_mode = bool(test_mode)
-        self._test_mode = test_mode
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -613,7 +612,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=bool(self._test_mode and other._test_mode)
+            test_mode=self._test_mode and other._test_mode
         )
         
         # Combine memories from both parents
@@ -902,7 +901,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50,
 # Control exported symbols for from utils import *
 __all__ = [
     'Action',
-    'Agent',
+    'Agent', 
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
@@ -913,5 +912,6 @@ __all__ = [
     'parse_xml_element',
     'parse_xml_to_dict',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'parse_xml_element'  # Was missing from exports
 ]
