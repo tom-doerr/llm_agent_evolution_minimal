@@ -615,7 +615,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode or other._test_mode
+            test_mode=self._test_mode and other._test_mode
         )
         
         # Combine memories from both parents
@@ -868,9 +868,9 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro', 
+        'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-001',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
@@ -898,14 +898,14 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 
 # Ensure __all__ is after all definitions
 __all__ = [
-    'create_agent',
-    'run_inference', 
-    'extract_xml',
-    'process_observation',
-    'MemoryItem',
-    'MemoryDiff',
-    'Action',
-    'DiffType',
     'Agent',
-    'parse_xml_to_dict'
+    'Action',
+    'create_agent',
+    'DiffType',
+    'extract_xml',
+    'MemoryDiff',
+    'MemoryItem', 
+    'parse_xml_to_dict',
+    'process_observation',
+    'run_inference'
 ]
