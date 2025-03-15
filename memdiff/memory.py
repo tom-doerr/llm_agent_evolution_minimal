@@ -20,12 +20,7 @@ class Action:
     name: str
     params: Dict[str, str]
 
-def process_observation(
-    current_memory: str, 
-    observation: str,
-    model: str = "deepseek/deepseek-reasoner"
-) -> Tuple[List[MemoryDiff], Optional[Action], str]:
-    # Validate inputs
+def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
     if not isinstance(current_memory, str):
         raise ValueError("current_memory must be a string")
     if not isinstance(observation, str):
@@ -33,8 +28,8 @@ def process_observation(
     if not isinstance(model, str):
         raise ValueError("model must be a string")
 
-    # Prepare the prompt for the AI with explicit formatting instructions
-    prompt = f"""Current memory state:
+def _prepare_prompt(current_memory: str, observation: str) -> str:
+    return f"""Current memory state:
 {current_memory}
 
 New observation:
@@ -79,7 +74,9 @@ Examples:
   </memory_diff>
 </response>"""
 
-    # Get completion from LiteLLM
+def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
+    xml_content = ""
+    reasoning_content = ""
     try:
         response = litellm.completion(
             model=model,
@@ -87,9 +84,6 @@ Examples:
             stream=True
         )
 
-        # Process streaming response
-        xml_content = ""
-        reasoning_content = ""
         for chunk in response:
             try:
                 if chunk.choices and chunk.choices[0].delta:
@@ -103,19 +97,12 @@ Examples:
                 continue
     except Exception as e:
         raise ValueError(f"Error during litellm completion: {e}") from e
+    return xml_content, reasoning_content
 
-    # Parse XML response
+def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
     memory_diffs = []
-    action = None
-    
-    # Validate we got valid XML content
-    if not xml_content.strip().startswith("<response>"):
-        raise ValueError("Invalid XML response format - missing root <response> tag")
-        
-    # Parse memory diffs
     diff_sections = re.findall(r'<memory_diff>(.*?)</memory_diff>', xml_content, re.DOTALL)
     for section in diff_sections:
-        # Find all file diffs in the section
         file_diffs = re.finditer(
             r'<file_path>(.*?)</file_path>\s*<search>(.*?)</search>\s*<replace>(.*?)</replace>',
             section,
@@ -128,8 +115,9 @@ Examples:
             memory_diffs.append(
                 MemoryDiff(file_path=file_path, search=search, replace=replace)
             )
-            
-    # Parse action
+    return memory_diffs
+
+def _parse_action(xml_content: str) -> Optional[Action]:
     action_match = re.search(
         r'<action name="([^"]+)">(.*?)</action>',
         xml_content,
@@ -138,7 +126,6 @@ Examples:
     if action_match:
         action_name = action_match.group(1)
         params = {}
-        # Parse params
         param_matches = re.findall(
             r'<([^>]+)>(.*?)</\1>',
             action_match.group(2),
@@ -146,6 +133,22 @@ Examples:
         )
         for param_name, param_value in param_matches:
             params[param_name.strip()] = param_value.strip()
-        action = Action(name=action_name, params=params)
+        return Action(name=action_name, params=params)
+    return None
+
+def process_observation(
+    current_memory: str, 
+    observation: str,
+    model: str = "deepseek/deepseek-reasoner"
+) -> Tuple[List[MemoryDiff], Optional[Action], str]:
+    _validate_inputs(current_memory, observation, model)
+    prompt = _prepare_prompt(current_memory, observation)
+    xml_content, reasoning_content = _get_litellm_response(model, prompt)
+
+    if not xml_content.strip().startswith("<response>"):
+        raise ValueError("Invalid XML response format - missing root <response> tag")
+
+    memory_diffs = _parse_memory_diffs(xml_content)
+    action = _parse_action(xml_content)
 
     return memory_diffs, action, reasoning_content
