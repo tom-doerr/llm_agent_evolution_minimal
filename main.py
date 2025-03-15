@@ -20,8 +20,9 @@ from utils import extract_xml
 extracted_xml_data = extract_xml(response)
 print("extracted_xml_data:", extracted_xml_data)
 
-# make flash default
-agent = create_agent(model='flash', max_tokens=50)
+# MODEL = 'flash'
+MODEL = 'openrouter/deepseek/deepseek-chat'
+agent = create_agent(model=MODEL, max_tokens=50)
 memory = agent.memory
 print("memory:", memory)
 context = agent.context
@@ -36,19 +37,20 @@ assert 'You can edit your memory using the following XML action:' not in memory
 print_datetime()
 output = agent('please respond with the string abc')
 print("output:", output)
-last_response = agent.last_response
-assert '<remember>' in last_response
-assert '<search>' in last_response
-assert '</search>' in last_response
-assert '<replace>' in last_response
-assert '</replace>' in last_response
-assert '</remember>' in last_response
 assert 'abc' in output
 
 ouput = agent('my number is 132, please remember it')
 print("ouput:", ouput)
+last_completion = agent.last_completion
+print("last_completion:", last_completion)
 memory = agent.memory
 print("memory:", memory)
+assert '<remember>' in last_completion
+assert '<search>' in last_completion
+assert '</search>' in last_completion
+assert '<replace>' in last_completion
+assert '</replace>' in last_completion
+assert '</remember>' in last_completion
 assert '132' in memory
 
 net_worth = agent.get_net_worth()
@@ -108,8 +110,8 @@ with open('test.txt', 'r') as f:
 assert 'abcd' not in content
 
 
-agent_a = create_agent(model='flash', max_tokens=50)
-agent_b = create_agent(model='flash', max_tokens=50)
+agent_a = create_agent(model=MODEL, max_tokens=50)
+agent_b = create_agent(model=MODEL, max_tokens=50)
 output_a = agent_a('please remember my secret number 321!')
 print("output_a:", output_a)
 last_completion_a = agent_a.last_completion
