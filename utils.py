@@ -526,10 +526,10 @@ def process_observation(
             return [], None
         
         try:
-        _validate_xml_response(response)
-        diffs = _parse_memory_diffs(response)
-        action = _parse_action(response)
-        return diffs, action
+            _validate_xml_response(response)
+            diffs = _parse_memory_diffs(response)
+            action = _parse_action(response)
+            return diffs, action
     except ET.ParseError as e:
         print(f"XML parsing error: {str(e)}")
         return [], None
