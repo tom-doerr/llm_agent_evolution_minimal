@@ -51,3 +51,7 @@ Code Quality Improvements & Fixes:
 48. Added proper test_mode handling in agent creation
 49. Fixed XML response validation edge cases
 50. Improved MemoryDiff hash and equality consistency
+51. Fixed __all__ exports to include parse_xml_to_dict
+52. Corrected deepseek-reasoner OpenRouter model path
+53. Removed duplicate entries from __all__ exports
+54. Fixed test_mode propagation in mate() method
