@@ -621,20 +621,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not xml_content:
             return ""
             
-        # Enhanced command validation
-        if any(c in xml_content for c in (';', '&', '|', '$', '`', '>', '<', '*')):
-            return "<message>Error: Dangerous characters detected</message>"
-            
-        # Security validation - check for prohibited patterns
-        prohibited_patterns = [
-            r'(?:script|http|ftp|&\w+;|//)',  # Basic web protocols
-            r'(?:%\w+;)',  # URL encoding attempts
-            r'(?:\\x[0-9a-fA-F]{2})'  # Hex escapes
-        ]
-        
-        if any(re.search(pattern, xml_content, re.IGNORECASE) for pattern in prohibited_patterns):
-            return "<message>Error: Potentially dangerous content detected</message>"
-            
         try:
             root = ET.fromstring(xml_content)
         except ET.ParseError as e:
@@ -727,8 +713,6 @@ You can use multiple actions in a single completion but must follow the XML sche
                 output=raw_response,  # Store original XML response
                 type="interaction"
             ))
-            # Store in completions list before any processing
-            self.completions.append(raw_response)
             # Store raw response and increment completion count
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
