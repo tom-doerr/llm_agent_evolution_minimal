@@ -692,7 +692,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent for testing flexibility
         new_test_mode = bool(self._test_mode or other._test_mode)
-        from . import create_agent  # Add missing import
+        from utils import create_agent  # Absolute import for reliability
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -1048,9 +1048,6 @@ __all__ = [
     
     # XML handling
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
-    
-    # Utilities
-    'print_datetime'
     
     # Utilities
     'print_datetime'
