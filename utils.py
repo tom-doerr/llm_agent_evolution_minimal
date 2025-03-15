@@ -60,7 +60,6 @@ class MemoryDiff:
             (self.old_value or None) == (other.old_value or None) and
             (self.new_value or None) == (other.new_value or None)
         )
-        )
 
     @staticmethod
     def _normalize_value(value: Any) -> Any:
