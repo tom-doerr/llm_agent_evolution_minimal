@@ -18,10 +18,10 @@ args = parser.parse_args()
 
 current_memory = "<current_state></current_state>"
 
-diffs, action = process_observation(current_memory, args.observation, model=args.model)
+diffs, action, reasoning = process_observation(current_memory, args.observation, model=args.model)
 
 print("[bold blue]Reasoning:[/bold blue]")
-# TODO: Capture and print reasoning from the model
+print(reasoning)
 
 print("\n[bold blue]Memory Diffs:[/bold blue]")
 print("Memory Diffs:")

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import re
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 import litellm
 
 class DiffType(Enum):
@@ -24,7 +24,7 @@ def process_observation(
     current_memory: str, 
     observation: str,
     model: str = "deepseek/deepseek-reasoner"
-) -> tuple[List[MemoryDiff], Optional[Action]]:
+) -> Tuple[List[MemoryDiff], Optional[Action], str]:
     # Validate inputs
     if not isinstance(current_memory, str):
         raise ValueError("current_memory must be a string")
@@ -89,10 +89,15 @@ Examples:
 
         # Process streaming response
         xml_content = ""
+        reasoning_content = ""
         for chunk in response:
             try:
-                if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
-                    xml_content += chunk.choices[0].delta.content
+                if chunk.choices and chunk.choices[0].delta:
+                    delta = chunk.choices[0].delta
+                    if hasattr(delta, 'content') and delta.content:
+                        xml_content += delta.content
+                    if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                        reasoning_content += delta.reasoning_content
             except Exception as e:
                 print(f"Error processing chunk: {e}")
                 continue
@@ -143,4 +148,4 @@ Examples:
             params[param_name.strip()] = param_value.strip()
         action = Action(name=action_name, params=params)
 
-    return memory_diffs, action
+    return memory_diffs, action, reasoning_content
