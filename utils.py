@@ -357,7 +357,8 @@ class MemoryItem:
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command)
+                self.command == other.command and
+                self.type == other.type)
 
     def __hash__(self) -> int:
         return hash((
@@ -970,11 +971,17 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
+    Args:
+        model: Model identifier string (see supported models below)
+        max_tokens: Maximum number of tokens for responses
+        load: Path to load agent state from
+        test_mode: Enable testing mode (skips real LLM calls)
+
     Supported models (via OpenRouter):
     - openrouter/deepseek/deepseek-chat (default)
     - openrouter/deepseek/deepseek-coder-33b-instruct
     - openrouter/google/gemini-2.0-flash-001
-    - openrouter/google/gemini-2.0-pro
+    - openrouter/google/gemini-2.0-pro 
     - openrouter/meta-llama/llama-3-70b-instruct
     - openrouter/openai/gpt-3.5-turbo
     - openrouter/openai/gpt-4
@@ -987,9 +994,6 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
     - deepseek-coder -> openrouter/deepseek/deepseek-coder-33b-instruct
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
-        max_tokens: Maximum number of tokens for responses
-        load: Path to load agent state from
-        test_mode: Enable testing mode (skips real LLM calls)
         
     Returns:
         Initialized Agent instance
@@ -1046,7 +1050,7 @@ __all__ = [
     # Processing functions
     'create_agent', 'process_observation', 'run_inference',
     
-    # XML handling
+    # XML handling 
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Utilities
