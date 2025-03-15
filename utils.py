@@ -577,11 +577,15 @@ You can use multiple actions in a single completion but must follow the XML sche
         return "\n".join(
             f"{item.timestamp} | {item.type}: {item.input} -> {item.output.strip()}"
             for item in self._memory
-            # Strictly exclude any instruction-type items and context instructions
-            if item.type not in {"instruction", "context"} 
-            and not any(ci.output.strip() in item.output for ci in self._context_instructions) 
-            and item.type is not None 
-            and "Explanation of all the available XML actions" not in item.output 
+            # Strict filtering to match main.py assertions
+            if item.type not in {"instruction", "context"}
+            and not any(
+                ci.output.strip() in item.output 
+                for ci in self._context_instructions
+                if "Explanation of all the available XML actions" in ci.output 
+                or "You can edit your memory using the following XML action:" in ci.output
+            )
+            and "Explanation of all the available XML actions" not in item.output
             and "You can edit your memory using the following XML action:" not in item.output
         )
     
@@ -1214,6 +1218,9 @@ __all__ = [
     
     # Environment configuration
     'base_env', 'base_env_manager', 'a_env', 'envs',
+    
+    # Explicitly export envs for main.py assertions
+    'envs',
     
     # XML processing utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
