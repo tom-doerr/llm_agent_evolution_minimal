@@ -351,6 +351,7 @@ class Agent:
             memory_item = MemoryItem(
                 input=truncate_string(input_text),
                 output=truncate_string(result)
+            )
             self.memory.append(memory_item)
             return result
         except Exception as e:
