@@ -75,7 +75,8 @@ class Action:
     def __eq__(self, other: object) -> bool:
         return (isinstance(other, Action) and 
                self.type == other.type and 
-               (self.params or {}) == (other.params or {}))
+               # Compare params as unordered sets
+               set((self.params or {}).items()) == set((other.params or {}).items()))
 
     def __hash__(self) -> int:
         return hash((self.type, tuple(sorted((self.params or {}).items()))))
@@ -719,6 +720,14 @@ You can use multiple actions in a single completion but must follow the XML sche
                 return '''<response>
     <shell>ls</shell>
     <message>plexsearch.log</message>
+</response>'''
+            if 'remove the text' in input_text.lower():
+                return '''<response>
+    <edit>
+        <search>abcd</search>
+        <replace></replace>
+    </edit>
+    <message>abcd removed</message>
 </response>''' 
             if 'remember it' in input_text.lower():
                 return '''<response>
