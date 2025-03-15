@@ -827,7 +827,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek': 'deepseek/deepseek-reasoner',
+        'deepseek': 'openrouter/deepseek/deepseek-chat',
     }
     model_name = model_mapping.get(model.lower(), model)
     agent = Agent(model_name)
