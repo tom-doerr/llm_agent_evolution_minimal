@@ -400,7 +400,8 @@ class MemoryItem:
     timestamp: Optional[str] = field(default=None)
     file_path: Optional[str] = field(default=None, metadata={"description": "Path to file for edit operations"})
     command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
-    
+
+    def __post_init__(self) -> None:
         """Validate and normalize MemoryItem fields"""
         object.__setattr__(self, 'input', str(self.input))
         object.__setattr__(self, 'output', str(self.output))
