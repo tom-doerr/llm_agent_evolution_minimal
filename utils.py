@@ -937,10 +937,10 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 
     Args:
         model: Model to use - Valid options:
-               - 'deepseek-chat' (openrouter/deepseek/deepseek-chat)
+               - 'deepseek-chat' (alias for openrouter/deepseek/deepseek-chat)
                - 'deepseek-coder' (openrouter/deepseek/deepseek-coder-33b-instruct)
-               - 'flash' (openrouter/google/gemini-2.0-flash-001)
-               - 'pro' (openrouter/google/gemini-2.0-pro)
+               - 'flash' or 'gemini-flash' (openrouter/google/gemini-2.0-flash-001)
+               - 'pro' or 'gemini-pro' (openrouter/google/gemini-2.0-pro)
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)

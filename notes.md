@@ -30,7 +30,9 @@ Code Quality Improvements & Fixes:
 25. Added proper command sanitization using regex patterns
 26. Fixed model default values to use full OpenRouter paths
 25. Removed redundant __all__ exports
-26. Updated create_agent() docstring with accurate model names
+26. Updated create_agent() docstring with accurate model names and aliases
+27. Added missing model aliases to create_agent() documentation
+28. Improved model option clarity in docstring
 24. Added proper input validation for all public functions
 25. Fixed __all__ exports to remove duplicates
 26. Cleaned up environment configuration setup
