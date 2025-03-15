@@ -340,8 +340,8 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[An
             "1. Start with a letter or underscore\n"
             "2. Contain only a-z, 0-9, -, _, or .\n"
             "3. Be 1-255 characters\n"
-            "4. No spaces/colons\n"
-            "5. Not start with 'xml'\n"
+            "4. No spaces or colons\n"
+            "5. Not start with 'xml' (case-insensitive)\n"
             "6. Not end with hyphen"
         )
     if len(element) == 0:
@@ -400,13 +400,13 @@ class MemoryItem:
         if not isinstance(other, MemoryItem):
             return False
         return (
-            (self._normalize_value(self.input) == self._normalize_value(other.input)) and
-            (self._normalize_value(self.output) == self._normalize_value(other.output)) and
-            (self.type == other.type) and
-            (self.amount == other.amount) and
-            (self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp)) and
-            (self._normalize_value(self.file_path) == self._normalize_value(other.file_path)) and
-            (self._normalize_value(self.command) == self._normalize_value(other.command))
+            self._normalize_value(self.input) == self._normalize_value(other.input) and
+            self._normalize_value(self.output) == self._normalize_value(other.output) and
+            self.type == other.type and
+            self.amount == other.amount and
+            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
+            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
+            self._normalize_value(self.command) == self._normalize_value(other.command)
         )
 
     @staticmethod
@@ -731,7 +731,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1093,7 +1093,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env_manager', 'a_env', 'base_env_manager',
+    'envs', 'base_env_manager', 'a_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
