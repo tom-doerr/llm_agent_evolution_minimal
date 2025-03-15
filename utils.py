@@ -441,8 +441,8 @@ class MemoryItem:
             self.type == other.type and
             self.amount == other.amount and
             self._normalize_value(self.timestamp) == other._normalize_value(other.timestamp) and
-            (self.file_path or '') == (other.file_path or '') and
-            (self.command or '') == (other.command or '')
+            (self.file_path or None) == (other.file_path or None) and
+            (self.command or None) == (other.command or None)
         )
 
 class Agent:
@@ -480,6 +480,11 @@ class Agent:
 <recall> - Retrieve information from memory
 <request> - Ask for additional information
 <shell> - Execute approved shell commands (ls, date, pwd, wc)
+
+<edit>
+    <search>text to find</search>
+    <replace>replacement text</replace>
+</edit>
 
 XML Structure Requirements:
 1. Each action must be properly nested
@@ -1124,7 +1129,7 @@ def create_agent(
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',  # Alias
+        'deepseek/deepseek-chat': 'deepseek/deepseek-chat',  # Direct model name
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
