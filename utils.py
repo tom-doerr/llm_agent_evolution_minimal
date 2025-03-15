@@ -39,7 +39,8 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
         )
         
         if response and hasattr(response, 'choices') and response.choices:
-            return response.choices[0].message.content
+            if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
+                return response.choices[0].message.content
         return f"Inference result for: {input_string}"
     except ImportError:
         # Fallback if litellm is not installed
@@ -50,7 +51,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
 def extract_xml(xml_string: str) -> str:
     if not is_non_empty_string(xml_string):
         return ""
-        
+    
     # Try to find XML content between tags if it's embedded in other text
     try:
         # Look for content between first < and last >
@@ -59,8 +60,24 @@ def extract_xml(xml_string: str) -> str:
         
         if start_idx >= 0 and end_idx > start_idx:
             xml_content = xml_string[start_idx:end_idx+1]
-            root = ET.fromstring(xml_content)
-            return ET.tostring(root, encoding='unicode')
+            try:
+                root = ET.fromstring(xml_content)
+                return ET.tostring(root, encoding='unicode')
+            except ET.ParseError:
+                # Try to find a complete XML element
+                for tag in ['response', 'result', 'data', 'xml', 'root']:
+                    start_tag = f'<{tag}'
+                    end_tag = f'</{tag}>'
+                    start = xml_string.find(start_tag)
+                    end = xml_string.find(end_tag)
+                    if start >= 0 and end > start:
+                        try:
+                            element = xml_string[start:end + len(end_tag)]
+                            root = ET.fromstring(element)
+                            return ET.tostring(root, encoding='unicode')
+                        except ET.ParseError:
+                            continue
+                return ""
         else:
             # Try parsing the whole string as XML
             root = ET.fromstring(xml_string)
@@ -73,18 +90,47 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         return {}
     
     try:
+        # First try to extract valid XML if it's embedded in other text
+        extracted = extract_xml(xml_string)
+        if extracted:
+            xml_string = extracted
+            
         root = ET.fromstring(xml_string)
         result = {}
         
         for child in root:
-            result[child.tag] = child.text
+            # Handle nested elements
+            if len(child) > 0:
+                result[child.tag] = parse_xml_element(child)
+            else:
+                result[child.tag] = child.text
             
         return result
     except ET.ParseError:
         return {}
 
-def create_agent(model_type: str):
-    """Create an agent with the specified model type."""
+def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
+    if len(element) == 0:
+        return element.text or ""
+    
+    result = {}
+    for child in element:
+        if len(child) > 0:
+            result[child.tag] = parse_xml_element(child)
+        else:
+            result[child.tag] = child.text or ""
+    
+    return result
+
+class Agent:
+    def __init__(self, model_name: str):
+        self.model_name = model_name
+        self.memory = []
+    
+    def __str__(self) -> str:
+        return f"Agent with model: {self.model_name}"
+
+def create_agent(model_type: str) -> Agent:
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
@@ -96,9 +142,14 @@ def create_agent(model_type: str):
     
     try:
         import dspy
-        return dspy.LM(model_name)
+        lm = dspy.LM(model_name)
+        agent = Agent(model_name)
+        agent.lm = lm
+        return agent
     except ImportError:
-        # Fallback if dspy is not installed
-        return f"Agent with model: {model_name} (dspy not installed)"
+        # Return a dummy agent if dspy is not installed
+        return Agent(model_name)
     except Exception as e:
-        return f"Error creating agent: {str(e)}"
+        # Return a dummy agent with error info
+        agent = Agent(f"{model_name} (Error: {str(e)})")
+        return agent
