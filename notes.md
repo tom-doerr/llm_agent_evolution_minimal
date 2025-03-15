@@ -62,9 +62,9 @@ Code Quality Improvements & Fixes:
 13. Added parse_xml_element to __all__ exports
 14. Cleaned up create_agent docstring and default model documentation
 15. Removed redundant test_mode check in mate()
-12. Added missing parse_xml_to_dict to __all__ exports
-13. Completed memory item comparison in agent mating
-14. Enhanced XML validation in _handle_shell_commands()
+12. Fixed MemoryItem equality check to compare all fields including type and amount
+13. Removed duplicate parse_xml_element from __all__ exports
+14. Organized __all__ exports into logical groups for better import clarity
 4. Improved error handling for shell command execution
 5. Added missing test_mode initialization in Agent creation
 6. Fixed XML tag validation logic in parse_xml_element()
