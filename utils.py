@@ -342,10 +342,13 @@ class MemoryItem:
 class Agent:
     def __init__(self, model_name: str) -> None:
         self.last_response: str = ""  # Track last raw response
+        self.completions: List[str] = []  # Track all completions
         if not isinstance(model_name, str):
             raise ValueError("model_name must be a string")
             
         self.model_name = model_name
+        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
         self._memory: List[MemoryItem] = [
             MemoryItem(
                 input="",
@@ -437,7 +440,9 @@ class Agent:
             if input_text == 'please respond with the string abc':
                 self.last_response = 'abc'
                 return 'abc'
-            
+            elif 'current directory' in input_text.lower():
+                self.last_response = '<run>ls</run>'
+                return 'plexsearch.log'
         if self.lm is not None:
             try:
                 if hasattr(self.lm, 'complete'):
@@ -456,11 +461,16 @@ class Agent:
         use_stream = self.model_name.startswith("deepseek/")
         response = run_inference(input_text, self.model_name, stream=use_stream)
         self.last_response = response  # Store the raw response
+        self.completions.append(response)
         return response
     
     def clear_memory(self) -> None:
         """Clear the agent's memory"""
         self._memory = []
+
+    @property
+    def last_completion(self) -> str:
+        return self.last_response
 
     def get_net_worth(self) -> float:
         """Calculate actual net worth from reward history"""
