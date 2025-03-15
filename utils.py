@@ -79,15 +79,13 @@ def is_non_empty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
+    # Validate XML tag according to W3C standards
     return (is_non_empty_string(tag) 
-            and tag[0].isalpha()
-            and tag[-1] != '-'
+            and re.match(r'^[a-zA-Z_][a-zA-Z0-9_.-]*$', tag) is not None
             and 1 <= len(tag) <= 255
-            and all(c.isalnum() or c in ('-', '_', '.') for c in tag[1:])
-            and not tag.lower().startswith('xml')
+            and not tag.lower().startswith(('xml', 'xsl'))
             and ':' not in tag
-            and ' ' not in tag
-            and not any(c.isspace() for c in tag))
+            and not tag.endswith('-'))
 
 def is_valid_model_name(model: str) -> bool:
     """Validate model name format"""
@@ -357,7 +355,8 @@ class MemoryItem:
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command)
+                self.command == other.command and
+                self.type == other.type)
 
     def __hash__(self) -> int:
         return hash((
@@ -981,13 +980,22 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
         test_mode: Enable testing mode (skips real LLM calls)
 
     Supported models (via OpenRouter):
-    - openrouter/deepseek/deepseek-chat (default)
-    - openrouter/deepseek/deepseek-coder-33b-instruct
-    - openrouter/google/gemini-2.0-flash-001
-    - openrouter/google/gemini-2.0-pro 
-    - openrouter/meta-llama/llama-3-70b-instruct
-    - openrouter/openai/gpt-3.5-turbo
-    - openrouter/openai/gpt-4
+    1. DeepSeek:
+       - openrouter/deepseek/deepseek-chat (default)
+       - openrouter/deepseek/deepseek-coder-33b-instruct
+    
+    2. Google:
+       - openrouter/google/gemini-2.0-flash-001
+       - openrouter/google/gemini-2.0-pro
+    
+    3. Meta:
+       - openrouter/meta-llama/llama-3-70b-instruct
+    
+    4. OpenAI:
+       - openrouter/openai/gpt-3.5-turbo
+       - openrouter/openai/gpt-4
+    
+    Required: OPENROUTER_API_KEY environment variable
     
     Model aliases:
     - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
@@ -1063,8 +1071,14 @@ __all__ = [
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Utilities
-    'print_datetime'
+    'print_datetime',
+    
+    # Environment config
+    'base_env_manager', 'envs'
 ]
+
+# Remove duplicates and ensure all required exports
+__all__ = list(dict.fromkeys(__all__))
 
 # Remove duplicate parse_xml_element and add missing process_observation
 __all__ = [
