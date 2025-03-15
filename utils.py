@@ -80,10 +80,7 @@ class Action:
                (other.params if other.params is not None else {}))
 
     def __hash__(self) -> int:
-        return hash((self.type, frozenset((self.params or {}).items())))
-
-    def __hash__(self) -> int:
-        return hash((self.type, tuple(sorted(self.params.items())) if self.params else None))
+        return hash((self.type, tuple(sorted((self.params or {}).items())))
 
 
 
@@ -548,12 +545,8 @@ You can use multiple actions in a single completion but must follow the XML sche
 
     @property
     def context(self) -> str:
-        context_str = "\n".join(item.output for item in self._context_instructions)
-        if 'Explanation of all the available XML actions' not in context_str:
-            context_str = "Explanation of all the available XML actions:\n" + context_str
-        if 'Examples of how to use the XML actions:' not in context_str:
-            context_str += "\nExamples of how to use the XML actions:"
-        return context_str
+        """Build context string from core instructions"""
+        return "\n".join(item.output for item in self._context_instructions)
 
     @property
     def memory(self) -> str:
@@ -1033,7 +1026,6 @@ def create_agent(model: str = 'deepseek-chat',
             - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
             
         Requires OPENROUTER_API_KEY environment variable for OpenRouter models.
-        max_tokens: Maximum response length in tokens
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -1106,7 +1098,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem', 'create_agent',
     
     # Environment configuration
-    'base_env', 'envs', 'base_env_manager', 'a_env',
+    'base_env', 'base_env_manager', 'a_env',
     
     # XML processing utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
