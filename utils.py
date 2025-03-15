@@ -54,7 +54,9 @@ class MemoryDiff:
     def __eq__(self, other: object) -> bool:
         return (isinstance(other, MemoryDiff) and 
                 self.type == other.type and 
-                self.key == other.key)
+                self.key == other.key and
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -652,8 +654,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # New agent only in test mode if both parents are in test mode
-        new_test_mode = self._test_mode and other._test_mode
+        # New agent inherits test mode only if both parents are in test mode
+        new_test_mode = self._test_mode and other._test_mode  # Logical AND ensures strict test mode inheritance
         if not isinstance(new_test_mode, bool):
             new_test_mode = False
         new_agent = create_agent(
@@ -942,13 +944,12 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         
     # Model name mapping with full OpenRouter paths
     model_mapping = {
-        'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',  # Primary deepseek chat model
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
-        'default': 'openrouter/deepseek/deepseek-chat',
+        'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
-        'gemini-pro': 'openrouter/google/gemini-2.0-pro'
+        'gemini-pro': 'openrouter/google/gemini-2.0-pro',
+        'pro': 'openrouter/google/gemini-2.0-pro'
     }
     # Get mapped model name
     model_name = model_mapping.get(model, model)  # Case-sensitive match
@@ -977,8 +978,8 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 # Control exported symbols for from utils import *
 __all__ = [
     'Action',
-    'Agent', 
-    'DiffType',
+    'Agent',
+    'DiffType', 
     'MemoryDiff',
     'MemoryItem',
     'a_env',
