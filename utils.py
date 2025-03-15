@@ -40,9 +40,22 @@ __all__ = [
     'MemoryItem',
     'Agent',
     'create_agent',
-    'MemoryDiff',  # Added missing class
-    'Action',      # Added missing class
-    'DiffType'     # Added missing enum
+    'MemoryDiff',
+    'Action',
+    'DiffType',
+    'process_observation',  # Added missing function
+    '_validate_inputs',     # Added missing function
+    '_create_prompt_header',# Added missing function
+    '_create_prompt_body',  # Added missing function
+    '_create_prompt_examples', # Added missing function
+    '_prepare_prompt',      # Added missing function
+    '_process_chunk',       # Added missing function
+    '_get_litellm_response',# Added missing function
+    '_extract_file_diffs',  # Added missing function
+    '_parse_memory_diffs',  # Added missing function
+    '_parse_action_params', # Added missing function
+    '_parse_action',        # Added missing function
+    '_validate_xml_response' # Added missing function
 ]
 
 def is_non_empty_string(value: Any) -> bool:
@@ -114,20 +127,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         ValueError: If input_string is invalid
         ImportError: If required dependencies are missing
     """
-    """Run inference using the specified model.
-    
-    Args:
-        input_string: Input text to process
-        model: Model to use for inference
-        stream: Whether to use streaming mode
-        
-    Returns:
-        str: Inference result as string
-        
-    Raises:
-        ValueError: If input_string is invalid
-        ImportError: If required dependencies are missing
-    """
     if not is_non_empty_string(input_string):
         return ""
         
@@ -190,15 +189,6 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
         
     Raises:
         ValueError: If xml_string is not a string
-    """
-    """Extract valid XML content from a string that might contain other text.
-    
-    Args:
-        xml_string: Input string potentially containing XML
-        max_attempts: Maximum number of parsing attempts
-        
-    Returns:
-        Extracted XML string or empty string if no valid XML found
     """
     if not is_non_empty_string(xml_string):
         return ""
