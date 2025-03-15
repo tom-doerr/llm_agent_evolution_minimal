@@ -46,8 +46,8 @@ class MemoryDiff:
             return False
         return (self.type == other.type and 
                 self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                str(self.old_value) == str(other.old_value) and
+                str(self.new_value) == str(other.new_value))
 
 @dataclass
 class Action:
@@ -495,7 +495,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         cmd = command_elem.text.strip().split()[0]
         if cmd not in self.allowed_shell_commands:
-            return f"Command {cmd} not allowed"
+            return f"<message>Error: Command {cmd} not allowed</message>"
             
         # Execute validated command
         import subprocess
