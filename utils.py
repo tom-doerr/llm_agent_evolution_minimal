@@ -867,12 +867,13 @@ __all__ = [
         
     # Enum
     'DiffType',
-        
+    
     # Core classes
     'Agent',
     
-    # Enum
-    'DiffType',
+    # Environment configs
+    'base_env_manager',
+    'envs',
     
     # Environment configs
     'base_env_manager',
