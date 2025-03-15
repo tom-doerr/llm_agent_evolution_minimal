@@ -42,9 +42,9 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, MemoryDiff) and \
-            self.type == other.type and \
-            self.key == other.key
+        if not isinstance(other, MemoryDiff):
+            return False
+        return self.type == other.type and self.key == other.key
 
 @dataclass
 class Action:
@@ -916,7 +916,7 @@ __all__ = [
     'MemoryDiff',
     'MemoryItem',
     'parse_xml_to_dict',
-    'parse_xml_to_dict',
+    'parse_xml_element',
     'process_observation',
     'run_inference'
 ]
