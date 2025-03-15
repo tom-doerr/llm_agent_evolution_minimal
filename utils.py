@@ -20,7 +20,10 @@ envs = {
     'base_env': SimpleNamespace(description="Base environment configuration")
 }
 """Collection of available environments with their reward functions and configurations.
-Includes both a_env (counting 'a's) and base_env (evolution settings)"""
+Includes:
+- a_env: Counts 'a' characters in input
+- base_env: Base configuration namespace
+Evolution settings are managed separately by base_env_manager"""
 
 class DiffType(Enum):
     ADD = auto()
@@ -991,9 +994,10 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff', 
+    'MemoryDiff',
     'MemoryItem',
-    'base_env_manager',
+    'a_env',
+    'base_env_manager', 
     'create_agent',
     'envs',
     'extract_xml',
