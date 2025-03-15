@@ -21,7 +21,8 @@ envs = {
     'base_env': SimpleNamespace(
         description="Base environment configuration",
         mating_cost=50
-    )
+    ),
+    'base_env_manager': base_env_manager
 }
 
 class DiffType(Enum):
@@ -390,8 +391,7 @@ class MemoryItem:
             self.amount,
             self.timestamp,
             self.file_path,
-            self.command,
-            self.type
+            self.command
         ))
 
     @staticmethod
@@ -1088,7 +1088,7 @@ __all__ = [
     'create_agent', 'process_observation', 'run_inference',
     
     # XML handling utilities 
-    'extract_xml', 'parse_xml_to_dict',
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Helper functions
     'print_datetime'
