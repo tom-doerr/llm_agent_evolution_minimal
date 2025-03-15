@@ -732,6 +732,13 @@ You can use multiple actions in a single completion but must follow the XML sche
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
+
+            # Process shell commands and store output
+            shell_output = self._handle_shell_commands(raw_response)
+            if shell_output:
+                self.completions.append(shell_output)
+                self.total_num_completions += 1
+
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
