@@ -803,7 +803,8 @@ def _parse_action(xml_content: str) -> Optional[Action]:
     if action_elem is not None:
         return Action(
             type=action_elem.get('type', ''),
-            params={child.tag: child.text or '' for child in action_elem}
+            params={child.tag: (child.text or '').strip()  # Added strip()
+                   for child in action_elem if child.text is not None}  # Filter None texts
         )
     return None
 
@@ -909,8 +910,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder',
         'default': 'openrouter/deepseek/deepseek-chat',
-        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'  # Explicit full path
+        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
     
