@@ -377,13 +377,15 @@ class MemoryItem:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
             return False
-        return (self.type == other.type and
-                self._normalize_value(self.input) == self._normalize_value(other.input) and
-                self._normalize_value(self.output) == self._normalize_value(other.output) and
-                self.amount == other.amount and
-                self.timestamp == other.timestamp and
-                self.file_path == other.file_path and
-                self.command == other.command)
+        return (
+            self._normalize_value(self.input) == self._normalize_value(other.input) and
+            self._normalize_value(self.output) == self._normalize_value(other.output) and
+            self.type == other.type and
+            self.amount == other.amount and
+            self.timestamp == other.timestamp and
+            self.file_path == other.file_path and
+            self.command == other.command
+        )
 
     def __hash__(self) -> int:
         return hash((
@@ -1104,6 +1106,21 @@ __all__ = [
     'print_datetime'
 ]
 
-# Ensure all exported symbols are defined
-__all__ = [name for name in __all__ if globals().get(name) is not None]
+# Core exports
+__all__ = [
+    # Core agent components
+    'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
+    
+    # Environment configuration
+    'base_env_manager', 'envs', 'a_env',
+    
+    # Core processing functions
+    'create_agent', 'process_observation', 'run_inference',
+    
+    # XML handling utilities
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
+    
+    # Helper functions
+    'print_datetime'
+]
 
