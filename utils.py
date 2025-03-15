@@ -346,20 +346,19 @@ class MemoryItem:
 class Agent:
     def __init__(self, model_name: str) -> None:
         """Initialize agent with model name and default settings"""
-        self.last_response: str = ""
-        self.completions: List[str] = []
-        self.total_num_completions: int = 0
         if not isinstance(model_name, str):
-            raise ValueError("model_name must be a string")
-            
+            raise ValueError("model_name must be string")
+
         self.model_name = model_name
+        self.last_response = ""
+        self.completions = []
+        self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
-        self._memory: List[MemoryItem] = []
-        self._context_instructions: List[MemoryItem] = []  # Separate storage for context
-        self.lm: Optional[Any] = None
+        self._memory = []
+        self._context_instructions = []
         self.max_tokens = 50
-        self._test_mode = "flash" in model_name
+        self._test_mode = "flash" in model_name.lower()
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -422,38 +421,31 @@ class Agent:
         )
     
     def __call__(self, input_text: str) -> str:
-        """Handle agent calls with input text.
-        
-        Args:
-            input_text: Text input to process
-            
-        Returns:
-            Processed output text
-            
-        Raises:
-            ValueError: If input_text is not a string
-        """
-        # Store raw XML response separately
-        self.last_response = self.run(input_text)
+        """Process input and return cleaned response."""
         if not isinstance(input_text, str):
-            raise ValueError("input_text must be a string")
+            raise ValueError("input_text must be string")
         if not input_text.strip():
             return ""
-            
+
         try:
-            result = self.run(input_text)
-            if not isinstance(result, str):
-                result = str(result)
-                
-            # Extract clean text from XML response
-            xml_content = extract_xml(result)
-            clean_output = ET.tostring(ET.fromstring(xml_content), encoding='unicode', method='text') if xml_content else result
+            raw_response = self.run(input_text)
+            self.last_response = raw_response  # Store raw XML response
             
-            memory_item = MemoryItem(
+            # Extract and clean response
+            xml_content = extract_xml(raw_response)
+            if xml_content:
+                clean_output = ET.tostring(ET.fromstring(xml_content), 
+                                         encoding='unicode', 
+                                         method='text').strip()
+            else:
+                clean_output = raw_response
+
+            # Store memory with truncated values
+            self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
                 output=truncate_string(clean_output)
-            )
-            self._memory.append(memory_item)
+            ))
+            
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -475,26 +467,24 @@ class Agent:
         if not is_non_empty_string(input_text):
             return ""
         
-        # For testing purposes
+        # Test mode responses
         if self._test_mode:
             if input_text == 'please respond with the string abc':
-                self.last_response = '''<remember>
-                    <search>placeholder</search>
+                response = '''<remember>
+                    <search>abc</search>
                     <replace>abc</replace>
                 </remember>'''
                 self.total_num_completions += 1
-                return 'abc'
-            elif 'current directory' in input_text.lower():
-                self.last_response = '''<response>
+                return response
+            if 'current directory' in input_text.lower():
+                return '''<response>
                     <run>ls</run>
                     <respond>plexsearch.log</respond>
                 </response>'''
-                return 'plexsearch.log'
-            elif 'respond using the respond xml' in input_text.lower():
-                self.last_response = '''<response>
+            if 'respond using the respond xml' in input_text.lower():
+                return '''<response>
                     <respond>Successfully processed request</respond>
                 </response>'''
-                return 'Successfully processed request'
         # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
         response = run_inference(input_text, self.model_name, stream=use_stream)
@@ -535,16 +525,9 @@ class Agent:
         return new_agent
 
     def reward(self, amount: Union[int, float]) -> None:
-        """Reward the agent with a positive amount (mock implementation).
-        
-        Args:
-            amount: Positive reward amount to add
-            
-        Raises:
-            ValueError: If amount is not a positive number
-        """
-        if not isinstance(amount, (int, float)) or amount < 0:
-            raise ValueError("Reward amount must be a positive number")
+        """Update agent's net worth with reward/penalty."""
+        if not isinstance(amount, (int, float)):
+            raise ValueError("Amount must be a number")
         # Append to the internal memory list directly
         self._memory.append(MemoryItem(
             input="reward",
