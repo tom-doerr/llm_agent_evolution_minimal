@@ -737,9 +737,9 @@ You can use multiple actions in a single completion but must follow the XML sche
             return ""
         
         # Test mode responses
-        # Always increment for any completion
-        self.total_num_completions += 1  
         if self._test_mode:
+            # Track test mode completions
+            self.total_num_completions += 1
             if input_text == 'please respond with the string abc':
                 return '''<response>
     <remember>
