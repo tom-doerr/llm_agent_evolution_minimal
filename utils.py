@@ -389,7 +389,7 @@ class Agent:
     def _add_core_context_instructions(self) -> None:
         """Add required context instructions that should never appear in memory"""
         core_instructions = [
-            ("Explanation of all the available XML actions. You can edit your memory using XML actions:", 
+            ("Explanation of all the available XML actions. You can edit your memory using the following XML action:", 
              "instruction", ""),
             ("""Available XML actions:
 <respond> - Send response to user  
@@ -431,7 +431,9 @@ Security Rules:
 4. Limit memory storage of sensitive data
 
 You can use multiple actions in a single completion but must follow the XML schema.""", 
-             "instruction", "XML Actions")
+             "instruction", "XML Actions"),
+            ("When you finish editing, present me with a list of options of how we could continue.", 
+             "instruction", "")
         ]
         
         for text, type_, input_ in core_instructions:
@@ -903,10 +905,11 @@ __all__ = [
     'process_observation',
     'MemoryItem',
     'MemoryDiff',
-    'Action',
+    'Action', 
     'DiffType',
     'Agent',
     'parse_xml_to_dict',
     'base_env_manager',
-    'envs'
+    'envs',
+    'parse_xml_element'
 ]
