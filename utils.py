@@ -668,7 +668,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # New agent inherits test mode only if both parents are in test mode
-        new_test_mode = self._test_mode and other._test_mode  # Logical AND ensures strict test mode inheritance
+        new_test_mode = bool(self._test_mode and other._test_mode)  # Logical AND ensures strict test mode inheritance
         if not isinstance(new_test_mode, bool):
             new_test_mode = False
         new_agent = create_agent(
@@ -968,7 +968,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     model_name = model_mapping.get(model, model)  # Case-sensitive match
     
     if not is_valid_model_name(model_name):
-        raise ValueError(f"Invalid model name: {model_name}")
+        raise ValueError(f"Invalid model name: {model_name}. Valid options are: {list(model_mapping.keys())}")
 
     agent = Agent(model_name, max_tokens=max_tokens, test_mode=bool(test_mode))
     
