@@ -781,8 +781,6 @@ __all__ = [
     'truncate_string',
     'run_inference',
     'extract_xml',
-    'parse_xml_to_dict',
-    'parse_xml_element',
     'print_datetime',
     'create_agent',
     'process_observation',
@@ -804,5 +802,8 @@ __all__ = [
     'parse_xml_element',
     
     # Observation processing
-    'process_observation'
+    'process_observation',
+    
+    # XML parsing
+    'extract_xml'
 ]
