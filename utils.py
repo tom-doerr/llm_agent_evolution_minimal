@@ -1,19 +1,10 @@
 import xml.etree.ElementTree as ET
 import datetime
 import os
-from typing import Any, Dict, List, Optional, Union, Tuple, TypeVar
-
-T = TypeVar('T')
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 def is_non_empty_string(value: Any) -> bool:
-    """Check if value is a non-empty string after stripping whitespace.
-    
-    Args:
-        value: Value to check
-        
-    Returns:
-        bool: True if non-empty string, False otherwise
-    """
+    """Check if value is a non-empty string after stripping whitespace."""
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
@@ -24,14 +15,7 @@ def is_valid_xml_tag(tag: str) -> bool:
     return tag[0].isalpha() and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
 
 def is_valid_model_name(model: str) -> bool:
-    """Check if model name is valid.
-    
-    Args:
-        model: Model name to validate
-        
-    Returns:
-        bool: True if valid model name, False otherwise
-    """
+    """Check if model name is valid (contains non-empty string with slash)."""
     return isinstance(model, str) and bool(model.strip()) and '/' in model
 
 def is_valid_xml(xml_string: str) -> bool:
@@ -45,21 +29,14 @@ def is_valid_xml(xml_string: str) -> bool:
         return False
 
 def safe_int_conversion(value: Any) -> Optional[int]:
-    """Safely convert value to integer.
-    
-    Args:
-        value: Value to convert
-        
-    Returns:
-        Optional[int]: Converted integer or None if conversion fails
-    """
+    """Safely convert value to integer or return None if conversion fails."""
     try:
         return int(value)
     except (ValueError, TypeError):
         return None
 
 def safe_float_conversion(value: Any) -> Optional[float]:
-    """Safely convert value to float."""
+    """Safely convert value to float or return None if conversion fails."""
     try:
         return float(value)
     except (ValueError, TypeError):
@@ -70,8 +47,11 @@ def is_valid_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 def truncate_string(value: Any, max_length: int = 100) -> str:
-    """Truncate string to specified length with ellipsis."""
-    if not isinstance(value, str):  # Handle non-string inputs gracefully
+    """Truncate string to specified length with ellipsis.
+    
+    Returns empty string for non-string inputs.
+    """
+    if not isinstance(value, str):
         return ""
     if len(value) <= max_length:
         return value
@@ -285,9 +265,9 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
     return result
 
 def print_datetime() -> None:
-    """Print the current date and time in a standardized format."""
+    """Print the current date and time in ISO format."""
     current_time = datetime.datetime.now()
-    print(f"Current date and time: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Current date and time: {current_time.isoformat(sep=' ', timespec='seconds')}")
 
 class Agent:
     def __init__(self, model_name: str) -> None:
