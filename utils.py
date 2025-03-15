@@ -355,8 +355,8 @@ class MemoryItem:
             self.input = str(self.input)
         if self.file_path and not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File path {self.file_path} does not exist")
-        # Truncate long values
-        if isinstance(self.output, str): 
+        # Only truncate non-instruction memory items
+        if isinstance(self.output, str) and self.type != 'instruction':
             self.output = truncate_string(self.output, 500)
         if not isinstance(self.output, str):
             self.output = str(self.output)
@@ -984,7 +984,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 # Control exported symbols for from utils import *
 __all__ = [
     'Action',
-    'Agent',
+    'Agent', 
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
@@ -995,6 +995,7 @@ __all__ = [
     'extract_xml',
     'print_datetime',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'base_env_manager'
 ]
 
