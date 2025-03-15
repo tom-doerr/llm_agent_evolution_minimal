@@ -954,9 +954,10 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType', 
+    'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    'a_env',
     'base_env_manager',
     'create_agent',
     'envs',
@@ -964,7 +965,6 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'a_env'
+    'run_inference'
 ]
 
