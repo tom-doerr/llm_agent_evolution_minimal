@@ -601,8 +601,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._memory.extend(other._memory)
         
         # Apply mating cost once to each parent
-        self.reward(-base_env_manager.mating_cost)
-        other.reward(-base_env_manager.mating_cost)
+        self.reward(-utils.base_env_manager.mating_cost)
+        other.reward(-utils.base_env_manager.mating_cost)
         
         # Remove duplicate memories using serialized representation
         seen = set()
@@ -841,6 +841,11 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     }
     
     # Get model name with default fallback
+    model_mapping = {
+        'flash': 'deepseek/deepseek-reasoner',
+        'pro': 'deepseek/deepseek-reasoner', 
+        'deepseek': 'deepseek/deepseek-reasoner',
+    }
     model_name = model_mapping.get(model.lower(), model)
     agent = Agent(model_name)
     agent.max_tokens = max_tokens
@@ -855,7 +860,6 @@ __all__ = [
     'is_valid_model_name',
     'is_valid_xml',
     'parse_xml_to_dict',
-    'process_observation',
     'safe_int_conversion',
     'safe_float_conversion',
     'is_valid_number',
@@ -868,6 +872,7 @@ __all__ = [
     '_validate_inputs',
     '_prepare_prompt',
     '_get_litellm_response',
+    'parse_xml_to_dict',
         
     # Data classes
     'MemoryItem',
