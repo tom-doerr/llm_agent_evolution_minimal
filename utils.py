@@ -644,8 +644,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # New agent only in test mode if both parents are in test mode
-        new_test_mode = bool(all((self._test_mode, other._test_mode)))
+        # New agent only in test mode if both parents are in test mode (logical AND)
+        new_test_mode = self._test_mode and other._test_mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -792,9 +792,21 @@ def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
 
 def _validate_xml_response(xml_content: str) -> None:
     """Validate XML structure meets requirements"""
-    root = ET.fromstring(xml_content)
-    if root.find('.//diffs') is None:
-        raise ValueError("XML response missing required <diffs> section")
+    try:
+        root = ET.fromstring(xml_content)
+        if root.find('.//diffs') is None:
+            raise ValueError("XML response missing required <diffs> section")
+            
+        # Validate basic XML structure
+        if not root.find('.//diffs'):
+            raise ValueError("Missing required <diffs> section in XML response")
+            
+        for diff in root.findall('.//diff'):
+            if not diff.get('type'):
+                raise ValueError("Diff element missing type attribute")
+                
+    except ET.ParseError as e:
+        raise ValueError(f"Invalid XML structure: {str(e)}") from e
 
 def _parse_action(xml_content: str) -> Optional[Action]:
     """Parse action from XML response if present"""
@@ -908,9 +920,11 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-coder': 'openrouter/deepseek/deepseek-coder',
+        'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat',
-        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
+        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
+        'gemini-pro': 'openrouter/google/gemini-2.0-pro'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -943,7 +957,6 @@ __all__ = [
     'MemoryDiff',
     'MemoryItem',
     'base_env_manager',
-    'a_env',
     'create_agent',
     'envs',
     'extract_xml',
