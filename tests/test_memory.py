@@ -1,5 +1,5 @@
 import pytest
-from memory import MemoryDiff, Action, process_observation, DiffType
+from memdiff.memory import MemoryDiff, Action, process_observation, DiffType
 from unittest.mock import patch
 
 def test_memory_diff_initialization():

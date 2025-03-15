@@ -1,4 +1,4 @@
-from memory import process_observation
+from memdiff.memory import process_observation
 import litellm
 import os
 
