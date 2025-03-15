@@ -37,29 +37,6 @@ class Action:
                 self.params == other.params)
 
 
-# Move __all__ to end of file to ensure all symbols are defined
-__all__ = [
-    'is_non_empty_string',
-    'is_valid_xml_tag',
-    'is_valid_model_name',
-    'is_valid_xml',
-    'safe_int_conversion',
-    'safe_float_conversion',
-    'is_valid_number',
-    'truncate_string',
-    'run_inference',
-    'extract_xml',
-    'parse_xml_to_dict',
-    'parse_xml_element',
-    'print_datetime',
-    'MemoryItem',
-    'Agent',
-    'create_agent',
-    'MemoryDiff',
-    'Action', 
-    'DiffType',
-    'process_observation'
-]
 
 def is_non_empty_string(value: Any) -> bool:
     """True if value is a non-empty string after stripping whitespace"""
@@ -680,3 +657,27 @@ def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     agent.max_tokens = max_tokens
     
     return agent
+
+# Ensure __all__ is after all definitions
+__all__ = [
+    'is_non_empty_string',
+    'is_valid_xml_tag',
+    'is_valid_model_name',
+    'is_valid_xml',
+    'safe_int_conversion',
+    'safe_float_conversion',
+    'is_valid_number',
+    'truncate_string',
+    'run_inference',
+    'extract_xml',
+    'parse_xml_to_dict',
+    'parse_xml_element',
+    'print_datetime',
+    'MemoryItem',
+    'Agent',
+    'create_agent',
+    'MemoryDiff',
+    'Action', 
+    'DiffType',
+    'process_observation'
+]
