@@ -35,8 +35,8 @@ class MemoryDiff:
             return NotImplemented
         return (self.type == other.type and 
                 self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                str(self.old_value) == str(other.old_value) and
+                str(self.new_value) == str(other.new_value))
 
 @dataclass
 class Action:
@@ -342,6 +342,8 @@ class MemoryItem:
         """Validate and normalize fields after initialization"""
         if not isinstance(self.input, str):
             self.input = str(self.input)
+        if self.file_path and not os.path.exists(self.file_path):
+            raise FileNotFoundError(f"File path {self.file_path} does not exist")
         if not isinstance(self.output, str):
             self.output = str(self.output)
         if self.amount is not None and not isinstance(self.amount, (int, float)):
@@ -489,8 +491,9 @@ You can use multiple actions in a single completion""",
         # Test mode responses
         if self._test_mode:
             if input_text == 'please respond with the string abc':
-                response = '''<remember>
-                    <search>abc</search>
+                response = '''<respond>abc</respond>
+                <remember>
+                    <search>previous_value</search>
                     <replace>abc</replace>
                 </remember>'''
                 self.total_num_completions += 1
@@ -543,9 +546,16 @@ You can use multiple actions in a single completion""",
         new_agent._memory.extend(self._memory)
         new_agent._memory.extend(other._memory)
         
-        # Apply mating cost to original agents
+        # Apply mating cost once to each parent
         self.reward(-base_env_manager.mating_cost)
         other.reward(-base_env_manager.mating_cost)
+        
+        # Remove duplicate memories
+        seen = set()
+        new_agent._memory = [
+            item for item in new_agent._memory 
+            if not (item in seen or seen.add(item))
+        ]
         
         return new_agent
 
