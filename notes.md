@@ -59,3 +59,7 @@ Code Quality Improvements & Fixes:
 57. Fixed envs configuration to use dict instead of SimpleNamespace
 58. Added missing base_env_manager and envs to __all__ exports
 59. Simplified MemoryDiff equality check to key+type only
+60. Fixed __all__ exports to remove duplicates and ensure proper imports
+61. Updated DeepSeek model mapping to current OpenRouter paths  
+62. Removed redundant MemoryDiff equality type check
+63. Added missing parse_xml_element to __all__ exports
