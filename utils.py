@@ -47,9 +47,7 @@ class MemoryDiff:
         return (self.type == other.type and 
                 self.key == other.key and
                 self.old_value == other.old_value and
-                self.new_value == other.new_value and
-                type(self.old_value) == type(other.old_value) and
-                type(self.new_value) == type(other.new_value))
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -486,8 +484,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         command = extract_xml(response)
         try:
             root = ET.fromstring(command)
-        except ET.ParseError:
-            return "Invalid XML format for command"
+        except ET.ParseError as e:
+            return f"Invalid XML format for command: {str(e)}"
             
         command_elem = root.find('.//shell')
         if not command_elem or not command_elem.text:
@@ -904,7 +902,7 @@ __all__ = [
     'extract_xml',
     'process_observation',
     'MemoryItem',
-    'MemoryDiff', 
+    'MemoryDiff',
     'Action',
     'DiffType',
     'Agent',

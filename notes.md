@@ -37,3 +37,9 @@ Code Quality Improvements & Fixes:
 36. Added missing max_tokens initialization in Agent class
 37. Fixed None handling in action parameter parsing
 38. Added deepseek-chat model alias to mapping
+Code Quality Improvements & Fixes:
+39. Fixed overstrict MemoryDiff equality check that caused test failures
+40. Improved XML command error handling with detailed error messages
+41. Removed redundant type checks in MemoryDiff equality comparison  
+42. Fixed __all__ exports formatting and removed duplicate entries
+43. Added proper error propagation for shell command handling
