@@ -456,7 +456,9 @@ class Agent:
         self._memory = []
         self.last_response = ""
         self.completions = []
-        self.total_num_completions = 0  # Track all completions (including XML processing)
+        # Track all completions (including XML processing)
+        self.total_num_completions = 0  
+        # Initialize from existing memory if provided
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
         self.completions = []
@@ -735,7 +737,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             return ""
         
         # Test mode responses
-        self.total_num_completions += 1  # Increment for every completion
+        # Always increment for any completion
+        self.total_num_completions += 1  
         if self._test_mode:
             if input_text == 'please respond with the string abc':
                 return '''<response>
