@@ -106,7 +106,7 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
         return value
     return value[:max_length] + "..."
 
-def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> Union[str, List[MemoryDiff]]:
     """Run inference using the specified model.
     
     Args:
@@ -350,10 +350,12 @@ class MemoryItem:
             self.timestamp = datetime.datetime.now().isoformat()
 
 class Agent:
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str, max_tokens: int = 50) -> None:
         """Initialize agent with model name and default settings"""
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
+        if not isinstance(max_tokens, int) or max_tokens <= 0:
+            raise ValueError("max_tokens must be a positive integer")
 
         self.model_name = model_name
         self.last_response = ""
@@ -814,7 +816,7 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         )
     return None
 
-def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
+def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str] = None) -> Agent:
     """Create an agent with specified model.
     
     Args:
@@ -877,8 +879,7 @@ __all__ = [
     'envs',
     
     # Agent creation
-    'create_agent',
-        
     # XML parsing functions
-    'parse_xml_element'
+    'parse_xml_element',
+    'create_agent'
 ]
