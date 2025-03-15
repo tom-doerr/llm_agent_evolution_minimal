@@ -12,8 +12,12 @@ base_env_manager = SimpleNamespace(
     mating_cost=50  # Cost for agent mating operation
 )
 
+def a_env(input_str: str) -> int:
+    """Count 'a's in string and return reward"""
+    return sum(1 for c in str(input_str) if c.lower() == 'a')
+
 envs = {
-    'a_env': lambda x: sum(1 for c in x if c == 'a')  # Count 'a's in string
+    'a_env': a_env
 }
 
 class DiffType(Enum):
@@ -366,7 +370,7 @@ class Agent:
 
         self.model_name = model_name
         self.max_tokens = int(max_tokens)
-        self._test_mode = bool(test_mode)
+        self._test_mode = test_mode if isinstance(test_mode, bool) else False
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -474,10 +478,14 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
     
     def _handle_shell_commands(self, response: str) -> str:
-        # Extract and validate command
-        command = extract_xml(response)
+        """Execute validated shell commands from XML response"""
+        # Extract and validate XML structure first
+        xml_content = extract_xml(response)
+        if not xml_content:
+            return "<message>Error: No valid XML content found</message>"
+            
         try:
-            root = ET.fromstring(command)
+            root = ET.fromstring(xml_content)
         except ET.ParseError as e:
             return f"<message>Error: Invalid XML format - {str(e)}</message>"
             
@@ -615,7 +623,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Create new agent with same model and propagate test mode only if both parents have it
         test_mode = bool(self._test_mode and other._test_mode)
         # Ensure proper XML validation in child agent
-        test_mode = bool(test_mode)
+        test_mode = self._test_mode and other._test_mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -906,7 +914,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 # Control exported symbols for from utils import *
 __all__ = [
     'Action',
-    'Agent', 
+    'Agent',
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
@@ -917,5 +925,6 @@ __all__ = [
     'parse_xml_to_dict',
     'parse_xml_element',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'print_datetime'
 ]
