@@ -46,8 +46,8 @@ class MemoryDiff:
             return False
         return (self.type == other.type and 
                 self.key == other.key and
-                str(self.old_value) == str(other.old_value) and
-                str(self.new_value) == str(other.new_value))
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -907,5 +907,7 @@ __all__ = [
     'MemoryItem', 
     'parse_xml_to_dict',
     'process_observation',
-    'run_inference'
+    'run_inference',
+    'base_env_manager',
+    'envs'
 ]
