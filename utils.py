@@ -455,10 +455,7 @@ You can use multiple actions in a single completion""",
                 clean_output = raw_response
 
             # Store memory with truncated values
-            self._memory.append(MemoryItem(
-                input=truncate_string(input_text),
-                output=truncate_string(clean_output)
-            ))
+            # Memory is stored in run() method
             
             return clean_output
         except Exception as e:
@@ -534,8 +531,9 @@ You can use multiple actions in a single completion""",
         # Create new agent with same model
         new_agent = Agent(self.model_name)
         
-        # Combine memories (simple concatenation)
-        new_agent._memory = self._memory + other._memory
+        # Combine memories from both parents
+        new_agent._memory.extend(self._memory)
+        new_agent._memory.extend(other._memory)
         
         # Apply mating cost to original agents
         self.reward(-base_env_manager.mating_cost)
