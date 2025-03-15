@@ -54,7 +54,7 @@ __all__ = [
     'Agent',
     'create_agent',
     'MemoryDiff',
-    'Action',
+    'Action', 
     'DiffType',
     'process_observation'
 ]
@@ -347,8 +347,8 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str) -> None:
-        self.last_response: str = ""  # Track last raw response
-        self.completions: List[str] = []  # Track all completions
+        self.last_response: str = ""
+        self.completions: List[str] = []
         if not isinstance(model_name, str):
             raise ValueError("model_name must be a string")
             
@@ -356,7 +356,9 @@ class Agent:
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
         self._memory: List[MemoryItem] = []
-        self._test_mode = model_name.startswith("flash")  # Initialize here
+        self.lm: Optional[Any] = None
+        self.max_tokens = 50
+        self._test_mode = "flash" in model_name.lower()
         # Initialize with core instructions
         self.remember(
             "Explanation of all the available XML actions. You can edit your memory using the following XML action:",
@@ -379,9 +381,6 @@ class Agent:
             output=output,
             type=type_
         ))
-        # Removed redundant test_mode assignment
-        self.lm: Optional[Any] = None  # Language model instance
-        self.max_tokens = 50  # Default value
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -536,6 +535,9 @@ def process_observation(
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return [], None
+    except Exception as e:
+        print(f"Error processing observation: {str(e)}")
+        return [], None
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
     """Validate input types and values"""
