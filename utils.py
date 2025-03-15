@@ -43,8 +43,11 @@ class MemoryDiff:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
-            return NotImplemented
-        return self.type == other.type and self.key == other.key
+            return False
+        return (self.type == other.type and 
+                self.key == other.key and
+                self.old_value == other.old_value and
+                self.new_value == other.new_value)
 
 @dataclass
 class Action:
@@ -487,8 +490,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             return f"<message>Error: Invalid XML format - {str(e)}</message>"
             
         command_elem = root.find('.//shell')
-        if not command_elem or not command_elem.text:
-            return "<message>Error: Invalid command format</message>"
+        if not command_elem:
+            return "<message>Error: No shell command element found</message>"
+        if not command_elem.text or not command_elem.text.strip():
+            return "<message>Error: Empty shell command</message>"
             
         cmd = command_elem.text.strip().split()[0]
         if cmd not in self.allowed_shell_commands:
@@ -869,6 +874,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'deepseek': 'openrouter/deepseek/deepseek-chat',
         'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-001',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
@@ -897,7 +903,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 # Ensure __all__ is after all definitions
 __all__ = [
     'create_agent',
-    'run_inference',
+    'run_inference', 
     'extract_xml',
     'process_observation',
     'MemoryItem',
@@ -906,7 +912,5 @@ __all__ = [
     'DiffType',
     'Agent',
     'parse_xml_to_dict',
-    'parse_xml_element',
-    'base_env_manager',
-    'envs'
+    'parse_xml_element'
 ]
