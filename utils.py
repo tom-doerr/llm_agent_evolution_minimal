@@ -309,7 +309,13 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     """Parse XML element recursively into dict or string"""
     if not is_valid_xml_tag(element.tag):
-        raise ValueError(f"Invalid XML tag: {element.tag}. Tags must start with a letter, contain only alphanumerics/hyphens/underscores/dots, and cannot contain spaces or colons.")
+        raise ValueError(
+            f"Invalid XML tag: {element.tag}. Tags must: "
+            f"- Start with a letter\n"
+            f"- Contain only alphanumerics, hyphens, underscores or dots\n"
+            f"- Not contain spaces or colons\n"
+            f"- Not start with 'xml' (case-insensitive)"
+        )
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -352,8 +358,8 @@ class MemoryItem:
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
-    file_path: Optional[str] = field(default=None)  # For file edit operations
-    command: Optional[str] = field(default=None)   # For shell commands
+    file_path: Optional[str] = field(default=None, metadata={"description": "Path to file for edit operations"})
+    command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
     
     def __post_init__(self):
         """Validate and normalize fields after initialization"""
@@ -991,18 +997,27 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 
 # Control exported symbols for from utils import *
 __all__ = [
+    # Core classes
     'Action',
     'Agent',
-    'DiffType', 
+    'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    
+    # Environment configuration
     'a_env',
     'base_env_manager',
-    'create_agent',
     'envs',
+    
+    # Factory functions
+    'create_agent',
+    
+    # XML processing
     'extract_xml',
     'parse_xml_element',
     'parse_xml_to_dict',
+    
+    # Utility functions
     'print_datetime',
     'process_observation',
     'run_inference'
