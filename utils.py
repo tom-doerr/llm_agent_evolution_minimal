@@ -96,9 +96,9 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
     try:
         import litellm
         import os
-    except ImportError:
+    except ImportError as e:
         # Return mock response if litellm not installed
-        return "Mock response (litellm not installed)"
+        return f"Mock response (litellm not installed: {str(e)})"
     
     # Validate and normalize model name
     if not is_valid_model_name(model):
