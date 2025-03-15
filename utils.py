@@ -485,6 +485,9 @@ You can use multiple actions in a single completion but must follow the XML sche
     
     def _handle_shell_commands(self, response: str) -> str:
         """Execute validated shell commands from XML response"""
+        if not isinstance(response, str):
+            return "<message>Error: Invalid response type</message>"
+            
         # Extract and validate XML structure first
         xml_content = extract_xml(response)
         if not xml_content:
@@ -501,7 +504,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not command_elem.text or not command_elem.text.strip():
             return "<message>Error: Empty shell command</message>"
             
-        cmd = command_elem.text.strip().split()[0]
+        # Validate and sanitize command
+        cmd_text = command_elem.text.strip()
+        if any(c in cmd_text for c in (';', '&', '|', '$', '`')):
+            return "<message>Error: Invalid characters in command</message>"
+                
+        cmd = cmd_text.split()[0]
         if cmd not in self.allowed_shell_commands:
             return f"<message>Error: Command {cmd} not allowed</message>"
             
@@ -531,7 +539,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         """Process input and return cleaned response."""
         if not isinstance(input_text, str):
             raise ValueError("input_text must be string")
-        if not input_text.strip():
+            
+        input_text = input_text.strip()
+        if not input_text:
             return ""
 
         try:
@@ -547,11 +557,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             else:
                 clean_output = raw_response
 
-            # Store memory with truncated values
-            # Memory is stored in run() method
-            
             # Store successful interaction in memory
-            # Note: ouput is cleaned version without XML tags
+            # Note: output is cleaned version without XML tags
             self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
                 output=clean_output,
