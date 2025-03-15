@@ -126,7 +126,7 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
         return value
     return value[:max_length] + "..."
 
-def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
+def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> Union[str, str]:
     """Run inference using the specified model.
     
     Args:
@@ -919,6 +919,17 @@ def process_observation(
 def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
+    
+    Args:
+        model: Model identifier string (supports 'flash', 'pro', 'deepseek-chat', etc)
+        max_tokens: Maximum response length (default: 50)
+        load: Path to load agent state from (optional)
+        test_mode: Enable testing mode with mocked responses (default: False)
+        
+    Returns:
+        Initialized Agent instance
+    """
+    """Create an agent with specified model.
 
     Args:
         model: Model to use ('flash', 'gemini-pro', 'deepseek-chat' or full OpenRouter model name)
@@ -952,7 +963,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     if not is_valid_model_name(model_name):
         raise ValueError(f"Invalid model name: {model_name}")
 
-    agent = Agent(model_name, max_tokens=max_tokens, test_mode=test_mode)
+    agent = Agent(model_name, max_tokens=max_tokens, test_mode=bool(test_mode))
     
     if load:
         if not os.path.exists(load):
@@ -977,6 +988,8 @@ __all__ = [
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    'a_env',
+    'base_env_manager',
     'create_agent',
     'envs',
     'extract_xml',
