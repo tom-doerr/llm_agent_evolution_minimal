@@ -899,9 +899,10 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek-chat': 'openrouter/deepseek/deepseek-chat', 
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder',
-        'default': 'openrouter/deepseek/deepseek-chat'
+        'default': 'openrouter/deepseek/deepseek-chat',
+        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -942,6 +943,5 @@ __all__ = [
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'base_env_manager'
+    'run_inference'
 ]
