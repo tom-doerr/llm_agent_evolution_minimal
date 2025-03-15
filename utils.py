@@ -19,11 +19,6 @@ envs = {
     'a_env': a_env,
     'base_env': SimpleNamespace(description="Base environment configuration")
 }
-"""Collection of available environments with their reward functions and configurations.
-Includes:
-- a_env: Counts 'a' characters in input
-- base_env: Base configuration namespace
-Evolution settings are managed separately by base_env_manager"""
 
 class DiffType(Enum):
     ADD = auto()
@@ -528,7 +523,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             return "<message>Error: No valid XML content found</message>"
             
         # Security validation
-        if any(tag in xml_content.lower() for tag in ['script', 'http', 'ftp']):
+        if re.search(r'(?:script|http|ftp|&\w+;|//)', xml_content, re.IGNORECASE):
             return "<message>Error: Potentially dangerous content detected</message>"
             
         try:
@@ -638,21 +633,29 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Test mode responses
         if self._test_mode:
             if input_text == 'please respond with the string abc':
-                response = '''<respond>abc</respond>'''
-                self.total_num_completions += 1
-                return response
+                return '''<response>
+    <respond>abc</respond>
+</response>'''
             if 'remember it' in input_text.lower():
-                return '''<remember>
-    <search>previous_value</search>
-    <replace>132</replace>
-</remember>'''
+                return '''<response>
+    <remember>
+        <search>previous_value</search>
+        <replace>132</replace>
+    </remember>
+</response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
     <shell>ls</shell>
     <respond>plexsearch.log</respond>
 </response>'''
-            if 'respond using the respond xml' in input_text.lower():
-                return '''<respond>Successfully processed request</respond>'''
+            if 'respond using the message xml' in input_text.lower():
+                return '''<response>
+    <message>Successfully processed request</message>
+</response>'''
+            # Fallback response for other test cases
+            return f'''<response>
+    <respond>{input_text}</respond>
+</response>'''
 
         # Use streaming for OpenRouter DeepSeek models
         use_stream = self.model_name.startswith("openrouter/deepseek/")
