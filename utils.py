@@ -575,6 +575,10 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not xml_content:
             return "<message>Error: No valid XML content found</message>"
             
+        # Security validation - prevent command injection
+        if any(c in xml_content for c in (';', '&', '|', '$', '`')):
+            return "<message>Error: Dangerous characters detected</message>"
+            
         # Security validation
         if re.search(r'(?:script|http|ftp|&\w+;|//)', xml_content, re.IGNORECASE):
             return "<message>Error: Potentially dangerous content detected</message>"
@@ -757,6 +761,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         """Create new agent by combining memories from both parents.
         Applies mating cost to both parents.
         
+        Args:
+            other: Another Agent instance to mate with
+        
         Inherits:
         - Test mode from either parent
         - Model name from self
@@ -930,12 +937,13 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
 def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
     """Parse memory diffs from XML"""
     diffs = []
-    root = ET.fromstring(xml_content)
-    for diff_elem in root.findall('.//diff'):
-        try:
-            diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
-        except KeyError:
-            diff_type = DiffType.MODIFY  # Default to MODIFY for unknown types
+    try:
+        root = ET.fromstring(xml_content)
+        for diff_elem in root.findall('.//diff'):
+            try:
+                diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+            except KeyError:
+                continue  # Skip invalid diff types
             
         diffs.append(MemoryDiff(
             type=diff_type,
@@ -970,8 +978,8 @@ def _parse_action(xml_content: str) -> Optional[Action]:
     if action_elem is not None:
         return Action(
             type=action_elem.get('type', ''),
-            params={child.tag: (child.text or '').strip()  # Added strip()
-                   for child in action_elem if child.text is not None}  # Filter None texts
+            params={child.tag: (child.text or '').strip()
+                   for child in action_elem if child.text is not None}
         )
     return None
 
