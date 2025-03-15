@@ -4,22 +4,22 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 
 def is_non_empty_string(value: Any) -> bool:
-    """Check if value is a non-empty string after stripping whitespace."""
+    # Check if value is a non-empty string after stripping whitespace
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
-    """Check if a string is a valid XML tag name."""
+    # Check if a string is a valid XML tag name
     if not is_non_empty_string(tag):
         return False
     # Basic XML tag name validation
     return tag[0].isalpha() and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
 
 def is_valid_model_name(model: str) -> bool:
-    """Check if model name is valid (contains non-empty string with slash)."""
+    # Check if model name is valid (contains non-empty string with slash)
     return isinstance(model, str) and bool(model.strip()) and '/' in model
 
 def is_valid_xml(xml_string: str) -> bool:
-    """Check if string contains valid XML."""
+    # Check if string contains valid XML
     if not is_non_empty_string(xml_string):
         return False
     try:
