@@ -56,17 +56,17 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
             return full_response
         
         # Handle non-streaming response
-        if response and hasattr(response, 'choices') and response.choices:
+        if hasattr(response, 'choices') and response.choices:
             choice = response.choices[0]
             if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
                 return choice.message.content
-            elif hasattr(choice, 'text'):  # Handle different response formats
+            elif hasattr(choice, 'text'):
                 return choice.text
         
-        return f"Inference result for: {input_string}"
+        return ""
     except ImportError:
         # Fallback if litellm is not installed
-        return f"Inference result for: {input_string} (litellm not installed)"
+        return f"Error: litellm not installed"
     except Exception as e:
         return f"Error during inference: {str(e)}"
 
@@ -101,10 +101,10 @@ def extract_xml(xml_string: str) -> str:
                         except ET.ParseError:
                             continue
                 return ""
-        else:
-            # Try parsing the whole string as XML
-            root = ET.fromstring(xml_string)
-            return ET.tostring(root, encoding='unicode')
+        
+        # Try parsing the whole string as XML
+        root = ET.fromstring(xml_string)
+        return ET.tostring(root, encoding='unicode')
     except ET.ParseError:
         return ""
 
@@ -165,14 +165,16 @@ class Agent:
         if self.lm and hasattr(self.lm, 'complete'):
             try:
                 response = self.lm.complete(input_text)
-                return response.completion
+                if hasattr(response, 'completion'):
+                    return response.completion
+                return str(response)
             except Exception as e:
                 return f"Error using DSPy LM: {str(e)}"
-        else:
-            # Fallback to run_inference
-            # Use streaming for DeepSeek models to properly handle reasoning content
-            use_stream = self.model_name.startswith("deepseek/")
-            return run_inference(input_text, self.model_name, stream=use_stream)
+        
+        # Fallback to run_inference
+        # Use streaming for DeepSeek models to properly handle reasoning content
+        use_stream = self.model_name.startswith("deepseek/")
+        return run_inference(input_text, self.model_name, stream=use_stream)
 
 def create_agent(model_type: str) -> Agent:
     model_mapping = {
@@ -187,12 +189,8 @@ def create_agent(model_type: str) -> Agent:
     
     try:
         import dspy
-        # For DeepSeek models, we need to use the appropriate configuration
-        if model_name.startswith("deepseek/"):
-            agent.lm = dspy.LM(model_name)
-        else:
-            agent.lm = dspy.LM(model_name)
-        # Memory is already initialized in the Agent constructor
+        # Initialize the language model
+        agent.lm = dspy.LM(model_name)
         return agent
     except ImportError:
         # Return the agent without DSPy integration
