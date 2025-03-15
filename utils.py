@@ -927,8 +927,9 @@ __all__ = [
     'create_agent',
     'envs',
     'extract_xml',
-    'parse_xml_element',
+    'parse_xml_element', 
     'parse_xml_to_dict',
     'print_datetime',
+    'process_observation',
     'run_inference'
 ]
