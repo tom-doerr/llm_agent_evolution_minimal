@@ -56,3 +56,6 @@ Code Quality Improvements & Fixes:
 54. Updated deepseek-reasoner model mapping
 55. Improved Action equality check for None params
 56. Removed redundant equality checks in MemoryDiff
+57. Fixed envs configuration to use dict instead of SimpleNamespace
+58. Added missing base_env_manager and envs to __all__ exports
+59. Simplified MemoryDiff equality check to key+type only

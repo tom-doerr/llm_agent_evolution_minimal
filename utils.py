@@ -12,9 +12,9 @@ base_env_manager = SimpleNamespace(
     mating_cost=50  # Cost for agent mating operation
 )
 
-envs = SimpleNamespace(
-    a_env=lambda x: sum(1 for c in x if c == 'a')  # Count 'a's in string
-)
+envs = {
+    'a_env': lambda x: sum(1 for c in x if c == 'a')  # Count 'a's in string
+}
 
 class DiffType(Enum):
     ADD = auto()
@@ -45,9 +45,7 @@ class MemoryDiff:
         if not isinstance(other, MemoryDiff):
             return False
         return (self.type == other.type and 
-                self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value) 
+                self.key == other.key)
 
 @dataclass
 class Action:
@@ -905,8 +903,10 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 __all__ = [
     'Agent',
     'Action',
-    'create_agent', 
+    'base_env_manager',
+    'create_agent',
     'DiffType',
+    'envs', 
     'extract_xml',
     'MemoryDiff',
     'MemoryItem',
