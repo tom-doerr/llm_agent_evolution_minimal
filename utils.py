@@ -1051,7 +1051,6 @@ __all__ = [
     'parse_xml_element', 
     'parse_xml_to_dict',
     'process_observation',
-    'parse_xml_element',
     
     # Utility functions
     'print_datetime',
