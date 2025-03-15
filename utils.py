@@ -616,6 +616,9 @@ You can use multiple actions in a single completion but must follow the XML sche
             # Basic command allowlist validation
             if cmd_parts[0] not in self.allowed_shell_commands:
                 return f"<message>Error: Command {cmd_parts[0]} not allowed</message>"
+            
+        except ET.ParseError as e:
+            return f"<message>XML parsing error: {str(e)}</message>"
                 
             # Execute validated command
             result = subprocess.run(
@@ -693,6 +696,10 @@ You can use multiple actions in a single completion but must follow the XML sche
         <replace>132</replace>
     </remember>
     <respond>Got it! I'll remember that!</respond>
+</response>'''
+            if 'respond using the message xml' in input_text.lower():
+                return '''<response>
+    <message>Successfully processed request</message>
 </response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
@@ -790,7 +797,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         with open(file_path, 'w') as f:
             f.write(self.memory)
 
-    def reward(self, amount: Union[int, float]) -> None:
+    def reward(self, amount: Union[int, float]) -> None:  # type: ignore
         """Update agent's net worth with reward/penalty."""
         if not isinstance(amount, (int, float)):
             raise ValueError("Amount must be a number")
