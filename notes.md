@@ -7,6 +7,10 @@
 - Simplified XML parsing logic
 - Cleaned up __all__ exports for better organization
 - Removed redundant comments and docstrings
+- Added llama-3 model to model mapping
+- Fixed gpt-3.5 alias in model mapping
+- Removed redundant __all__ validation
+- Ensured all model aliases are properly mapped
 
 ## Core Fixes
 1. Fixed XML validation error messages to show formatting rules:
