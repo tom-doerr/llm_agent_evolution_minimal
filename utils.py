@@ -8,6 +8,10 @@ from enum import Enum, auto
 from types import SimpleNamespace
 
 # Environment configuration
+base_env = SimpleNamespace(
+    description="Base environment configuration"
+)
+
 base_env_manager = SimpleNamespace(
     mating_cost=50
 )
@@ -730,13 +734,13 @@ You can use multiple actions in a single completion but must follow the XML sche
         - Max tokens from self
         - Environment configurations
         """
-        # Use utils.create_agent to ensure proper initialization
+        # Use utils.create_agent to ensure proper initialization with namespace
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1098,7 +1102,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env', 'base_env_manager', 'a_env',
+    'envs', 'base_env', 'base_env_manager', 'a_env', 'base_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
