@@ -2,7 +2,7 @@ import re
 import xml.etree.ElementTree as ET
 import datetime
 import os
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from types import SimpleNamespace
@@ -42,6 +42,7 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
+        # Full equality check of all fields
         if not isinstance(other, MemoryDiff):
             return False
         return (self.type == other.type and 
@@ -916,6 +917,5 @@ __all__ = [
     'parse_xml_element',
     'parse_xml_to_dict',
     'process_observation',
-    'run_inference',
-    'parse_xml_element'
+    'run_inference'
 ]
