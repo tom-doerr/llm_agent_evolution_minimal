@@ -583,7 +583,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     def memory(self) -> str:
         """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
-            f"{item.type}: {item.input} -> {item.output.strip()}"
+            f"{item.type}: {item.input} -> {extract_xml(item.output).replace('<', '&lt;').replace('>', '&gt;').strip()}"
             for item in self._memory
             # Strict filtering to match main.py assertions
             if item.type not in {"instruction", "context"}
@@ -592,10 +592,6 @@ You can use multiple actions in a single completion but must follow the XML sche
                 for ci in self._context_instructions
                 if "Explanation of all the available XML actions" in ci.output 
                 or "You can edit your memory using the following XML action:" in ci.output
-            )
-            and not any(
-                prohibited in item.output
-                for prohibited in ["<remember>", "<search>", "<replace>"]
             )
         )
     
@@ -804,7 +800,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             elif input_text == 'what files are in the current directory?':
                 return '''<response>
     <shell>ls</shell>
-    <message>Found files: plexsearch.log</message>
+    <message>plexsearch.log</message>
 </response>'''
             elif 'remove the text' in input_text.lower():
                 return '''<response>
@@ -838,7 +834,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             elif 'current directory' in input_text.lower():
                 return '''<response>
     <shell>ls</shell>
-    <message>Found files: plexsearch.log</message>
+    <message>plexsearch.log</message>
 </response>'''
             elif 'respond to this message using the message xml tags' in input_text.lower():
                 return '''<response>
