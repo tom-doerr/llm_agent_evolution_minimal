@@ -34,6 +34,9 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         import litellm
         import os
         
+        if not is_non_empty_string(input_string):
+            return ""
+            
         if model.startswith("deepseek/") and "DEEPSEEK_API_KEY" not in os.environ:
             return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
             
@@ -95,7 +98,7 @@ def extract_xml(xml_string: str) -> str:
                     start_tag = f'<{tag}'
                     end_tag = f'</{tag}>'
                     start = xml_string.find(start_tag)
-                    end = xml_string.find(end_tag)
+                    end = xml_string.rfind(end_tag)
                     if start >= 0 and end > start:
                         try:
                             element = xml_string[start:end + len(end_tag)]
@@ -103,8 +106,20 @@ def extract_xml(xml_string: str) -> str:
                             return ET.tostring(root, encoding='unicode')
                         except ET.ParseError:
                             continue
+                            
+                # Try to find any well-formed XML fragment
+                import re
+                xml_pattern = r'<([a-zA-Z][a-zA-Z0-9]*)(?:\s+[^>]*)?(?:/>|>.*?</\1>)'
+                matches = re.finditer(xml_pattern, xml_string, re.DOTALL)
+                for match in matches:
+                    try:
+                        fragment = match.group(0)
+                        root = ET.fromstring(fragment)
+                        return ET.tostring(root, encoding='unicode')
+                    except ET.ParseError:
+                        continue
         return ""
-    except ET.ParseError:
+    except Exception:
         return ""
 
 def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
@@ -132,7 +147,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
                 result[child.tag] = child.text or ""
             
         return result
-    except ET.ParseError:
+    except Exception:
         return {}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
@@ -204,6 +219,9 @@ class Agent:
         self.memory = []
 
 def create_agent(model_type: str) -> Agent:
+    if not is_non_empty_string(model_type):
+        model_type = 'default'
+        
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
