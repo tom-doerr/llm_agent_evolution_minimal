@@ -365,7 +365,8 @@ class MemoryItem:
                self.type == other.type and
                self.amount == other.amount and
                self.timestamp == other.timestamp and
-               self.file_path == other.file_path)
+               self.file_path == other.file_path and
+               self.command == other.command)
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
@@ -718,12 +719,13 @@ You can use multiple actions in a single completion but must follow the XML sche
         unique_memory = []
         for item in new_agent._memory:
             item_repr = (
-                item.input, 
-                item.output, 
-                item.type, 
-                item.amount, 
+                item.input,
+                item.output,
+                item.type,
+                item.amount,
                 item.timestamp,
-                item.file_path
+                item.file_path,
+                item.command
             )
             if item_repr not in seen:
                 seen.add(item_repr)
@@ -1059,7 +1061,8 @@ __all__ = [
     
     # XML processing
     'extract_xml',
-    'parse_xml_to_dict',
+    'parse_xml_element',
+    'parse_xml_to_dict', 
     'process_observation',
     
     # Utility functions
