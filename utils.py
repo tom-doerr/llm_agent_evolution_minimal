@@ -944,8 +944,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
-        'gemini-pro': 'openrouter/google/gemini-2.0-pro',
-        'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
+        'gemini-pro': 'openrouter/google/gemini-2.0-pro'
     }
     # Add full model name as alias (case-sensitive)
     model_mapping[model] = model
@@ -985,7 +984,7 @@ __all__ = [
     'envs',
     'extract_xml',
     'parse_xml_to_dict',
-    'parse_xml_element',  # Added missing export
+    'parse_xml_element',
     'print_datetime',
     'process_observation',
     'run_inference'
