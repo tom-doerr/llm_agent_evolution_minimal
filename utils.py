@@ -19,3 +19,11 @@ def safe_float_conversion(input_str: str) -> float | None:
 def is_valid_number(value) -> bool:
     """Check if a value is a valid number (int or float)."""
     return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+def truncate_string(text: str, max_length: int = 100) -> str:
+    """Truncate string to specified length and add ellipsis if needed."""
+    if not isinstance(text, str):
+        return ""
+    if len(text) <= max_length:
+        return text
+    return text[:max_length] + "..."
