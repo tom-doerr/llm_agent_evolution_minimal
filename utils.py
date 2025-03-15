@@ -4,7 +4,14 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple
 
 def is_non_empty_string(value: Any) -> bool:
-    """Check if value is a non-empty string after stripping whitespace."""
+    """Check if value is a non-empty string after stripping whitespace.
+    
+    Args:
+        value: Value to check
+        
+    Returns:
+        bool: True if non-empty string, False otherwise
+    """
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
@@ -15,7 +22,14 @@ def is_valid_xml_tag(tag: str) -> bool:
     return tag[0].isalpha() and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
 
 def is_valid_model_name(model: str) -> bool:
-    """Check if model name is valid."""
+    """Check if model name is valid.
+    
+    Args:
+        model: Model name to validate
+        
+    Returns:
+        bool: True if valid model name, False otherwise
+    """
     return isinstance(model, str) and bool(model.strip()) and '/' in model
 
 def is_valid_xml(xml_string: str) -> bool:
@@ -29,7 +43,14 @@ def is_valid_xml(xml_string: str) -> bool:
         return False
 
 def safe_int_conversion(value: Any) -> Optional[int]:
-    """Safely convert value to integer."""
+    """Safely convert value to integer.
+    
+    Args:
+        value: Value to convert
+        
+    Returns:
+        Optional[int]: Converted integer or None if conversion fails
+    """
     try:
         return int(value)
     except (ValueError, TypeError):
