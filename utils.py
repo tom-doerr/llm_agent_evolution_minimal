@@ -383,7 +383,9 @@ Examples of how to use the XML actions:
 
 <respond>
     Response text here
-</respond>""", 
+</respond>
+
+You can use multiple actions in a single completion""", 
              "instruction", "XML Actions")
         ]
         
@@ -799,8 +801,5 @@ __all__ = [
     'envs',
     
     # XML parsing functions
-    'parse_xml_element',
-    
-    # Diff types
-    'DiffType'
+    'parse_xml_element'
 ]
