@@ -34,13 +34,17 @@ Key Resolved Issues:
 - Standardized environment configurations
 
 Key Resolved Issues:
-- Removed all duplicate entries in __all__ exports
-- Fixed model mapping for deepseek-chat
-- Proper test_mode handling throughout Agent lifecycle
+- Added missing a_env to __all__ exports
+- Removed redundant boolean cast in test_mode
+- Improved environment config documentation  
+- Fixed test_mode propagation in mate()
+- Standardized environment configurations
+- Proper shell command security checks
 - Complete XML handling implementation
 - Consistent memory diff validation
-- Proper shell command security checks
-- Fixed test_mode propagation in mate()
-- Simplified MemoryDiff equality checks
-- Standardized environment configurations
-- Removed redundant boolean cast in test_mode
+
+New Features:
+- Full type hint coverage
+- Explicit test mode initialization
+- Clearer environment config docs
+- Proper agent memory isolation

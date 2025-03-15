@@ -9,9 +9,11 @@ from types import SimpleNamespace
 
 # Environment configuration and constants
 base_env_manager = SimpleNamespace(
-    mating_cost=50  # Cost for agent mating operation
+    mating_cost=50  # Base cost for agent mating operation
 )
-"""Manages base environment settings for agent evolution"""
+"""Manages evolution environment settings including:
+- mating_cost: Energy cost for reproduction
+"""
 
 def a_env(input_str: str) -> int:
     """Count 'a's in string and return reward"""
@@ -363,15 +365,21 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
-        """Initialize agent with model name and default settings"""
+        """Initialize agent with model name and default settings
+        
+        Args:
+            model_name: Name of LLM model to use
+            max_tokens: Maximum response length
+            test_mode: Enable testing mode with mocked responses
+        """
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
             raise ValueError("max_tokens must be a positive integer")
 
         self.model_name = model_name
-        self.max_tokens = int(max_tokens)
-        self._test_mode = test_mode  # Boolean flag for testing
+        self.max_tokens = max_tokens
+        self._test_mode = test_mode
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -928,7 +936,8 @@ __all__ = [
     'base_env_manager',
     'create_agent',
     'envs',
-    'extract_xml',
+    'a_env',
+    'extract_xml', 
     'parse_xml_element',
     'parse_xml_to_dict',
     'print_datetime',
