@@ -359,14 +359,10 @@ class MemoryItem:
     output: str = field(default="")
     
     def __eq__(self, other: object) -> bool:
-        """Equality check that compares all fields"""
+        """Equality check comparing input/output only"""
         return (isinstance(other, MemoryItem) and 
                self.input == other.input and
-               self.output == other.output and
-               self.type == other.type and
-               self.amount == other.amount and
-               self.file_path == other.file_path and
-               self.command == other.command)
+               self.output == other.output)
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
@@ -685,6 +681,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # New agent inherits test mode only if both parents are in test mode
         new_test_mode = bool(self._test_mode) and bool(other._test_mode)
+        # Explicit boolean cast for clarity
+        new_test_mode = bool(new_test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -953,13 +951,15 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
-    Supported models and their OpenRouter paths:
-    - deepseek-chat: openrouter/deepseek/deepseek-chat
-    - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
-    - pro/gemini-pro: openrouter/google/gemini-2.0-pro
-    - gpt-3.5-turbo: openrouter/openai/gpt-3.5-turbo
-    - gpt-4: openrouter/openai/gpt-4
+    Supported OpenRouter models:
+    - openrouter/deepseek/deepseek-chat (default)
+    - openrouter/deepseek/deepseek-coder-33b-instruct
+    - openrouter/google/gemini-2.0-flash-001
+    - openrouter/google/gemini-2.0-pro
+    - openrouter/openai/gpt-3.5-turbo
+    - openrouter/openai/gpt-4
+    
+    Aliases: flash, gemini-flash, pro, gemini-pro
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         max_tokens: Maximum number of tokens for responses
@@ -1030,14 +1030,11 @@ __all__ = [
     'extract_xml',
     'parse_xml_element',
     'parse_xml_to_dict',
+    'process_observation',
     
     # Utility functions
     'print_datetime',
-    'process_observation',
-    'run_inference',
-    
-    # Data structures
-    'MemoryItem'
+    'run_inference'
 ]
 
 # Added process_observation to exports for proper from utils import *
