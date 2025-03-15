@@ -518,6 +518,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                 output=clean_output,
                 type="interaction"
             ))
+            self.completions.append(raw_response)  # Store raw XML for later access
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -542,11 +543,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Test mode responses
         if self._test_mode:
             if input_text == 'please respond with the string abc':
-                response = '''<respond>abc</respond>
-                <remember>
+                response = '''<remember>
                     <search>previous_value</search>
                     <replace>abc</replace>
-                </remember>'''
+                </remember>
+                <respond>abc</respond>'''
                 self.total_num_completions += 1
                 return response
             if 'remember it' in input_text.lower():
@@ -555,14 +556,10 @@ You can use multiple actions in a single completion but must follow the XML sche
                     <replace>132</replace>
                 </remember>'''
             if 'current directory' in input_text.lower():
-                return '''<response>
-                    <run>ls</run>
-                    <respond>plexsearch.log</respond>
-                </response>'''
+                return '''<run>ls</run>
+                    <respond>plexsearch.log</respond>'''
             if 'respond using the respond xml' in input_text.lower():
-                return '''<response>
-                    <respond>Successfully processed request</respond>
-                </response>'''
+                return '''<respond>Successfully processed request</respond>'''
 
         # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
@@ -592,7 +589,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model
-        new_agent = Agent(self.model_name)
+        new_agent = Agent(self.model_name, max_tokens=self.max_tokens)
         
         # Combine memories from both parents
         new_agent._memory.extend(self._memory)
@@ -862,24 +859,19 @@ __all__ = [
     'print_datetime',
     'create_agent',
     'process_observation',
-        
+            
     # Data classes
     'MemoryItem',
     'MemoryDiff',
     'Action',
-        
+            
     # Enum
     'DiffType',
-    
+        
     # Core classes
     'Agent',
-    
+        
     # Environment configs
     'base_env_manager',
-    'envs',
-    
-    # Agent creation
-    # XML parsing functions
-    'parse_xml_element',
-    'create_agent'
+    'envs'
 ]
