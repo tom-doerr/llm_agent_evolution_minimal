@@ -7,6 +7,13 @@ def is_non_empty_string(value: Any) -> bool:
     """Check if value is a non-empty string after stripping whitespace."""
     return isinstance(value, str) and bool(value.strip())
 
+def is_valid_xml_tag(tag: str) -> bool:
+    """Check if a string is a valid XML tag name."""
+    if not is_non_empty_string(tag):
+        return False
+    # Basic XML tag name validation
+    return tag[0].isalpha() and all(c.isalnum() or c in ('-', '_', '.') for c in tag)
+
 def is_valid_model_name(model: str) -> bool:
     """Check if model name is valid."""
     return isinstance(model, str) and bool(model.strip()) and '/' in model
@@ -225,7 +232,12 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
         
     Returns:
         Parsed element as dictionary or string
+        
+    Raises:
+        ValueError: If element contains invalid XML tags
     """
+    if not is_valid_xml_tag(element.tag):
+        raise ValueError(f"Invalid XML tag: {element.tag}")
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -327,6 +339,11 @@ class Agent:
     def clear_memory(self) -> None:
         """Clear the agent's memory"""
         self.memory = []
+
+    def get_net_worth(self) -> float:
+        """Get the agent's net worth (mock implementation)."""
+        # This is a mock implementation since we don't have real financial data
+        return 1000.0  # Default mock value
 
 def create_agent(model_type: str = 'flash', max_tokens: int = 50) -> Agent:
     """Create an agent with specified model type and token limit.
