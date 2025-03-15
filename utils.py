@@ -561,7 +561,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Execute validated command
         import subprocess
         try:
-            if not is_valid_xml_tag(command_elem.text):
+            if not is_valid_xml_tag(command_elem.tag):
                 if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
                     return "<message>Error: Invalid characters in command</message>"
             
@@ -699,7 +699,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         new_test_mode = bool(self._test_mode and other._test_mode)
-        # Inherit test mode only if both parents are in test mode
+        # Inherit test mode from either parent for testing flexibility
+        new_test_mode = bool(self._test_mode or other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -986,7 +987,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',  # Default to
     - openrouter/openai/gpt-4
     
     Model aliases:
-    - flash/openrouter/google/gemini-2.0-flash-001
+    - flash -> openrouter/google/gemini-2.0-flash-001
     - gemini-flash -> openrouter/google/gemini-2.0-flash-001
     - pro -> openrouter/google/gemini-2.0-pro
     - gemini-pro -> openrouter/google/gemini-2.0-pro
@@ -1061,7 +1062,6 @@ __all__ = [
     
     # XML processing
     'extract_xml',
-    'parse_xml_element',
     'parse_xml_to_dict',
     'process_observation',
     
