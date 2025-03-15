@@ -85,6 +85,10 @@ Code Quality Improvements & Fixes:
 8. Added strict type checks for memory operations
 9. Fixed __all__ exports to include all required components
 10. Updated model documentation with latest OpenRouter options
+11. Added explicit process_observation export in __all__
+12. Fixed model alias documentation formatting
+13. Added missing llama-3 model to documentation
+14. Removed duplicate type check in MemoryItem equality
 Code Quality Improvements & Fixes:
 1. Fixed duplicate parse_xml_element in __all__ exports
 2. Added missing envs and base_env_manager to exports

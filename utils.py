@@ -378,7 +378,8 @@ class MemoryItem:
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command)
+                self.command == other.command and
+                self.type == other.type)
 
     def __hash__(self) -> int:
         return hash((
@@ -1032,10 +1033,11 @@ def create_agent(model: str = 'deepseek-chat',
     Model aliases:
     - deepseek-chat: openrouter/deepseek/deepseek-chat (default)
     - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
-    - pro/gemini-pro: openrouter/google/gemini-2.0-pro 
+    - flash | gemini-flash: openrouter/google/gemini-2.0-flash-001
+    - pro | gemini-pro: openrouter/google/gemini-2.0-pro 
     - gpt-3.5: openrouter/openai/gpt-3.5-turbo
     - gpt-4: openrouter/openai/gpt-4
+    - llama-3: openrouter/meta-llama/llama-3-70b-instruct
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         
@@ -1100,6 +1102,10 @@ __all__ = [
     # Helper functions
     'print_datetime'
 ]
+
+# Ensure process_observation is properly exported
+if 'process_observation' not in __all__:
+    __all__.append('process_observation')
 
 # Ensure unique exports while preserving order
 __all__ = list(dict.fromkeys(__all__))
