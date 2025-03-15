@@ -563,6 +563,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                 </remember>
                 <respond>abc</respond>'''
                 self.total_num_completions += 1
+                self._test_mode = True
                 return response
             if 'remember it' in input_text.lower():
                 return '''<remember>
@@ -570,7 +571,7 @@ You can use multiple actions in a single completion but must follow the XML sche
                     <replace>132</replace>
                 </remember>'''
             if 'current directory' in input_text.lower():
-                return '''<run>ls</run>
+                return '''<shell>ls</shell>
                     <respond>plexsearch.log</respond>'''
             if 'respond using the respond xml' in input_text.lower():
                 return '''<respond>Successfully processed request</respond>'''
