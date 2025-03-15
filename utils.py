@@ -1,17 +1,17 @@
 import xml.etree.ElementTree as ET
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
-def is_non_empty_string(value: str) -> bool:
+def is_non_empty_string(value: Any) -> bool:
     # Check if value is a non-empty string after stripping whitespace
     return isinstance(value, str) and bool(value.strip())
 
-def safe_int_conversion(value: str) -> Optional[int]:
+def safe_int_conversion(value: Any) -> Optional[int]:
     try:
         return int(value)
     except (ValueError, TypeError):
         return None
 
-def safe_float_conversion(value: str) -> Optional[float]:
+def safe_float_conversion(value: Any) -> Optional[float]:
     try:
         return float(value)
     except (ValueError, TypeError):
@@ -21,7 +21,7 @@ def is_valid_number(value: Any) -> bool:
     # Check if value is int/float but not subclass bool
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
-def truncate_string(value: str, max_length: int = 100) -> str:
+def truncate_string(value: Any, max_length: int = 100) -> str:
     if not isinstance(value, str):  # Handle non-string inputs gracefully
         return ""
     if len(value) <= max_length:
@@ -29,15 +29,7 @@ def truncate_string(value: str, max_length: int = 100) -> str:
     return value[:max_length] + "..."
 
 def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") -> str:
-    """Run inference using the specified model.
-    
-    Args:
-        input_string: The input text to process
-        model: The model to use for inference (default: deepseek/deepseek-reasoner)
-        
-    Returns:
-        The model's response as a string
-    """
+    """Run inference using the specified model."""
     try:
         import litellm
         
@@ -57,14 +49,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner") 
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str) -> str:
-    """Extract XML data from a string.
-    
-    Args:
-        xml_string: String containing XML data
-        
-    Returns:
-        Extracted XML as a string, or empty string if parsing fails
-    """
+    """Extract XML data from a string."""
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -84,3 +69,19 @@ def extract_xml(xml_string: str) -> str:
             return ET.tostring(root, encoding='unicode')
     except ET.ParseError:
         return ""
+
+def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
+    """Parse XML string into a dictionary structure."""
+    if not is_non_empty_string(xml_string):
+        return {}
+    
+    try:
+        root = ET.fromstring(xml_string)
+        result = {}
+        
+        for child in root:
+            result[child.tag] = child.text
+            
+        return result
+    except ET.ParseError:
+        return {}
