@@ -386,7 +386,7 @@ class MemoryItem:
     
 
     def __hash__(self) -> int:
-        return hash(
+        return hash((
             self._normalize_value(self.input),
             self._normalize_value(self.output),
             self.type,
@@ -394,7 +394,7 @@ class MemoryItem:
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
             self._normalize_value(self.command)
-        )
+        ))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryItem):
@@ -434,6 +434,7 @@ class MemoryItem:
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
+        self._context_instructions: List[MemoryItem] = []
         """Initialize agent with model configuration and memory"""
         """Initialize agent with model name and default settings"""
         if not isinstance(model_name, str):
@@ -735,7 +736,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1097,7 +1098,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env_manager', 'a_env', 'base_env',
+    'envs', 'base_env', 'base_env_manager', 'a_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
