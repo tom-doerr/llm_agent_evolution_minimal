@@ -79,13 +79,31 @@ def is_non_empty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml_tag(tag: str) -> bool:
-    # Validate XML tag according to W3C standards
-    return (is_non_empty_string(tag) 
-            and re.match(r'^[a-zA-Z_][a-zA-Z0-9_.-]*$', tag) is not None
-            and 1 <= len(tag) <= 255
-            and not tag.lower().startswith(('xml', 'xsl'))
-            and ':' not in tag
-            and not tag.endswith('-'))
+    """Validate XML tag according to W3C standards with detailed error messages"""
+    if not is_non_empty_string(tag):
+        raise ValueError("XML tag cannot be empty or whitespace only")
+    
+    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_.-]*$', tag):
+        raise ValueError(
+            f"Invalid XML tag: {tag}. Tags must:\n"
+            "1. Start with a letter or underscore\n"
+            "2. Contain only a-z, 0-9, -, _, or .\n"
+            "3. Not contain spaces or special characters"
+        )
+    
+    if not 1 <= len(tag) <= 255:
+        raise ValueError(f"Tag length invalid ({len(tag)}). Must be 1-255 characters")
+    
+    if tag.lower().startswith(('xml', 'xsl')):
+        raise ValueError("Tag cannot start with 'xml' or 'xsl' (case-insensitive)")
+    
+    if ':' in tag:
+        raise ValueError("Colons are not allowed in XML tags")
+    
+    if tag.endswith('-'):
+        raise ValueError("Tag cannot end with a hyphen")
+    
+    return True
 
 def is_valid_model_name(model: str) -> bool:
     """Validate model name format"""
@@ -305,7 +323,9 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
         return {"error": f"Unexpected error: {str(e)}"}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
-    # XML tag validation is handled by the XML parser itself
+    """Parse XML element into Python data structures with validation"""
+    if not is_valid_xml_tag(element.tag):
+        raise ValueError(f"Invalid XML tag: {element.tag}")
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -381,8 +401,8 @@ class MemoryItem:
     file_path: Optional[str] = field(default=None, metadata={"description": "Path to file for edit operations"})
     command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
     
-    def __post_init__(self):
-        """Validate and normalize fields after initialization"""
+    def __post_init__(self) -> None:
+        """Validate and normalize MemoryItem fields"""
         if not isinstance(self.input, str):
             self.input = str(self.input)
         if self.file_path and not os.path.exists(self.file_path):
@@ -1085,16 +1105,16 @@ __all__ = [
     # Core components
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
-    # Environments
-    'a_env', 'base_env_manager', 'envs',
+    # Environment configuration
+    'base_env_manager', 'envs', 'a_env',
     
-    # Processing functions
+    # Core processing
     'create_agent', 'process_observation', 'run_inference',
     
-    # XML handling 
+    # XML utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
-    # Utilities
+    # Helper functions
     'print_datetime'
 ]
 
