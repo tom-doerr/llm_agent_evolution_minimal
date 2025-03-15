@@ -28,6 +28,7 @@
 - Removed redundant comments and docstrings
 
 Key Resolved Issues:
+- Added process_observation and parse_xml_element to __all__ exports
 - Removed all duplicate entries in __all__ exports
 - Fixed model mapping for deepseek-chat
 - Proper test_mode handling throughout Agent lifecycle
