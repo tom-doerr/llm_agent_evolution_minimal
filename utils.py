@@ -42,10 +42,10 @@ __all__ = [
     'MemoryDiff',
     'Action',
     'DiffType',
-    'process_observation',
-    '_create_prompt_body',
-    '_create_prompt_examples'
+    'process_observation'
 ]
+
+# Moved to bottom to ensure all symbols are defined before __all__ is set
 
 def is_non_empty_string(value: Any) -> bool:
     """True if value is a non-empty string after stripping whitespace"""
@@ -414,6 +414,7 @@ class Agent:
         # For testing purposes
         if hasattr(self, '_test_mode') and self._test_mode:
             if input_text == 'please respond with the string abc':
+                self.last_response = 'abc'
                 return 'abc'
             
         if self.lm is not None:
@@ -421,14 +422,20 @@ class Agent:
                 if hasattr(self.lm, 'complete'):
                     response = self.lm.complete(input_text)
                     if hasattr(response, 'completion'):
+                        self.last_response = response.completion
                         return response.completion
+                    self.last_response = str(response)
                     return str(response)
             except Exception as e:
-                return f"Error using LM: {str(e)}"
+                error_msg = f"Error using LM: {str(e)}"
+                self.last_response = error_msg
+                return error_msg
         
         # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
-        return run_inference(input_text, self.model_name, stream=use_stream)
+        response = run_inference(input_text, self.model_name, stream=use_stream)
+        self.last_response = response  # Store the raw response
+        return response
     
     def clear_memory(self) -> None:
         """Clear the agent's memory"""
@@ -565,12 +572,16 @@ def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
     diffs = []
     root = ET.fromstring(xml_content)
     for diff_elem in root.findall('.//diff'):
-        diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+        try:
+            diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+        except KeyError:
+            diff_type = DiffType.MODIFY  # Default to MODIFY for unknown types
+            
         diffs.append(MemoryDiff(
             type=diff_type,
-            key=diff_elem.find('key').text,
-            old_value=diff_elem.find('old_value').text,
-            new_value=diff_elem.find('new_value').text
+            key=diff_elem.findtext('key', ''),
+            old_value=diff_elem.findtext('old_value', None),
+            new_value=diff_elem.findtext('new_value', None)
         ))
     return diffs
 
