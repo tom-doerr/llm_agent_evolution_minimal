@@ -514,7 +514,7 @@ class Agent:
             if item.type == "reward" and item.amount is not None
         )
         
-    def mate(self, other: Agent) -> Agent:
+    def mate(self, other: 'Agent') -> 'Agent':
         """Create new agent by combining memories from both parents"""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
