@@ -33,7 +33,6 @@ class MemoryDiff:
     new_value: Optional[Any] = None
 
     def __post_init__(self):
-        """Validate key and diff type"""
         if not self.key.strip():
             raise ValueError("MemoryDiff key cannot be empty")
         if not isinstance(self.type, DiffType):
@@ -865,24 +864,13 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
 
 # Ensure __all__ is after all definitions
 __all__ = [
-    # Core functions
     'create_agent',
-    'run_inference',
+    'run_inference', 
     'extract_xml',
     'process_observation',
-    
-    # Data classes
     'MemoryItem',
     'MemoryDiff',
     'Action',
-    
-    # Enum
     'DiffType',
-    
-    # Core class
-    'Agent',
-    
-    # Environment configs
-    'base_env_manager',
-    'envs'
+    'Agent'
 ]

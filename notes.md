@@ -10,3 +10,6 @@ Code Quality Improvements & Fixes:
 9. Added _test_mode initialization in Agent class
 10. Added validation for MemoryDiff key fields
 11. Fixed error handling for invalid DiffType values
+12. Fixed test mode initialization in Agent class
+13. Corrected shell command XML handling
+14. Removed redundant environment configs from exports
