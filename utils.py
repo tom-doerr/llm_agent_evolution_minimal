@@ -302,9 +302,9 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
             
         return result
     except ET.ParseError as e:
-        return {"error": f"XML parsing error: {str(e)}", "xml_input": xml_string}
+        return {"error": f"XML parsing error: {str(e)}"}
     except Exception as e:
-        return {"error": f"Unexpected error: {str(e)}", "xml_input": xml_string}
+        return {"error": f"Unexpected error: {str(e)}"}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     # XML tag validation is handled by the XML parser itself
@@ -357,8 +357,7 @@ class MemoryItem:
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
                 self.file_path == other.file_path and
-                self.command == other.command and
-                self.type == other.type)
+                self.command == other.command)
 
     def __hash__(self) -> int:
         return hash((
@@ -693,7 +692,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent for testing flexibility
         new_test_mode = bool(self._test_mode or other._test_mode)
-        from utils import create_agent  # Absolute import for reliability
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -1021,7 +1019,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
     if not is_valid_model_name(model_name):
         raise ValueError(f"Invalid model name: {model_name}. Valid options are: {list(model_mapping.keys())}")
 
-    agent = Agent(model_name, max_tokens=max_tokens, test_mode=bool(test_mode))
+    agent = Agent(model_name, max_tokens=max_tokens, test_mode=test_mode)
     
     if load:
         if not os.path.exists(load):
