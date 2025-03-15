@@ -22,7 +22,7 @@ Code Quality Improvements & Fixes:
 
 Key Resolved Issues:
 - Removed all duplicate entries in __all__ exports
-- Fixed model mapping for deepseek-reasoner
+- Fixed model mapping for deepseek-chat
 - Proper test_mode handling throughout Agent lifecycle
 - Complete XML handling implementation
 - Consistent memory diff validation
