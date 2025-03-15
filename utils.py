@@ -513,6 +513,23 @@ def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
         ))
     return diffs
 
+def _validate_xml_response(xml_content: str) -> None:
+    """Validate XML structure meets requirements"""
+    root = ET.fromstring(xml_content)
+    if root.find('.//diffs') is None:
+        raise ValueError("XML response missing required <diffs> section")
+
+def _parse_action(xml_content: str) -> Optional[Action]:
+    """Parse action from XML response if present"""
+    root = ET.fromstring(xml_content)
+    action_elem = root.find('.//action')
+    if action_elem is not None:
+        return Action(
+            type=action_elem.get('type', ''),
+            params={child.tag: child.text or '' for child in action_elem}
+        )
+    return None
+
 def create_agent(model: str = 'flash', max_tokens: int = 50) -> Agent:
     """Create an agent with specified model.
     
