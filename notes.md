@@ -150,7 +150,8 @@ Code Quality Improvements Applied:
    - Ensures exact field matching during agent mating
    
 2. Strengthened __all__ exports
-   - Explicitly included base_env_manager for proper import
+   - Explicitly included base_env_manager and create_agent for proper import
+   - Added process_observation to XML handling exports
    - Verified all SimpleNamespace components are accessible
    - Organized exports into logical groups with clear comments
 
