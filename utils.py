@@ -54,9 +54,13 @@ class MemoryDiff:
             return False
         return (
             (self._normalize_value(self.input), self._normalize_value(self.output),
-             self.type, self.amount, self.timestamp, self.file_path, self.command) == 
+             self._normalize_value(self.type), self._normalize_value(self.amount),
+             self._normalize_value(self.timestamp), self._normalize_value(self.file_path),
+             self._normalize_value(self.command)) == 
             (self._normalize_value(other.input), self._normalize_value(other.output),
-             other.type, other.amount, other.timestamp, other.file_path, other.command)
+             self._normalize_value(other.type), self._normalize_value(other.amount),
+             self._normalize_value(other.timestamp), self._normalize_value(other.file_path),
+             self._normalize_value(other.command))
         )
 
     @staticmethod
