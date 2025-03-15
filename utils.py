@@ -1137,40 +1137,39 @@ def create_agent(
     test_mode: bool = True,  # Default to test mode for assertions
     load: Optional[str] = None
 ) -> Agent:
-    # Create an agent with specified model
-    #
-    # Supported models (via OpenRouter):
-    #
-    # Args:
-    #     model: Model identifier string. Valid options:
-    #         - deepseek-chat (default): openrouter/deepseek/deepseek-chat
-    #         - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-    #         - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
-    #         - pro/gemini-pro: openrouter/google/gemini-2.0-pro
-    #         - gpt-3.5: openrouter/openai/gpt-3.5-turbo
-    #         - gpt-4: openrouter/openai/gpt-4
-    #         - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
-    #     
-    #     Requires OPENROUTER_API_KEY environment variable for OpenRouter models.
-    #     max_tokens: Maximum number of tokens for responses
-    #     load: Path to load agent state from
-    #     test_mode: Enable testing mode (skips real LLM calls)
-    #
-    # Supported models (via OpenRouter):
-    # - DeepSeek: 
-    #   - deepseek-chat (default): openrouter/deepseek/deepseek-chat
-    #   - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-    # - Google:
-    #   - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
-    #   - pro/gemini-pro: openrouter/google/gemini-2.0-pro
-    # - Meta:
-    #   - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
-    # - OpenAI:
-    #   - gpt-3.5: openrouter/openai/gpt-3.5-turbo
-    #   - gpt-4: openrouter/openai/gpt-4
-    #
-    # All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
+    """Create an agent with specified model
+
+    Supported models (via OpenRouter):
+
+    Args:
+        model: Model identifier string. Valid options:
+            - deepseek-chat (default): openrouter/deepseek/deepseek-chat
+            - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
+            - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+            - pro/gemini-pro: openrouter/google/gemini-2.0-pro
+            - gpt-3.5: openrouter/openai/gpt-3.5-turbo
+            - gpt-4: openrouter/openai/gpt-4
+            - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
         
+        max_tokens: Maximum number of tokens for responses
+        load: Path to load agent state from
+        test_mode: Enable testing mode (skips real LLM calls)
+
+    Supported models (via OpenRouter):
+    - DeepSeek: 
+        - deepseek-chat (default): openrouter/deepseek/deepseek-chat
+        - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
+    - Google:
+        - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+        - pro/gemini-pro: openrouter/google/gemini-2.0-pro
+    - Meta:
+        - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
+    - OpenAI:
+        - gpt-3.5: openrouter/openai/gpt-3.5-turbo
+        - gpt-4: openrouter/openai/gpt-4
+
+    All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
+
     Returns:
         Initialized Agent instance
         
