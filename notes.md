@@ -145,8 +145,15 @@ Code Quality Improvements Applied:
 2. Updated model alias documentation in create_agent()
    - Added missing llama3 and llama-3-70b aliases
    - Improved documentation clarity for model options
+   - Clarified OpenRouter API key requirements
 
 3. Verified proper exports in __all__
    - Added missing base_env_manager and envs exports
    - Ensured a_env function is properly exported
    - Fixed process_observation export visibility
+   - Organized exports into logical groups for better import structure
+
+4. XML validation improvements
+   - Standardized error message formatting
+   - Added explicit tag validation rules
+   - Improved special character handling in shell commands
