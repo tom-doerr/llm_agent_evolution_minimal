@@ -23,6 +23,8 @@ envs = {
     'a_env': a_env,
     'base_env': SimpleNamespace(description="Base environment configuration")
 }
+"""Collection of available environments with their reward functions and configurations.
+Includes both a_env (counting 'a's) and base_env (evolution settings)"""
 """Collection of available environments with their reward functions and configurations"""
 
 class DiffType(Enum):
@@ -636,7 +638,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
         
     def mate(self, other: 'Agent') -> 'Agent':
-        """Create new agent by combining memories from both parents"""
+        """Create new agent by combining memories from both parents.
+        New agent will be in test mode only if both parents are in test mode.
+        Applies mating cost to both parents."""
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
@@ -935,13 +939,14 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType',
+    'DiffType', 
     'MemoryDiff',
     'MemoryItem',
+    'base_env_manager',
+    'a_env',
     'create_agent',
     'envs',
     'extract_xml',
-    'parse_xml_element',
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
