@@ -807,26 +807,23 @@ __all__ = [
     'print_datetime',
     'create_agent',
     'process_observation',
-    
+    '_validate_inputs',
+    '_prepare_prompt',
+    '_get_litellm_response',
+        
     # Data classes
     'MemoryItem',
     'MemoryDiff',
     'Action',
     'DiffType',
-    
+        
     # Core classes
     'Agent',
-    
+        
     # Environment configs
     'base_env_manager',
     'envs',
-    
+        
     # XML parsing functions
-    'parse_xml_element',
-    
-    # Observation processing
-    'process_observation',
-    
-    # XML parsing
-    'extract_xml'
+    'parse_xml_element'
 ]
