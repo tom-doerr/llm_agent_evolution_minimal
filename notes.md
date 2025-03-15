@@ -66,6 +66,10 @@ New Features:
 Code Quality Improvements & Fixes:
 1. Fixed XML response format in test mode to include required tags
 2. Added proper test_mode propagation in mate() method
+3. Added process_observation to __all__ exports for proper import*
+4. Improved XML tag validation error messages
+5. Enhanced model documentation in create_agent()
+6. Fixed missing OpenRouter API key requirement in docs
 3. Enhanced XML validation in _handle_shell_commands()
 4. Improved error handling for shell command execution
 5. Added missing test_mode initialization in Agent creation

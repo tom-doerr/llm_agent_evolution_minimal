@@ -309,7 +309,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
     """Parse XML element recursively into dict or string"""
     if not is_valid_xml_tag(element.tag):
-        raise ValueError(f"Invalid XML tag: {element.tag}")
+        raise ValueError(f"Invalid XML tag: {element.tag}. Tags must start with a letter, contain only alphanumerics/hyphens/underscores/dots, and cannot contain spaces or colons.")
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -934,13 +934,14 @@ def process_observation(
 def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
-
-    Args:
-        model: Model to use - Valid options:
-               - 'deepseek-chat' (alias for openrouter/deepseek/deepseek-chat)
-               - 'deepseek-coder' (openrouter/deepseek/deepseek-coder-33b-instruct)
-               - 'flash' or 'gemini-flash' (openrouter/google/gemini-2.0-flash-001)
-               - 'pro' or 'gemini-pro' (openrouter/google/gemini-2.0-pro)
+    
+    Supported models:
+    - 'deepseek-chat' (openrouter/deepseek/deepseek-chat)
+    - 'deepseek-coder' (openrouter/deepseek/deepseek-coder-33b-instruct) 
+    - 'flash'/'gemini-flash' (openrouter/google/gemini-2.0-flash-001)
+    - 'pro'/'gemini-pro' (openrouter/google/gemini-2.0-pro)
+    
+    All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -992,7 +993,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType',
+    'DiffType', 
     'MemoryDiff',
     'MemoryItem',
     'a_env',
