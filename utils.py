@@ -51,13 +51,16 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
+        def normalize(value: Any) -> Any:
+            if isinstance(value, str):
+                return re.sub(r'\s+', ' ', value).strip()
+            return value
+            
         return (isinstance(other, MemoryDiff) and 
                 self.type == other.type and
                 self.key == other.key and
-                (str(self.old_value).strip() if isinstance(self.old_value, str) else self.old_value) == 
-                (str(other.old_value).strip() if isinstance(other.old_value, str) else other.old_value) and
-                (str(self.new_value).strip() if isinstance(self.new_value, str) else self.new_value) == 
-                (str(other.new_value).strip() if isinstance(other.new_value, str) else other.new_value))
+                normalize(self.old_value) == normalize(other.old_value) and
+                normalize(self.new_value) == normalize(other.new_value))
 
 @dataclass
 class Action:
@@ -668,7 +671,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Inherit test mode only if both parents are in test mode
-        new_test_mode = bool(self._test_mode and other._test_mode)
+        new_test_mode = bool(self._test_mode and other._test_mode)  # AND not OR
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -938,9 +941,8 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     """Create an agent with specified model.
 
     Args:
-        model: Model to use - 'flash' (gemini-2.0-flash), 'pro' (gemini-2.0-pro),
-               'deepseek-chat' (openrouter/deepseek/deepseek-chat) or 
-               'deepseek-coder' (openrouter/deepseek/deepseek-coder-33b-instruct)
+        model: Model to use - 'deepseek-chat' (default), 'deepseek-coder', 
+               'gemini-flash', or 'gemini-pro'
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
@@ -992,7 +994,7 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
 __all__ = [
     'Action',
     'Agent',
-    'DiffType', 
+    'DiffType',
     'MemoryDiff',
     'MemoryItem',
     'a_env',
@@ -1001,7 +1003,7 @@ __all__ = [
     'envs',
     'extract_xml',
     'print_datetime',
-    'process_observation', 
+    'process_observation',
     'run_inference'
 ]
 
