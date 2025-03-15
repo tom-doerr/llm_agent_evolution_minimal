@@ -429,12 +429,11 @@ class MemoryItem:
         return (
             self._normalize_value(self.input) == self._normalize_value(other.input) and
             self._normalize_value(self.output) == self._normalize_value(other.output) and
-            self.type == other.type and
+            self._normalize_value(self.type) == self._normalize_value(other.type) and
             self.amount == other.amount and
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
-            self._normalize_value(self.command) == self._normalize_value(other.command) and
-            self._normalize_value(self.type) == self._normalize_value(other.type)
+            self._normalize_value(self.command) == self._normalize_value(other.command)
         )
 
 class Agent:
@@ -693,6 +692,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         <search>previous_value</search>
         <replace>132</replace>
     </remember>
+    <respond>Got it! I'll remember that!</respond>
 </response>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
