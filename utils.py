@@ -1009,12 +1009,10 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-coder-33b-instruct': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
-        'gemini-pro': 'openrouter/google/gemini-2.0-pro', 
-        'pro': 'openrouter/google/gemini-2.0-pro',
+        'gemini-pro': 'openrouter/google/gemini-2.0-pro',
         'gpt-3.5-turbo': 'openrouter/openai/gpt-3.5-turbo',
         'gpt-4': 'openrouter/openai/gpt-4'
     }
@@ -1062,7 +1060,7 @@ __all__ = [
     # XML processing
     'extract_xml',
     'parse_xml_element',
-    'parse_xml_to_dict', 
+    'parse_xml_to_dict',
     'process_observation',
     
     # Utility functions

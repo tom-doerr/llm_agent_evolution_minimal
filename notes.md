@@ -1,8 +1,7 @@
 # Code Quality Improvements & Fixes
 
 ## Core Fixes
-1. Removed duplicate `parse_xml_element` from `__all__` exports
-2. Fixed XML validation error messages to show formatting rules:
+1. Fixed XML validation error messages to show formatting rules:
    ```python
    f"Invalid XML tag: {element.tag}. Tags must:\n"
    f"1. Start with a letter\n"
