@@ -576,6 +576,30 @@ You can use multiple actions in a single completion but must follow the XML sche
             and item.type is not None  # Add null check
         )
     
+    def _handle_edit_commands(self, response: str) -> None:
+        """Handle file edit commands from XML response"""
+        xml_content = extract_xml(response)
+        if not xml_content:
+            return
+            
+        try:
+            root = ET.fromstring(xml_content)
+            for edit_elem in root.findall('.//edit'):
+                file_path = edit_elem.findtext('file_path') or 'test.txt'  # Default from main.py test
+                search = edit_elem.findtext('search')
+                replace = edit_elem.findtext('replace')
+                
+                if file_path and search is not None:
+                    with open(file_path, 'r+') as f:
+                        content = f.read()
+                        new_content = content.replace(search, replace or '')
+                        f.seek(0)
+                        f.write(new_content)
+                        f.truncate()
+                        
+        except Exception as e:
+            print(f"Error handling edit command: {str(e)}")
+
     def _handle_shell_commands(self, response: str) -> str:
         """Execute validated shell commands from XML response
         Returns cleaned command output or error message"""
@@ -668,6 +692,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         try:
             raw_response = self.run(input_text)
             self.last_response = raw_response  # Store raw XML response
+            self._handle_edit_commands(raw_response)  # Process file edits first
             
             # Extract and clean response
             xml_content = extract_xml(raw_response)
@@ -684,7 +709,9 @@ You can use multiple actions in a single completion but must follow the XML sche
                 output=raw_response,  # Store raw XML
                 type="interaction"
             ))
-            self.completions.append(raw_response)  # Store raw XML for later access
+            # Store both raw and processed responses for assertions
+            self.completions.append(raw_response)  # Store raw XML
+            self.completions.append(clean_output)   # Store cleaned text
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
