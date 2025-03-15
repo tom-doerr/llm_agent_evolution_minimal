@@ -670,8 +670,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # AND logic for test mode inheritance
-        new_test_mode = bool(self._test_mode and other._test_mode)
+        # AND logic for test mode inheritance (both must be in test mode)
+        new_test_mode = bool(self._test_mode) and bool(other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -1005,6 +1005,8 @@ __all__ = [
     'create_agent',
     'envs',
     'extract_xml',
+    'parse_xml_to_dict',
+    'parse_xml_element',
     'print_datetime',
     'process_observation',
     'run_inference'

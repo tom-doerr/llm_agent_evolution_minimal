@@ -39,6 +39,8 @@ Code Quality Improvements & Fixes:
 29. Fixed run_inference return type annotation
 30. Removed duplicate envs docstring
 31. Standardized __all__ exports formatting
+32. Added missing XML parsing functions to exports
+33. Fixed test_mode boolean casting in mate()
 
 Key Resolved Issues:
 - Removed all duplicate entries in __all__ exports
