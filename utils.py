@@ -32,6 +32,13 @@ class MemoryDiff:
     old_value: Optional[Any] = None
     new_value: Optional[Any] = None
 
+    def __post_init__(self):
+        """Validate key and diff type"""
+        if not self.key.strip():
+            raise ValueError("MemoryDiff key cannot be empty")
+        if not isinstance(self.type, DiffType):
+            raise TypeError(f"Invalid DiffType: {type(self.type)}")
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
             return NotImplemented
@@ -889,5 +896,5 @@ __all__ = [
     'envs',
     
     # XML processing
-    'extract_xml'  # Single entry for extract_xml
+    'extract_xml'
 ]
