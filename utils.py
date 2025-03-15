@@ -380,6 +380,7 @@ class Agent:
         self._memory = []
         self._context_instructions = []
         self.max_tokens = max_tokens
+        self._test_mode = test_mode
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -866,7 +867,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro', 
         'deepseek': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat'
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -902,7 +903,5 @@ __all__ = [
     'Action',
     'DiffType',
     'Agent',
-    'base_env_manager',
-    'envs',
     'parse_xml_to_dict'
 ]

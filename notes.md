@@ -27,3 +27,7 @@ Code Quality Improvements & Fixes:
 26. Corrected deepseek-reasoner model mapping
 27. Added proper test_mode propagation in mate()
 28. Updated default model to openrouter format
+29. Fixed __all__ exports to remove duplicates
+30. Corrected deepseek-reasoner model mapping
+31. Fixed test_mode initialization in Agent class
+32. Added proper test_mode propagation in mate()
