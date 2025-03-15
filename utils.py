@@ -155,7 +155,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
             
     # Check for required API keys
     if model.startswith("openrouter/") and "OPENROUTER_API_KEY" not in os.environ:
-        return f"Error: DEEPSEEK_API_KEY environment variable not set for model {model}"
+        return f"Error: OPENROUTER_API_KEY environment variable not set for model {model}"
         
     try:
         response = litellm.completion(
@@ -372,7 +372,7 @@ class Agent:
 
         self.model_name = model_name
         self.max_tokens = int(max_tokens)
-        self._test_mode = test_mode if isinstance(test_mode, bool) else False
+        self._test_mode = bool(test_mode)  # Ensure boolean type
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -585,7 +585,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             if input_text == 'please respond with the string abc':
                 response = '''<respond>abc</respond>'''
                 self.total_num_completions += 1
-                self._test_mode = True
                 return response
             if 'remember it' in input_text.lower():
                 return '''<remember>
