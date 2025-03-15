@@ -187,7 +187,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
                     continue
     return ""
 
-def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
+def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], List[Any]]]:
     """Parse XML string into a nested dictionary structure.
     
     Args:
@@ -226,7 +226,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Any]:
         # Handle other exceptions
         return {"error": f"Unexpected error: {str(e)}"}
 
-def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
+def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, Dict[str, str]]:
     """Parse an XML element recursively into a dictionary or string.
     
     Args:
@@ -272,8 +272,8 @@ def print_datetime() -> None:
 
 @dataclass
 class MemoryItem:
-    input: str
-    output: str
+    input: str = ""
+    output: str = ""
     type: Optional[str] = None
     amount: Optional[float] = None
     timestamp: Optional[str] = None
@@ -379,6 +379,8 @@ class Agent:
         # In a real implementation this would modify some internal state
         # For now just log the reward
         self.memory.append(MemoryItem(
+            input="reward",
+            output=str(amount),
             type="reward",
             amount=float(amount),
             timestamp=datetime.datetime.now().isoformat()
