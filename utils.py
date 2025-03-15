@@ -60,6 +60,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         
     Raises:
         ValueError: If input_string is invalid
+        ImportError: If required dependencies are missing
     """
     if not is_non_empty_string(input_string):
         return ""
@@ -263,6 +264,7 @@ class Agent:
         self.model_name = model_name
         self.memory: List[Dict[str, str]] = []
         self._test_mode = model_name.startswith("flash")
+        self.lm = None  # Initialize lm attribute
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -327,7 +329,15 @@ class Agent:
         self.memory = []
 
 def create_agent(model_type: str = 'flash', max_tokens: int = 50) -> Agent:
-    # Create agent with specified model type and token limit
+    """Create an agent with specified model type and token limit.
+    
+    Args:
+        model_type: Type of model to use ('flash', 'pro', 'deepseek')
+        max_tokens: Maximum number of tokens for responses
+        
+    Returns:
+        Initialized Agent instance
+    """
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
@@ -338,5 +348,8 @@ def create_agent(model_type: str = 'flash', max_tokens: int = 50) -> Agent:
     # Get model name with default fallback
     model_name = model_mapping.get(model_type.lower(), model_mapping['default'])
     agent = Agent(model_name)
+    
+    # Set max_tokens if needed (currently unused but available for future use)
+    agent.max_tokens = max_tokens
     
     return agent
