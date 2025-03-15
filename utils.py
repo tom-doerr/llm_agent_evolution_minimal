@@ -389,6 +389,18 @@ class MemoryItem:
     output: str = field(default="")
     
 
+    @staticmethod
+    def _normalize_value(value: Any) -> Any:
+        """Normalize string values for consistent comparison"""
+        if isinstance(value, str):
+            return re.sub(r'\s+', ' ', value).strip()
+        return value
+    type: Optional[str] = field(default=None)
+    amount: Optional[float] = field(default=None)
+    timestamp: Optional[str] = field(default=None)
+    file_path: Optional[str] = field(default=None, metadata={"description": "Path to file for edit operations"})
+    command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
+    
     def __hash__(self) -> int:
         return hash((
             self._normalize_value(self.input),
@@ -413,18 +425,6 @@ class MemoryItem:
             self._normalize_value(self.command) == self._normalize_value(other.command)
         )
 
-    @staticmethod
-    def _normalize_value(value: Any) -> Any:
-        """Normalize string values for consistent comparison"""
-        if isinstance(value, str):
-            return re.sub(r'\s+', ' ', value).strip()
-        return value
-    type: Optional[str] = field(default=None)
-    amount: Optional[float] = field(default=None)
-    timestamp: Optional[str] = field(default=None)
-    file_path: Optional[str] = field(default=None, metadata={"description": "Path to file for edit operations"})
-    command: Optional[str] = field(default=None, metadata={"description": "Executed shell command"})
-    
     def __post_init__(self) -> None:
         """Validate and normalize MemoryItem fields"""
         if not isinstance(self.input, str):
@@ -1099,18 +1099,15 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem', 'create_agent',
     
     # Environment configuration
-    'base_env', 'base_env_manager', 'a_env',
+    'base_env', 'base_env_manager', 'a_env', 'envs',
     
     # XML processing utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
     
     # Core runtime utilities
-    'print_datetime', 'create_agent', 'run_inference',
+    'print_datetime', 'run_inference',
     
     # Validation functions
-    'is_valid_xml_tag', 'is_valid_model_name',
-    
-    # Environment components
-    'base_env', 'envs', 'base_env_manager', 'a_env'
+    'is_valid_xml_tag', 'is_valid_model_name'
 ]
 
