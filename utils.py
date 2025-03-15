@@ -470,7 +470,6 @@ class Agent:
         # Initialize from base environment configuration
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
-        # Initialize from base environment configuration
         self._context_instructions = []
         self._test_mode = bool(test_mode)
         self.completions = []
@@ -884,8 +883,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         
         # Apply mating cost only to self parent per main.py assertion
         self.reward(-base_env_manager.mating_cost)
-        # Clear other parent's cost as per main.py's net_worth_b assertion
-        other.reward(0)
         
         return new_agent
 
