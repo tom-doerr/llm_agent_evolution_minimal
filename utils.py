@@ -49,15 +49,19 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         if stream:
             full_response = ""
             for chunk in response:
-                if hasattr(chunk, 'choices') and chunk.choices and len(chunk.choices) > 0:
-                    delta = chunk.choices[0].delta
-                    if hasattr(delta, 'content') and delta.content:
-                        full_response += delta.content
-                    elif hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-                        full_response += delta.reasoning_content
+                if not hasattr(chunk, 'choices') or not chunk.choices:
+                    continue
+                    
+                delta = chunk.choices[0].delta
+                # Handle both regular content and reasoning_content (for DeepSeek models)
+                if hasattr(delta, 'content') and delta.content:
+                    full_response += delta.content
+                elif hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                    full_response += delta.reasoning_content
             return full_response
         
-        if hasattr(response, 'choices') and response.choices and len(response.choices) > 0:
+        # Handle non-streaming response
+        if hasattr(response, 'choices') and response.choices:
             choice = response.choices[0]
             if hasattr(choice, 'message') and hasattr(choice.message, 'content'):
                 return choice.message.content
@@ -107,9 +111,8 @@ def extract_xml(xml_string: str) -> str:
                         except ET.ParseError:
                             continue
                 
-                # Import re only when needed
-                import re
                 # Try to find any well-formed XML fragment
+                import re
                 xml_pattern = r'<([a-zA-Z][a-zA-Z0-9]*)(?:\s+[^>]*)?(?:/>|>.*?</\1>)'
                 matches = re.finditer(xml_pattern, xml_string, re.DOTALL)
                 for match in matches:
