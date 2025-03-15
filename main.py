@@ -21,7 +21,8 @@ extracted_xml_data = extract_xml(response)
 print("extracted_xml_data:", extracted_xml_data)
 
 # MODEL = 'flash'
-MODEL = 'openrouter/deepseek/deepseek-chat'
+# MODEL = 'openrouter/deepseek/deepseek-chat'
+MODEL = 'deepseek/deepseek-chat'
 agent = create_agent(model=MODEL, max_tokens=50)
 memory = agent.memory
 print("memory:", memory)
