@@ -573,12 +573,10 @@ You can use multiple actions in a single completion but must follow the XML sche
                 self._test_mode = True
                 return response
             if 'remember it' in input_text.lower():
-                return '''<response>
-                    <remember>
-                        <search>previous_value</search>
-                        <replace>132</replace>
-                    </remember>
-                </response>'''
+                return '''<remember>
+    <search>previous_value</search>
+    <replace>132</replace>
+</remember>'''
             if 'current directory' in input_text.lower():
                 return '''<shell>ls</shell>
                     <respond>plexsearch.log</respond>'''
@@ -613,11 +611,11 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model and propagate test mode only if both parents have it
-        test_mode = bool(self._test_mode) and bool(other._test_mode)
+        test_mode = self._test_mode and other._test_mode
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode and other._test_mode
+            test_mode=test_mode
         )
         
         # Combine memories from both parents
@@ -849,7 +847,7 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         )
     return None
 
-def create_agent(model: str = 'flash', max_tokens: int = 50, 
+def create_agent(model: str = 'deepseek-chat', max_tokens: int = 50,
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
@@ -914,7 +912,6 @@ __all__ = [
     'create_agent',
     'envs',
     'extract_xml',
-    'parse_xml_element',
     'parse_xml_to_dict',
     'process_observation',
     'run_inference'
