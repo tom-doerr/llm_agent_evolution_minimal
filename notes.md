@@ -34,13 +34,11 @@ Code Quality Improvements & Fixes:
 10. Fixed model name mapping in create_agent() and test_mode handling
 11. Improved XML response validation
 12. Fixed test_mode propagation in mate()
-13. Added missing parse_xml_element to __all__ exports
-14. Fixed duplicate parameter in create_agent docstring
-15. Enforced boolean type for test_mode in mate() with explicit casting
-16. Added missing parse_xml_element to __all__ exports
-17. Fixed duplicate test_mode parameter in docstring
-18. Simplified MemoryDiff equality check
-18. Fixed variable naming inconsistency in mate()
+13. Fixed missing parse_xml_element in __all__ exports
+14. Removed duplicate test_mode parameter in create_agent docstring
+15. Enforced boolean type casting for test_mode in mate()
+16. Fixed variable name inconsistency in mate() method
+17. Standardized __all__ exports list
 16. Simplified MemoryDiff equality checks
 17. Updated DeepSeek model paths to current format
 17. Fixed Action equality handling of None params

@@ -618,7 +618,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model and propagate test mode only if both parents have it
-        new_test_mode = self._test_mode and other._test_mode
+        new_test_mode = bool(self._test_mode and other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -913,6 +913,7 @@ __all__ = [
     'DiffType',
     'MemoryDiff',
     'MemoryItem',
+    'parse_xml_element',
     'base_env_manager',
     'create_agent',
     'envs',
