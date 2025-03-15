@@ -574,10 +574,12 @@ You can use multiple actions in a single completion but must follow the XML sche
                 self._test_mode = True
                 return response
             if 'remember it' in input_text.lower():
-                return '''<remember>
-                    <search>previous_value</search>
-                    <replace>132</replace>
-                </remember>'''
+                return '''<response>
+                    <remember>
+                        <search>previous_value</search>
+                        <replace>132</replace>
+                    </remember>
+                </response>'''
             if 'current directory' in input_text.lower():
                 return '''<shell>ls</shell>
                     <respond>plexsearch.log</respond>'''
@@ -617,6 +619,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             max_tokens=self.max_tokens,
             test_mode=self._test_mode and other._test_mode
         )
+        new_agent._test_mode = self._test_mode and other._test_mode
         
         # Combine memories from both parents
         new_agent._memory.extend(self._memory)
@@ -870,6 +873,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
+        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
