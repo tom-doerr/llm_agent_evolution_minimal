@@ -377,7 +377,7 @@ class MemoryItem:
                 self.type == other.type and
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
-                self.file_path == other.file_path and
+                self.file_path == other.file_path and 
                 self.command == other.command)
 
     def __hash__(self) -> int:
@@ -996,7 +996,7 @@ def create_agent(model: str = 'deepseek-chat',
     
     Args:
         model: Model identifier string. Valid options:
-            - deepseek-chat (default): openrouter/deepseek/deepseek-chat
+            - deepseek-chat (default alias): openrouter/deepseek/deepseek-chat
             - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
             - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
             - pro/gemini-pro: openrouter/google/gemini-2.0-pro
@@ -1094,6 +1094,9 @@ __all__ = [
     
     # Core processing functions
     'create_agent', 'process_observation', 'run_inference',
+    
+    # XML handling utilities
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # XML handling utilities
     'extract_xml', 'parse_xml_to_dict',
