@@ -5,6 +5,7 @@ from typing import Optional, Dict, List, Tuple
 import litellm
 
 import xml.etree.ElementTree as ET
+from litellm import completion
 
 class DiffType(Enum):
     SEARCH_REPLACE = "search/replace"
