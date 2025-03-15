@@ -859,6 +859,7 @@ __all__ = [
     'print_datetime',
     'create_agent',
     'process_observation',
+    'print_datetime',
             
     # Data classes
     'MemoryItem',
@@ -873,5 +874,15 @@ __all__ = [
         
     # Environment configs
     'base_env_manager',
-    'envs'
+    'envs',
+    
+    # XML processing
+    'extract_xml',
+    
+    # Agent components
+    'Agent',
+    'MemoryItem',
+    'MemoryDiff',
+    'Action',
+    'DiffType'
 ]
