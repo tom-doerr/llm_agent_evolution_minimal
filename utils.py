@@ -1042,8 +1042,7 @@ def create_agent(model: str = 'deepseek-chat',
       - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
       - pro/gemini-pro: openrouter/google/gemini-2.0-pro
     - Meta:
-      - llama-3/llama3: openrouter/meta-llama/llama-3-70b-instruct
-      - llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
+      - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
     - OpenAI:
       - gpt-3.5: openrouter/openai/gpt-3.5-turbo
       - gpt-4: openrouter/openai/gpt-4
@@ -1103,7 +1102,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env', 'base_env_manager', 'a_env', 'base_env_manager',
+    'envs', 'base_env', 'base_env_manager', 'a_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
