@@ -378,13 +378,10 @@ class MemoryItem:
         if not isinstance(other, MemoryItem):
             return False
         return (
-            self._normalize_value(self.input) == self._normalize_value(other.input) and
-            self._normalize_value(self.output) == self._normalize_value(other.output) and
-            self.type == other.type and
-            self.amount == other.amount and
-            self.timestamp == other.timestamp and
-            self.file_path == other.file_path and
-            self.command == other.command
+            (self._normalize_value(self.input), self._normalize_value(self.output),
+             self.type, self.amount, self.timestamp, self.file_path, self.command) == 
+            (self._normalize_value(other.input), self._normalize_value(other.output),
+             other.type, other.amount, other.timestamp, other.file_path, other.command)
         )
 
     def __hash__(self) -> int:
@@ -1031,13 +1028,14 @@ def create_agent(model: str = 'deepseek-chat',
     Required: OPENROUTER_API_KEY environment variable
     
     Model aliases:
-    - deepseek-chat: openrouter/deepseek/deepseek-chat (default)
+    - deepseek-chat (default): openrouter/deepseek/deepseek-chat
     - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-    - flash | gemini-flash: openrouter/google/gemini-2.0-flash-001
-    - pro | gemini-pro: openrouter/google/gemini-2.0-pro 
+    - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
+    - pro/gemini-pro: openrouter/google/gemini-2.0-pro 
     - gpt-3.5: openrouter/openai/gpt-3.5-turbo
     - gpt-4: openrouter/openai/gpt-4
-    - llama-3 | llama3 | llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
+    - llama-3/llama3: openrouter/meta-llama/llama-3-70b-instruct
+    - llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         
@@ -1089,24 +1087,6 @@ def create_agent(model: str = 'deepseek-chat',
     return agent
 
 # Control exported symbols for from utils import *
-__all__ = [
-    # Core agent components
-    'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
-    
-    # Environment configuration
-    'base_env_manager', 'envs', 'a_env',
-    
-    # Core processing functions
-    'create_agent', 'process_observation', 'run_inference',
-    
-    # XML handling utilities
-    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
-    
-    # Helper functions
-    'print_datetime'
-]
-
-# Core exports
 __all__ = [
     # Core agent components
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
