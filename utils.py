@@ -1098,14 +1098,14 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env_manager', 'a_env',
+    'envs', 'base_env_manager', 'a_env', 'base_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     'process_observation',
     
     # Core utilities
-    'print_datetime', 'create_agent',
+    'print_datetime', 'create_agent', 'run_inference',
     
     # Validation functions
     'is_valid_xml_tag', 'is_valid_model_name'

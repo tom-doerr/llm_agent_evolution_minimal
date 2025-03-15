@@ -130,6 +130,8 @@ Code Quality Improvements Applied:
    - Added parse_xml_element to exports
    - Fixed MemoryItem hash implementation
    - Cleaned up create_agent() model docs
+   - Added missing base_env export
+   - Added run_inference to core utilities exports
 
 2. Updated create_agent() documentation:
    - Added missing model aliases (gpt-3.5, gpt-4)
