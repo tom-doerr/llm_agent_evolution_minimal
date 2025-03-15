@@ -49,9 +49,8 @@ class MemoryDiff:
         return hash((self.type, self.key, self.old_value, self.new_value))
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, MemoryDiff):
-            return False
-        return (self.type == other.type and 
+        return (isinstance(other, MemoryDiff) and 
+                self.type == other.type and
                 self.key == other.key and
                 self.old_value == other.old_value and
                 self.new_value == other.new_value)
@@ -918,16 +917,15 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff', 
+    'MemoryDiff',
     'MemoryItem',
     'base_env_manager',
     'create_agent',
     'envs',
     'extract_xml',
-    'parse_xml_element', 
+    'parse_xml_element',
     'parse_xml_to_dict',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'parse_xml_element'  # Explicitly added for star imports
+    'run_inference'
 ]
