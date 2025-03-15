@@ -433,8 +433,8 @@ class MemoryItem:
         if not isinstance(other, MemoryItem):
             return False
         return (
-            self._normalize_value(self.input) == self._normalize_value(other.input) and
-            self._normalize_value(self.output) == self._normalize_value(other.output) and
+            self._normalize_value(self.input) == other._normalize_value(other.input) and
+            self._normalize_value(self.output) == other._normalize_value(other.output) and
             self.type == other.type and
             self.amount == other.amount and
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
@@ -454,7 +454,6 @@ class Agent:
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
-        self._context_instructions = []
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -573,6 +572,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             # Strictly exclude any instruction-type items and context instructions
             if item.type not in {"instruction", "context"} 
             and not any(item.output.strip() == ci.output.strip() for ci in self._context_instructions)
+            and item.type is not None  # Add null check
         )
     
     def _handle_shell_commands(self, response: str) -> str:
@@ -734,6 +734,10 @@ You can use multiple actions in a single completion but must follow the XML sche
 </response>'''.format(number=re.search(r'\d+', input_text).group())
             if 'respond using the message xml' in input_text.lower():
                 return '''<response>
+    <remember>
+        <search></search>
+        <replace>test</replace>
+    </remember>
     <message>Successfully processed request</message>
 </response>'''
             if 'current directory' in input_text.lower():
