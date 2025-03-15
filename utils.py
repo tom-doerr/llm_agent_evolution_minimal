@@ -571,7 +571,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     def memory(self) -> str:
         """Get memory as formatted string with timestamped entries (excluding context instructions)"""
         return "\n".join(
-            f"{item.timestamp} | {item.type}: {item.input} -> {item.output}"
+            f"{item.timestamp} | {item.type}: {item.input} -> {item.output.strip()}"
             for item in self._memory
             # Strictly exclude any instruction-type items and context instructions
             if item.type not in {"instruction", "context"} 
@@ -638,7 +638,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         command_elem = root.find('.//shell')
         if not command_elem:
-            return "<message>Error: No shell command element found</message>"
+            return ""  # No shell command to process
         if not command_elem.text or not command_elem.text.strip():
             return "<message>Error: Empty shell command</message>"
             
@@ -809,7 +809,7 @@ You can use multiple actions in a single completion but must follow the XML sche
     <message>Successfully processed request</message>
 </response>'''
             return f'''<response>
-    <respond>{input_text}</respond>
+    <message>{input_text}</message>
 </response>'''
 
         # Use streaming for OpenRouter DeepSeek models
