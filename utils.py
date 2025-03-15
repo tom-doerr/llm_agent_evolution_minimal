@@ -619,9 +619,6 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Store raw response before processing
         self.completions.append(response)
-        # Always count completions regardless of test mode to match main.py assertions
-        self.total_num_completions += 1
-            
         # Extract and validate XML structure
         xml_content = extract_xml(response)
         if not xml_content:
@@ -731,6 +728,8 @@ You can use multiple actions in a single completion but must follow the XML sche
                 output=raw_response,  # Store raw XML
                 type="interaction"
             ))
+            # Update completion count after successful processing
+            self.total_num_completions += 1
             # Store both raw and processed responses for assertions
             self.completions.append(raw_response)  # Store raw XML
             self.completions.append(clean_output)   # Store cleaned text
