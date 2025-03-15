@@ -1098,7 +1098,7 @@ __all__ = [
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
     # Environment configuration
-    'envs', 'base_env_manager', 'a_env', 'base_env',
+    'envs', 'base_env_manager', 'a_env',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
