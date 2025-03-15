@@ -28,10 +28,8 @@ class MemoryDiff:
             return False
         return (self.type == other.type and 
                 self.key == other.key and
-                (self.old_value == other.old_value or 
-                 (self.old_value is None and other.old_value is None)) and
-                (self.new_value == other.new_value or 
-                 (self.new_value is None and other.new_value is None)))
+                (self.old_value == other.old_value) and
+                (self.new_value == other.new_value))
 
 @dataclass
 class Action:
@@ -42,8 +40,7 @@ class Action:
         if not isinstance(other, Action):
             return False
         return (self.type == other.type and 
-                self.params == other.params and
-                len(self.params) == len(other.params))
+                self.params == other.params)
 
 
 
@@ -558,21 +555,60 @@ def process_observation(
         response, error = _get_litellm_response(model, prompt)
         
         if error:
+            print(f"API Error: {error}")
             return [], None
         
+        if not response:
+            print("Empty response from API")
+            return [], None
+            
         try:
+            # Validate and parse XML
             _validate_xml_response(response)
-            diffs = _parse_memory_diffs(response)
-            action = _parse_action(response)
+            root = ET.fromstring(response)
+            
+            # Parse diffs
+            diffs = []
+            for diff_elem in root.findall('.//diff'):
+                diff_type = DiffType[diff_elem.get('type', 'MODIFY').upper()]
+                key = diff_elem.findtext('key', '').strip()
+                old_val = diff_elem.findtext('old_value', None)
+                new_val = diff_elem.findtext('new_value', None)
+                
+                diffs.append(MemoryDiff(
+                    type=diff_type,
+                    key=key,
+                    old_value=old_val,
+                    new_value=new_val
+                ))
+            
+            # Parse action if present
+            action = None
+            action_elem = root.find('.//action')
+            if action_elem is not None:
+                action_type = action_elem.get('type', '').strip()
+                params = {child.tag: child.text.strip() 
+                         for child in action_elem if child.text}
+                
+                action = Action(
+                    type=action_type,
+                    params=params
+                )
+            
             return diffs, action
+            
         except ET.ParseError as e:
-            print(f"XML parsing error: {str(e)}")
+            print(f"XML parsing error in response: {str(e)}\nResponse content: {response}")
+            return [], None
+        except KeyError as e:
+            print(f"Invalid diff type: {str(e)}")
             return [], None
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
+            print(f"Processing error: {str(e)}\nOriginal input: {observation}")
             return [], None
+            
     except Exception as e:
-        print(f"Error processing observation: {str(e)}")
+        print(f"Critical error processing observation: {str(e)}")
         return [], None
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
