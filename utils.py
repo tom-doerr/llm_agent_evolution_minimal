@@ -362,6 +362,7 @@ class Agent:
         self.model_name = model_name
         self.max_tokens = int(max_tokens)
         self._test_mode = bool(test_mode)
+        self._test_mode = test_mode
         self._memory = []
         self.last_response = ""
         self.completions = []
@@ -612,7 +613,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=test_mode
+            test_mode=bool(self._test_mode and other._test_mode)
         )
         
         # Combine memories from both parents
@@ -870,7 +871,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50,
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-llm-67b-chat',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
         'default': 'openrouter/deepseek/deepseek-chat'
