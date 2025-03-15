@@ -124,7 +124,6 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         
     try:
         import litellm
-        import os
     except ImportError as e:
         return f"Mock response (litellm not installed: {str(e)})"
     
@@ -185,7 +184,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
         ValueError: If xml_string is not a string
     """
     # Remove any XML declaration
-    xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string, flags=re.DOTALL)
+    xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string or '', flags=re.DOTALL)
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -856,10 +855,6 @@ __all__ = [
     'print_datetime',
     'create_agent',
     'process_observation',
-    '_validate_inputs',
-    '_prepare_prompt',
-    '_get_litellm_response',
-    'parse_xml_to_dict',
         
     # Data classes
     'MemoryItem',
