@@ -462,7 +462,7 @@ class Agent:
         # Initialize from base environment but override with test-specific commands
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo',
-                                        '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod', 'rm'}
+                                        '>', '<', '&', '|', ';', '*', '??', 'rmdir', 'kill', 'chmod'}
         
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -836,19 +836,10 @@ You can use multiple actions in a single completion but must follow the XML sche
     def mate(self, other: 'Agent') -> 'Agent':
         # Create new agent by combining memories from both parents
         # Applies mating cost to self parent only (50 as defined in base_env_manager)
+        # Create new agent by combining memories from both parents
+        # Applies mating cost to self parent only (50 as defined in base_env_manager)
         # Inherits configuration from parents while preferring self's settings
         # Returns new Agent with combined memories
-        if not isinstance(other, Agent):
-            raise ValueError("Can only mate with another Agent")
-        #
-        # Args:
-        #     other: Another Agent instance to mate with
-        #
-        # Inherits:
-        # - Test mode from either parent
-        # - Model name from self
-        # - Max tokens from self
-        # - Environment configurations
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
@@ -883,10 +874,15 @@ You can use multiple actions in a single completion but must follow the XML sche
                 seen_hashes.add(item_hash)
                 unique_memory.append(item)
         new_agent._memory = unique_memory
-        # Copy environment configurations from parents
+        # Copy environment configurations from self parent
         new_agent.allowed_shell_commands = self.allowed_shell_commands.copy()
         new_agent.prohibited_shell_commands = self.prohibited_shell_commands.copy()
         new_agent._context_instructions = self._context_instructions.copy()
+        
+        # Combine memories from both parents without duplicates
+        combined_mem = self._memory + other._memory
+        seen = set()
+        new_agent._memory = [x for x in combined_mem if not (x in seen or seen.add(x))]
         
         # Apply mating cost only to self parent per main.py assertion
         self.reward(-base_env_manager.mating_cost)
