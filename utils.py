@@ -954,9 +954,9 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'gemini-pro': 'openrouter/google/gemini-2.0-pro',
         'openrouter/deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat'
     }
-    # Add full model name as alias
+    # Add full model name as alias (case-sensitive)
     model_mapping[model] = model
-    model_name = model_mapping.get(model.lower(), model)
+    model_name = model_mapping.get(model, model)  # Remove .lower() for case-sensitive match
     
     if not is_valid_model_name(model_name):
         raise ValueError(f"Invalid model name: {model_name}")
