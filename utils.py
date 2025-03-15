@@ -985,11 +985,14 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat',
     - openrouter/openai/gpt-4
     
     Model aliases:
-    - flash -> openrouter/google/gemini-2.0-flash-001
-    - gemini-flash -> openrouter/google/gemini-2.0-flash-001
-    - pro -> openrouter/google/gemini-2.0-pro
-    - gemini-pro -> openrouter/google/gemini-2.0-pro
-    - deepseek-coder -> openrouter/deepseek/deepseek-coder-33b-instruct
+    - flash: openrouter/google/gemini-2.0-flash-001
+    - gemini-flash: openrouter/google/gemini-2.0-flash-001
+    - pro: openrouter/google/gemini-2.0-pro
+    - gemini-pro: openrouter/google/gemini-2.0-pro
+    - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
+    - deepseek-chat: openrouter/deepseek/deepseek-chat
+    - gpt-3.5: openrouter/openai/gpt-3.5-turbo
+    - gpt-4: openrouter/openai/gpt-4
     
     All models require OpenRouter API key in OPENROUTER_API_KEY environment variable.
         
@@ -1052,6 +1055,15 @@ __all__ = [
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Utilities
+    'print_datetime'
+]
+
+# Remove duplicate parse_xml_element and add missing process_observation
+__all__ = [
+    'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
+    'a_env', 'base_env_manager', 'envs',
+    'create_agent', 'process_observation', 'run_inference',
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     'print_datetime'
 ]
 
