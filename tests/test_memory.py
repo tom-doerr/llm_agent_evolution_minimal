@@ -111,6 +111,18 @@ def test_process_observation_invalid_xml(mock_complete):
         process_observation("current", "obs", model="test-model")
 
 
+def test_process_observation_empty_response():
+    """Tests process_observation with an empty response from the LLM."""
+    with patch('litellm.completion') as mock_complete:
+        mock_chunk = MagicMock()
+        mock_chunk.choices = [MagicMock()]
+        mock_chunk.choices[0].delta = MagicMock()
+        mock_chunk.choices[0].delta.content = ''
+        mock_complete.return_value = [mock_chunk]
+        diffs, action, reasoning = process_observation("current", "obs", model="test-model")
+        assert len(diffs) == 0
+        assert action is None
+
 def test_xml_parsing_error_handling():
     """Tests error handling when XML parsing fails."""
     with patch('litellm.completion') as mock_complete:
