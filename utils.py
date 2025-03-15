@@ -459,13 +459,14 @@ class MemoryItem:
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = True) -> None:
         """Initialize agent with model configuration and memory"""
-        # Ensure context instructions are never stored in regular memory
         self._context_instructions = []
         self._test_mode = bool(test_mode)
         self._memory = []
         self.last_response = ""
         self.completions = []
-        self.total_num_completions = 0  # Initialize counter
+        self.total_num_completions = 0
+        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
         # Initialize from base environment configuration
         # Initialize from base environment configuration
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
@@ -727,15 +728,14 @@ You can use multiple actions in a single completion but must follow the XML sche
             else:
                 clean_output = raw_response
 
-            # Store raw XML in memory while maintaining clean output
+            # Store raw XML in memory while maintaining clean output 
             self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
-                output=raw_response,  # Store raw XML
+                output=raw_response,
                 type="interaction"
             ))
-            # Store both raw and processed responses for assertions
-            self.completions.append(raw_response)  # Store raw XML
-            self.completions.append(clean_output)   # Store cleaned text
+            # Store raw response and increment completion count
+            self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
             if hasattr(self, 'completions'):
@@ -870,15 +870,16 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
         new_agent.total_num_completions = self.total_num_completions + other.total_num_completions
         
-        # Combine and deduplicate memories from both parents without filtering
+        # Combine context instructions from both parents first
+        combined_context = self._context_instructions + other._context_instructions
+        
+        # Combine memories from both parents
         combined_mem = self._memory + other._memory
         
-        # Remove duplicates while preserving order using hashes and ensure proper initialization
+        # Remove duplicates while preserving order
         seen_hashes = set()
         unique_memory = []
         for item in combined_mem:
-            if not isinstance(item, MemoryItem):
-                continue  # Skip invalid items
             item_hash = hash(item)
             if item_hash not in seen_hashes:
                 seen_hashes.add(item_hash)
@@ -1187,8 +1188,7 @@ def create_agent(
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-chat': 'deepseek/deepseek-chat',  # Handle direct model name
+        'deepseek/deepseek-chat': 'deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
