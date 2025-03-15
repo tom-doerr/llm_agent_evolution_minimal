@@ -49,10 +49,12 @@ class MemoryDiff:
 
     def __eq__(self, other: object) -> bool:
         return (isinstance(other, MemoryDiff) and 
-                self.type == other.type and 
+                self.type == other.type and
                 self.key == other.key and
-                self.old_value == other.old_value and
-                self.new_value == other.new_value)
+                (str(self.old_value).strip() if isinstance(self.old_value, str) else self.old_value) == 
+                (str(other.old_value).strip() if isinstance(other.old_value, str) else other.old_value) and
+                (str(self.new_value).strip() if isinstance(self.new_value, str) else self.new_value) == 
+                (str(other.new_value).strip() if isinstance(other.new_value, str) else other.new_value))
 
 @dataclass
 class Action:
