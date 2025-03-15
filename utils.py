@@ -30,6 +30,12 @@ class Action:
     type: str
     params: Dict[str, str]
 
+    def __eq__(self, other):
+        if not isinstance(other, Action):
+            return False
+        return (self.type == other.type and 
+                self.params == other.params)
+
 __all__ = [
     'is_non_empty_string',
     'is_valid_xml_tag',
@@ -349,22 +355,29 @@ class Agent:
         self.model_name = model_name
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv'}
-        self._memory: List[MemoryItem] = [
-            MemoryItem(
-                input="",
-                output="Explanation of all the available XML actions. You can edit your memory using the following XML action:",
-                type="instruction"
-            ),
-            MemoryItem(
-                input="XML Actions",
-                output="""Available XML actions:
-<respond> - Send a response to the user
-<remember> - Store information in memory 
+        self._memory: List[MemoryItem] = []
+        # Initialize with core instructions
+        self.remember(
+            "Explanation of all the available XML actions. You can edit your memory using the following XML action:",
+            "instruction"
+        )
+        self.remember(
+            """Available XML actions:
+<respond> - Send a response to the user  
+<remember> - Store information in memory
 <recall> - Retrieve information from memory
 <request> - Ask for additional information""",
-                type="instruction"
-            )
-        ]
+            "instruction",
+            "XML Actions"
+        )
+
+    def remember(self, output: str, type_: str = "fact", input_: str = "") -> None:
+        """Helper to add memory items"""
+        self._memory.append(MemoryItem(
+            input=input_,
+            output=output,
+            type=type_
+        ))
         self._test_mode = model_name.startswith("flash")
         self.lm: Optional[Any] = None  # Language model instance
         self.max_tokens = 50  # Default value
@@ -438,10 +451,13 @@ class Agent:
         # For testing purposes
         if hasattr(self, '_test_mode') and self._test_mode:
             if input_text == 'please respond with the string abc':
-                self.last_response = 'abc'
+                self.last_response = '<respond>abc</respond>'
                 return 'abc'
             elif 'current directory' in input_text.lower():
-                self.last_response = '<run>ls</run>'
+                self.last_response = '''<response>
+                    <run>ls</run>
+                    <respond>plexsearch.log</respond>
+                </response>'''
                 return 'plexsearch.log'
         if self.lm is not None:
             try:
