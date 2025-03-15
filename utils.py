@@ -530,12 +530,12 @@ def process_observation(
             diffs = _parse_memory_diffs(response)
             action = _parse_action(response)
             return diffs, action
-    except ET.ParseError as e:
-        print(f"XML parsing error: {str(e)}")
-        return [], None
-    except Exception as e:
-        print(f"Unexpected error: {str(e)}")
-        return [], None
+        except ET.ParseError as e:
+            print(f"XML parsing error: {str(e)}")
+            return [], None
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            return [], None
 
 def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
     """Validate input types and values"""
