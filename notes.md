@@ -188,7 +188,10 @@ Code Quality Improvements Applied:
 # Critical Fixes Applied
 
 1. Memory Handling:
-   - Fixed MemoryItem equality/hash to properly compare all fields including type
+   - Fixed MemoryItem hash implementation to match equality check
+   - Removed duplicate 'rm' from prohibited commands
+   - Added explicit utils namespace for create_agent in mate()
+   - Fixed __all__ exports grouping for XML processing utilities
    - Added missing base_env_manager to __all__ exports
    - Fixed MemoryItem hash tuple syntax
    - Added missing type field to hash calculation

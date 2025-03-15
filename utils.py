@@ -391,8 +391,8 @@ class MemoryItem:
 
     def __hash__(self) -> int:
         return hash((
-            self._normalize_value(self.type),
-            self._normalize_value(self.amount),
+            self.type,
+            self.amount,
             self._normalize_value(self.input),
             self._normalize_value(self.output),
             self._normalize_value(self.timestamp),
@@ -740,7 +740,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode,
@@ -1103,6 +1103,9 @@ __all__ = [
     
     # Environment configuration
     'envs', 'base_env', 'base_env_manager', 'a_env',
+    
+    # XML processing
+    'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
     
     # XML processing
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
