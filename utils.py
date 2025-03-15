@@ -374,14 +374,14 @@ class Agent:
     def _add_core_context_instructions(self) -> None:
         """Add required context instructions that should never appear in memory"""
         core_instructions = [
-            ("Explanation of all the available XML actions. You can edit your memory using the following XML action:", 
+            ("Explanation of all available XML actions. You can edit your memory using XML actions:", 
              "instruction", ""),
             ("""Available XML actions:
-<respond> - Send a response to the user  
+<respond> - Send response to user  
 <remember> - Store information in memory
 <recall> - Retrieve information from memory
 <request> - Ask for additional information
-<run> - Execute approved shell commands (ls, date, pwd, wc)
+<shell> - Execute approved shell commands (ls, date, pwd, wc)
 
 XML Structure Requirements:
 1. Each action must be properly nested
@@ -399,9 +399,9 @@ Examples of how to use the XML actions:
     Response text here
 </respond>
 
-<run>
+<shell>
     ls -l
-</run>
+</shell>
 
 Memory Management Guidelines:
 - Use <remember> for important user details
