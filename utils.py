@@ -1163,7 +1163,7 @@ def create_agent(
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek/deepseek-chat': 'deepseek/deepseek-chat',  # Direct model name
+        'deepseek/deepseek-chat': 'openrouter/deepseek/deepseek-chat',  # Direct model name
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
