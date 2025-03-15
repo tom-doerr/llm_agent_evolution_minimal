@@ -6,9 +6,13 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from types import SimpleNamespace
 
-# Environment configuration
+# Environment configurations
 base_env_manager = SimpleNamespace(
     mating_cost=50  # Cost for agent mating operation
+)
+
+envs = SimpleNamespace(
+    a_env=lambda x: sum(1 for c in x if c == 'a')  # Count 'a's in string
 )
 
 class DiffType(Enum):
@@ -165,6 +169,8 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     """Extract valid XML content from a string that might contain other text.
     
+    Handles common XML response tags like <respond>, <remember>, etc.
+    
     Args:
         xml_string: Input string potentially containing XML
         max_attempts: Maximum number of parsing attempts (default: 3)
@@ -205,8 +211,9 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
             root = ET.fromstring(xml_content)
             return ET.tostring(root, encoding='unicode')
         except ET.ParseError:
-            # Try common XML root tags
-            for tag in ['response', 'result', 'data', 'xml', 'root', 'memory', 'action']:
+            # Try common XML response tags
+            for tag in ['response', 'result', 'data', 'xml', 'root', 
+                      'memory', 'action', 'remember', 'respond']:
                 start_tag = f'<{tag}'
                 end_tag = f'</{tag}>'
                 start = xml_string.find(start_tag)
@@ -532,7 +539,7 @@ class Agent:
         Raises:
             ValueError: If amount is not a positive number
         """
-        if not is_valid_number(amount) or amount < 0:
+        if not isinstance(amount, (int, float)) or amount < 0:
             raise ValueError("Reward amount must be a positive number")
         # Append to the internal memory list directly
         self._memory.append(MemoryItem(
