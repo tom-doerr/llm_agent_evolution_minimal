@@ -263,11 +263,9 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
             
         return result
     except ET.ParseError as e:
-        # Handle XML parsing errors specifically
-        return {"error": f"XML parsing error: {str(e)}"}
+        return {"error": f"XML parsing error: {str(e)}", "xml_input": xml_string}
     except Exception as e:
-        # Handle other exceptions
-        return {"error": f"Unexpected error: {str(e)}"}
+        return {"error": f"Unexpected error: {str(e)}", "xml_input": xml_string}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str]:
     """Parse XML element recursively into dict or string"""
@@ -331,7 +329,7 @@ class Agent:
         self._memory: List[MemoryItem] = [
             MemoryItem(
                 input="",
-                output="Explanation: You can edit your memory using the following xml action:",
+                output="Explanation of all the available XML actions. You can edit your memory using the following XML action:",
                 type="instruction"
             )
         ]
@@ -456,7 +454,6 @@ def process_observation(
     observation: str,
     model: str = "deepseek/deepseek-reasoner"
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
-    """Process observation and return memory diffs with optional action"""
     """Process observation and return memory diffs with optional action"""
     _validate_inputs(current_memory, observation, model)
     prompt = _prepare_prompt(current_memory, observation)
