@@ -437,7 +437,6 @@ class MemoryItem:
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
         """Initialize agent with model configuration and memory"""
-        self._context_instructions: List[MemoryItem] = []
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
@@ -727,7 +726,6 @@ You can use multiple actions in a single completion but must follow the XML sche
         - Max tokens from self
         - Environment configurations
         """
-        # Use utils.create_agent to ensure proper initialization with namespace
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
@@ -736,8 +734,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=new_test_mode,
-            load=None
+            test_mode=new_test_mode
         )
         
         # Combine memories from both parents (using copies to prevent reference issues)
@@ -745,8 +742,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent._memory.extend(list(other._memory))
         
         # Apply mating cost once to each parent
-        self.reward(-base_env_manager.mating_cost)
-        other.reward(-base_env_manager.mating_cost)
+        self.reward(-envs['base_env_manager'].mating_cost)
+        other.reward(-envs['base_env_manager'].mating_cost)
         
         # Remove duplicate memories using all fields
         seen = set()
@@ -1103,15 +1100,12 @@ __all__ = [
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element', 'process_observation',
     
     # Core runtime utilities
-    'print_datetime', 'run_inference', 'create_agent',
+    'print_datetime', 'run_inference',
     
     # Validation functions
     'is_valid_xml_tag', 'is_valid_model_name',
     
     # Types and classes
-    'MemoryItem', 'SimpleNamespace',
-    
-    # Standard library types
-    'SimpleNamespace'
+    'MemoryItem', 'SimpleNamespace'
 ]
 
