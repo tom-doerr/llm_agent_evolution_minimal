@@ -369,6 +369,7 @@ class Agent:
             raise ValueError("max_tokens must be a positive integer")
 
         self.model_name = model_name
+        self.max_tokens = max_tokens
         self._test_mode = test_mode
         self.max_tokens = max_tokens
         self._memory = []
@@ -498,14 +499,17 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Execute validated command
         import subprocess
         try:
+            if not is_valid_xml_tag(command_elem.text):
+                return "<message>Error: Invalid command format</message>"
+                
             result = subprocess.run(
-                command_elem.text,
+                command_elem.text.strip(),
                 shell=True,
                 capture_output=True,
                 text=True,
                 timeout=5
             )
-            return result.stdout or result.stderr
+            return f"<shell_output>\n{result.stdout or result.stderr}\n</shell_output>"
         except Exception as e:
             return str(e)
 
@@ -874,7 +878,8 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
-        'default': 'openrouter/deepseek/deepseek-reasoner'
+        'default': 'openrouter/deepseek/deepseek-reasoner',
+        'deepseek': 'openrouter/deepseek/deepseek-reasoner'  # Alias for consistency
     }
     model_name = model_mapping.get(model.lower(), model)
     
