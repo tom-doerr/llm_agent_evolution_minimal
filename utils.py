@@ -509,6 +509,12 @@ You can use multiple actions in a single completion but must follow the XML sche
             # Store memory with truncated values
             # Memory is stored in run() method
             
+            # Store successful interaction in memory
+            self._memory.append(MemoryItem(
+                input=truncate_string(input_text),
+                output=clean_output,
+                type="interaction"
+            ))
             return clean_output
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -858,14 +864,22 @@ __all__ = [
     'MemoryItem',
     'MemoryDiff',
     'Action',
+        
+    # Enum
     'DiffType',
         
     # Core classes
     'Agent',
-        
+    
+    # Enum
+    'DiffType',
+    
     # Environment configs
     'base_env_manager',
     'envs',
+    
+    # Agent creation
+    'create_agent',
         
     # XML parsing functions
     'parse_xml_element'
