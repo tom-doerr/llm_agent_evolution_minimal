@@ -358,10 +358,14 @@ class MemoryItem:
     output: str = field(default="")
     
     def __eq__(self, other: object) -> bool:
-        """Equality check comparing input/output only"""
+        """Equality check comparing all fields"""
         return (isinstance(other, MemoryItem) and 
                self.input == other.input and
-               self.output == other.output)
+               self.output == other.output and
+               self.type == other.type and
+               self.amount == other.amount and
+               self.timestamp == other.timestamp and
+               self.file_path == other.file_path)
     type: Optional[str] = field(default=None)
     amount: Optional[float] = field(default=None)
     timestamp: Optional[str] = field(default=None)
@@ -709,14 +713,21 @@ You can use multiple actions in a single completion but must follow the XML sche
         self.reward(-base_env_manager.mating_cost)
         other.reward(-base_env_manager.mating_cost)
         
-        # Remove duplicate memories
+        # Remove duplicate memories using all fields
         seen = set()
         unique_memory = []
         for item in new_agent._memory:
-            item_repr = (item.input, item.output, item.type, item.amount)
+            item_repr = (
+                item.input, 
+                item.output, 
+                item.type, 
+                item.amount, 
+                item.timestamp,
+                item.file_path
+            )
             if item_repr not in seen:
                 seen.add(item_repr)
-                unique_memory.append(item)  # Store the actual MemoryItem
+                unique_memory.append(item)
         new_agent._memory = unique_memory
         
         return new_agent
@@ -1048,7 +1059,6 @@ __all__ = [
     
     # XML processing
     'extract_xml',
-    'parse_xml_element', 
     'parse_xml_to_dict',
     'process_observation',
     
