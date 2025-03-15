@@ -96,25 +96,31 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
-    # Extract valid XML content from a string that might contain other text
-    # Extract valid XML content from a string that might contain other text
+    """Extract valid XML content from a string that might contain other text.
+    
+    Args:
+        xml_string: Input string potentially containing XML
+        max_attempts: Maximum number of parsing attempts
+        
+    Returns:
+        Extracted XML string or empty string if no valid XML found
+    """
     if not is_non_empty_string(xml_string):
         return ""
         
-    # Remove common problematic characters
+    # Clean input string
     xml_string = xml_string.replace('\x00', '').strip()
     
-    # First check if the entire string is valid XML
+    # Fast path - already valid XML
     if is_valid_xml(xml_string):
         return xml_string
     
+    # Try parsing the entire string first
     try:
-        # First try to parse the entire string as XML
-        try:
-            root = ET.fromstring(xml_string)
-            return ET.tostring(root, encoding='unicode')
-        except ET.ParseError:
-            pass
+        root = ET.fromstring(xml_string)
+        return ET.tostring(root, encoding='unicode')
+    except ET.ParseError:
+        pass
             
         # Try to extract XML content between tags
         start_idx = xml_string.find('<')
@@ -220,10 +226,13 @@ def print_datetime() -> None:
 
 class Agent:
     def __init__(self, model_name: str):
+        if not isinstance(model_name, str):
+            raise ValueError("model_name must be a string")
+            
         self.model_name = model_name
         self.memory: List[Dict[str, str]] = []
         self.lm = None
-        self._test_mode = False  # Initialize test mode flag
+        self._test_mode = False
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -271,7 +280,7 @@ class Agent:
         """Clear the agent's memory"""
         self.memory = []
 
-def create_agent(model_type: str = 'flash', **kwargs) -> Agent:
+def create_agent(model_type: str = 'flash', **kwargs) -> "Agent":
     """Create an agent with the specified model type.
     
     Args:
