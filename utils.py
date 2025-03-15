@@ -542,9 +542,19 @@ You can use multiple actions in a single completion but must follow the XML sche
                 if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
                     return "<message>Error: Invalid characters in command</message>"
                 
+            # Validate command structure before execution
+            cmd_parts = command_elem.text.strip().split()
+            if len(cmd_parts) == 0:
+                return "<message>Error: Empty shell command</message>"
+                
+            # Basic command allowlist validation
+            if cmd_parts[0] not in self.allowed_shell_commands:
+                return f"<message>Error: Command {cmd_parts[0]} not allowed</message>"
+                
+            # Execute validated command
             result = subprocess.run(
-                command_elem.text.strip(),
-                shell=True,
+                cmd_parts,
+                shell=False,  # Safer without shell
                 capture_output=True,
                 text=True,
                 timeout=5
