@@ -53,8 +53,8 @@ class MemoryDiff:
 
     def __eq__(self, other: object) -> bool:
         return (isinstance(other, MemoryDiff) and 
-                (self.type, self.key, self.old_value, self.new_value) == 
-                (other.type, other.key, other.old_value, other.new_value))
+                self.type == other.type and 
+                self.key == other.key)
 
 @dataclass
 class Action:
@@ -946,9 +946,8 @@ def create_agent(model: str = 'openrouter/deepseek/deepseek-chat', max_tokens: i
         'gemini-flash': 'openrouter/google/gemini-2.0-flash-001',
         'gemini-pro': 'openrouter/google/gemini-2.0-pro'
     }
-    # Add full model name as alias (case-sensitive)
-    model_mapping[model] = model
-    model_name = model_mapping.get(model, model)  # Remove .lower() for case-sensitive match
+    # Get mapped model name
+    model_name = model_mapping.get(model, model)  # Case-sensitive match
     
     if not is_valid_model_name(model_name):
         raise ValueError(f"Invalid model name: {model_name}")
