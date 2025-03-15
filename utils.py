@@ -457,6 +457,7 @@ class Agent:
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
+        self.completions = []
         
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
@@ -574,7 +575,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         )
     
     def _handle_shell_commands(self, response: str) -> str:
-        """Execute validated shell commands from XML response"""
+        """Execute validated shell commands from XML response
+        Returns cleaned command output or error message"""
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
             
@@ -621,7 +623,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         if cmd not in self.allowed_shell_commands:
             return f"<message>Error: Command {cmd} not allowed</message>"
             
-        # Execute validated command
+        # Execute validated command and capture output
         import subprocess
         try:
             if any(c in command_elem.text for c in (';', '&', '|', '$', '`')):
@@ -784,6 +786,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         """Create new agent by combining memories from both parents.
         Applies mating cost to self parent only.
         
+        Inherits:
+        - Test mode from either parent
+        - Model name from self
+        - Max tokens from self
+        
         Args:
             other: Another Agent instance to mate with
         
@@ -808,7 +815,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         combined_mem = [
             item for item in self._memory + other._memory
             # Strict filtering of memory items
-            if item.type not in {"instruction", "context"}
+            if item.type not in {"instruction", "context"} and item.input.strip() != ""
             and not any(item.output == ci.output 
                       for ci in self._context_instructions + other._context_instructions)
             and item.input.strip() != ""  # Exclude empty inputs
