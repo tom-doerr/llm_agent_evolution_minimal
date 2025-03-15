@@ -80,7 +80,7 @@ class Action:
                (other.params if other.params is not None else {}))
 
     def __hash__(self) -> int:
-        return hash((self.type, tuple(sorted((self.params or {}).items())))
+        return hash((self.type, tuple(sorted((self.params or {}).items()))))
 
 
 
