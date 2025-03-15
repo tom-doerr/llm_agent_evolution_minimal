@@ -899,16 +899,15 @@ You can use multiple actions in a single completion but must follow the XML sche
         with open(file_path, 'w') as f:
             f.write(self.memory)
 
-    def reward(self, amount: Union[int, float]) -> None:
+    def reward(self, *amounts: Union[int, float]) -> None:
         """Update agent's net worth with reward/penalty."""
-        if not isinstance(amount, (int, float)):
-            raise ValueError("Amount must be a number")
+        total = sum(float(a) for a in amounts)
         # Append to the internal memory list directly
         self._memory.append(MemoryItem(
             input="Received reward",
-            output=str(amount),
+            output=str(total),
             type="reward",
-            amount=float(amount),
+            amount=total,
             timestamp=datetime.datetime.now().isoformat()
         ))
 
