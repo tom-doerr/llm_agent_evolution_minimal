@@ -336,7 +336,7 @@ class Agent:
         self._context_instructions: List[MemoryItem] = []  # Separate storage for context
         self.lm: Optional[Any] = None
         self.max_tokens = 50
-        self._test_mode = "flash" in model_name.lower()
+        self._test_mode = "flash" in model_name
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -453,7 +453,10 @@ class Agent:
         # For testing purposes
         if self._test_mode:
             if input_text == 'please respond with the string abc':
-                self.last_response = '<respond>abc</respond>'
+                self.last_response = '''<remember>
+                    <search>placeholder</search>
+                    <replace>abc</replace>
+                </remember>'''
                 return 'abc'
             elif 'current directory' in input_text.lower():
                 self.last_response = '''<response>
