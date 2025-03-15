@@ -461,7 +461,7 @@ class Agent:
         self.completions = []
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';'}
+        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
         self._context_instructions = []
         
         # Initialize context instructions (not stored in regular memory)
@@ -700,10 +700,10 @@ You can use multiple actions in a single completion but must follow the XML sche
             if 'remember it' in input_text.lower():
                 return '''<response>
     <remember>
-        <search>old_value</search>
+        <search></search>
         <replace>132</replace>
     </remember>
-    <respond>Got it! I'll remember that!</respond>
+    <respond>Got it! I'll remember your number as 132</respond>
 </response>'''
             if 'please remember my secret number' in input_text.lower():
                 return '''<response>
@@ -784,13 +784,21 @@ You can use multiple actions in a single completion but must follow the XML sche
             and item.input.strip() != ""  # Exclude empty inputs
         ]
         
-        # Remove duplicates while preserving order
+        # Remove duplicates while preserving order using all fields
         seen = set()
         new_agent._memory = []
         for item in combined_mem:
-            item_hash = hash(item)
-            if item_hash not in seen:
-                seen.add(item_hash)
+            item_repr = (
+                item.input,
+                item.output,
+                item.type,
+                item.amount,
+                item.timestamp,
+                item.file_path,
+                item.command
+            )
+            if item_repr not in seen:
+                seen.add(item_repr)
                 new_agent._memory.append(item)
         
         # Apply mating cost once to each parent
