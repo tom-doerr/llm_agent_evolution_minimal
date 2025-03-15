@@ -333,14 +333,13 @@ def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[An
     """Parse XML element into Python data structures with validation"""
     if not is_valid_xml_tag(element.tag):
         raise ValueError(
-            f"Invalid XML tag: {element.tag}\n"
-            "Valid tags must:\n"
-            "1. Start with a letter or underscore\n"
-            "2. Contain only a-z, 0-9, -, _, or .\n"
-            "3. Be 1-255 characters\n"
-            "4. No spaces/colons\n"
-            "5. Not start with 'xml'\n"
-            "6. Not end with hyphen"
+            f"Invalid XML tag: {element.tag}. Tags must:\n"
+            f"1. Start with a letter\n"
+            f"2. Contain only a-z, 0-9, -, _, or .\n" 
+            f"3. Not contain spaces or colons\n"
+            f"4. Not start with 'xml' (case-insensitive)\n"
+            f"5. Not end with hyphen\n"
+            f"6. Be between 1-255 characters"
         )
     if len(element) == 0:
         # Return text with attributes if any
@@ -387,25 +386,23 @@ class MemoryItem:
         return hash((
             self._normalize_value(self.input),
             self._normalize_value(self.output),
-            self.type,
-            self.amount,
+            self._normalize_value(self.type or ""),
+            self.amount if isinstance(self.amount, (int, float)) else 0,
             self._normalize_value(self.timestamp),
             self._normalize_value(self.file_path),
             self._normalize_value(self.command)
         ))
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, MemoryItem):
-            return False
-        return (
-            self._normalize_value(self.input) == self._normalize_value(other.input) and
-            self._normalize_value(self.output) == self._normalize_value(other.output) and
-            self.type == other.type and
-            self.amount == other.amount and
-            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
-            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
+        return isinstance(other, MemoryItem) and all([
+            self._normalize_value(self.input) == self._normalize_value(other.input),
+            self._normalize_value(self.output) == self._normalize_value(other.output),
+            self._normalize_value(self.type or "") == self._normalize_value(other.type or ""),
+            self.amount == other.amount,
+            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp),
+            self._normalize_value(self.file_path) == self._normalize_value(other.file_path),
             self._normalize_value(self.command) == self._normalize_value(other.command)
-        )
+        ])
 
     @staticmethod
     def _normalize_value(value: Any) -> Any:
@@ -1009,11 +1006,11 @@ def create_agent(model: str = 'deepseek-chat',
         model: Model identifier string. Valid options:
             - deepseek-chat (default): openrouter/deepseek/deepseek-chat
             - deepseek-coder: openrouter/deepseek/deepseek-coder-33b-instruct
-            - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001 
+            - flash/gemini-flash: openrouter/google/gemini-2.0-flash-001
             - pro/gemini-pro: openrouter/google/gemini-2.0-pro
             - gpt-3.5: openrouter/openai/gpt-3.5-turbo
             - gpt-4: openrouter/openai/gpt-4
-            - llama-3/llama3: openrouter/meta-llama/llama-3-70b-instruct
+            - llama-3/llama3/llama-3-70b: openrouter/meta-llama/llama-3-70b-instruct
             
         Requires OPENROUTER_API_KEY environment variable.
         max_tokens: Maximum response length in tokens
