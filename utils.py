@@ -377,8 +377,9 @@ class MemoryItem:
                 self.type == other.type and
                 self.amount == other.amount and
                 self.timestamp == other.timestamp and
-                self.file_path == other.file_path and 
-                self.command == other.command)
+                self.file_path == other.file_path and
+                self.command == other.command and
+                self.type == other.type)
 
     def __hash__(self) -> int:
         return hash((
@@ -715,9 +716,9 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # Inherit test mode from either parent (logical OR)
+        # Inherit test mode from either parent 
         new_test_mode = bool(self._test_mode or other._test_mode)
-        new_agent = create_agent(
+        new_agent = utils.create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
@@ -1058,7 +1059,8 @@ def create_agent(model: str = 'deepseek-chat',
         'gemini-pro': 'openrouter/google/gemini-2.0-pro',
         'gpt-3.5': 'openrouter/openai/gpt-3.5-turbo',
         'gpt-4': 'openrouter/openai/gpt-4',
-        'llama-3': 'openrouter/meta-llama/llama-3-70b-instruct'
+        'llama-3': 'openrouter/meta-llama/llama-3-70b-instruct',
+        'llama3': 'openrouter/meta-llama/llama-3-70b-instruct'
     }
     # Get mapped model name
     model_name = model_mapping.get(model, model)  # Case-sensitive match
@@ -1097,9 +1099,6 @@ __all__ = [
     
     # XML handling utilities
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
-    
-    # XML handling utilities
-    'extract_xml', 'parse_xml_to_dict',
     
     # Helper functions
     'print_datetime'

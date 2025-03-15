@@ -117,6 +117,8 @@ Code Quality Improvements Applied:
    - Added proper grouping of related components
    - Fixed duplicate MemoryItem equality check
    - Improved model alias documentation
+   - Fixed missing envs/base_env_manager exports
+   - Added parse_xml_element to exports
 
 2. Updated create_agent() documentation:
    - Added missing model aliases (gpt-3.5, gpt-4)
