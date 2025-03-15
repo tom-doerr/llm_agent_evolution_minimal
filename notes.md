@@ -1,10 +1,12 @@
 # Code Quality Improvements & Fixes
 
 ## Recent Changes
-- Simplified and standardized XML validation error messages
+- Added parse_xml_element to __all__ exports
+- Removed redundant XML tag validation check
+- Added missing create_agent import in mate()
+- Simplified XML parsing logic
 - Cleaned up __all__ exports for better organization
 - Removed redundant comments and docstrings
-- Improved code formatting consistency
 
 ## Core Fixes
 1. Fixed XML validation error messages to show formatting rules:

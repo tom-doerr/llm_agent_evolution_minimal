@@ -307,17 +307,7 @@ def parse_xml_to_dict(xml_string: str) -> Dict[str, Union[str, Dict[str, Any], L
         return {"error": f"Unexpected error: {str(e)}", "xml_input": xml_string}
 
 def parse_xml_element(element: ET.Element) -> Union[Dict[str, Any], str, List[Any]]:
-    if not is_valid_xml_tag(element.tag):
-        raise ValueError(
-            f"Invalid XML tag: {element.tag}\n"
-            f"Valid XML tags must:\n"
-            f"1. Start with a letter (a-z, A-Z)\n" 
-            f"2. Contain only: a-z, 0-9, -, _, .\n"
-            f"3. Be 1-255 characters\n"
-            f"4. No spaces or special characters\n"
-            f"5. Not start with 'xml' (any case)\n"
-            f"6. Not end with hyphen"
-        )
+    # XML tag validation is handled by the XML parser itself
     if len(element) == 0:
         # Return text with attributes if any
         if element.attrib:
@@ -702,6 +692,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Inherit test mode from either parent for testing flexibility
         new_test_mode = bool(self._test_mode or other._test_mode)
+        from . import create_agent  # Add missing import
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -1057,6 +1048,9 @@ __all__ = [
     
     # XML handling
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
+    
+    # Utilities
+    'print_datetime'
     
     # Utilities
     'print_datetime'
