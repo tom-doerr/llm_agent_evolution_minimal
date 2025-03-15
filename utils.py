@@ -525,7 +525,7 @@ def process_observation(
         if error:
             return [], None
         
-    try:
+        try:
         _validate_xml_response(response)
         diffs = _parse_memory_diffs(response)
         action = _parse_action(response)
