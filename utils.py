@@ -787,13 +787,14 @@ You can use multiple actions in a single completion but must follow the XML sche
     <respond>Got it! I'll remember your number: 132</respond>
 </response>'''
             elif 'please remember my secret number' in input_text.lower():
-                return '''<response>
+                number = re.search(r'\d+', input_text).group()
+                return f'''<response>
     <remember>
         <search></search>
         <replace>{number}</replace>
     </remember>
-    <respond>Got it! I'll remember your secret number: {number}</respond>
-</response>'''.format(number=re.search(r'\d+', input_text).group())
+    <message>Got it! I'll remember your secret number: {number}</message>
+</response>'''
             elif 'respond using the message xml' in input_text.lower():
                 return '''<response>
     <message>please respond to this message using the message xml tags</message>
@@ -850,39 +851,28 @@ You can use multiple actions in a single completion but must follow the XML sche
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
         )
-        # Initialize shell command permissions from self
-        new_agent.allowed_shell_commands = self.allowed_shell_commands.copy()
-        new_agent.prohibited_shell_commands = self.prohibited_shell_commands.copy()
-        new_agent.total_num_completions = self.total_num_completions + other.total_num_completions
-        
-        # Combine and deduplicate memories while preserving order
-        combined_mem: List[MemoryItem] = []
-        seen_hashes = set()
-        
-        for item in self._memory + other._memory:
-            item_hash = hash(item)
-            if item_hash not in seen_hashes:
-                seen_hashes.add(item_hash)
-                combined_mem.append(item)
-        
-        # Remove duplicates while preserving order
-        seen_hashes = set()
-        unique_memory = []
-        for item in combined_mem:
-            item_hash = hash(item)
-            if item_hash not in seen_hashes:
-                seen_hashes.add(item_hash)
-                unique_memory.append(item)
-        new_agent._memory = unique_memory
-        # Copy environment configurations from self parent
+        # Inherit shell command permissions from self parent
         new_agent.allowed_shell_commands = self.allowed_shell_commands.copy()
         new_agent.prohibited_shell_commands = self.prohibited_shell_commands.copy()
         new_agent._context_instructions = self._context_instructions.copy()
         
         # Combine memories from both parents without duplicates
-        combined_mem = self._memory + other._memory
-        seen = set()
-        new_agent._memory = [x for x in combined_mem if not (x in seen or seen.add(x))]
+        seen_hashes = set()
+        combined_mem = []
+        
+        # Add self's memories first
+        for item in self._memory:
+            item_hash = hash(item)
+            if item_hash not in seen_hashes:
+                seen_hashes.add(item_hash)
+                combined_mem.append(item)
+                
+        # Add other parent's memories
+        for item in other._memory:
+            item_hash = hash(item)
+            if item_hash not in seen_hashes:
+                seen_hashes.add(item_hash)
+                combined_mem.append(item)
         
         # Apply mating cost only to self parent per main.py assertion
         self.reward(-base_env_manager.mating_cost)
