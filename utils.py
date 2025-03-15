@@ -999,7 +999,6 @@ __all__ = [
     'extract_xml',
     'print_datetime',
     'process_observation',
-    'run_inference',
-    'a_env'
+    'run_inference'
 ]
 
