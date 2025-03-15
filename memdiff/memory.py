@@ -25,6 +25,14 @@ def process_observation(
     observation: str,
     model: str = "deepseek/deepseek-reasoner"
 ) -> tuple[List[MemoryDiff], Optional[Action]]:
+    # Validate inputs
+    if not isinstance(current_memory, str):
+        raise ValueError("current_memory must be a string")
+    if not isinstance(observation, str):
+        raise ValueError("observation must be a string")
+    if not isinstance(model, str):
+        raise ValueError("model must be a string")
+
     # Prepare the prompt for the AI with explicit formatting instructions
     prompt = f"""Current memory state:
 {current_memory}
@@ -72,16 +80,20 @@ Examples:
 </response>"""
 
     # Get completion from LiteLLM
-    response = litellm.completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        stream=True
-    )
+    try:
+        response = litellm.completion(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            stream=True
+        )
 
-    # Process streaming response
-    xml_content = ""
-    for chunk in response:
-        xml_content += chunk.choices[0].delta.content or ""
+        # Process streaming response
+        xml_content = ""
+        for chunk in response:
+            xml_content += chunk.choices[0].delta.content or ""
+    except Exception as e:
+        print(f"Error during litellm completion: {e}")
+        return [], None
 
     # Parse XML response
     memory_diffs = []
