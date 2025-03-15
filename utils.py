@@ -394,15 +394,17 @@ class MemoryItem:
         ))
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, MemoryItem) and all([
-            self._normalize_value(self.input) == self._normalize_value(other.input),
-            self._normalize_value(self.output) == self._normalize_value(other.output),
-            self._normalize_value(self.type or "") == self._normalize_value(other.type or ""),
-            self.amount == other.amount,
-            self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp),
-            self._normalize_value(self.file_path) == self._normalize_value(other.file_path),
-            self._normalize_value(self.command) == self._normalize_value(other.command)
-        ])
+        if not isinstance(other, MemoryItem):
+            return False
+        return (
+            self._normalize_value(self.input) == self._normalize_value(other.input) and
+            self._normalize_value(self.output) == self._normalize_value(other.output) and
+            self.type == other.type and
+            self.amount == other.amount and
+            self.timestamp == other.timestamp and
+            self.file_path == other.file_path and
+            self.command == other.command
+        )
 
     @staticmethod
     def _normalize_value(value: Any) -> Any:
@@ -1082,19 +1084,19 @@ def create_agent(model: str = 'deepseek-chat',
 
 # Control exported symbols for from utils import *
 __all__ = [
-    # Core agent components
+    # Agent components
     'Agent', 'Action', 'DiffType', 'MemoryDiff', 'MemoryItem',
     
-    # Environment configuration
+    # Environments
     'base_env_manager', 'envs', 'a_env',
     
-    # Core processing functions
+    # Core functions
     'create_agent', 'process_observation', 'run_inference',
     
-    # XML handling utilities
+    # XML handling
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
-    # Helper functions
+    # Utilities
     'print_datetime'
 ]
 
