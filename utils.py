@@ -838,6 +838,8 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Applies mating cost to self parent only (50 as defined in base_env_manager)
         # Inherits configuration from parents while preferring self's settings
         # Returns new Agent with combined memories
+        if not isinstance(other, Agent):
+            raise ValueError("Can only mate with another Agent")
         #
         # Args:
         #     other: Another Agent instance to mate with
@@ -857,6 +859,9 @@ You can use multiple actions in a single completion but must follow the XML sche
             max_tokens=self.max_tokens,
             test_mode=new_test_mode
         )
+        # Initialize shell command permissions from self
+        new_agent.allowed_shell_commands = self.allowed_shell_commands.copy()
+        new_agent.prohibited_shell_commands = self.prohibited_shell_commands.copy()
         new_agent.total_num_completions = self.total_num_completions + other.total_num_completions
         
         # Combine and deduplicate memories while preserving order
@@ -896,7 +901,13 @@ You can use multiple actions in a single completion but must follow the XML sche
     def reward(self, *amounts: Union[int, float]) -> None:
         # Update agent's net worth with reward/penalty
         # Handles both integer and float values including large numbers
-        total = sum(float(a) for a in amounts)
+        # Convert string representations if needed
+        converted = []
+        for a in amounts:
+            if isinstance(a, str):
+                a = a.replace(',', '')  # Handle comma-formatted numbers
+            converted.append(float(a))
+        total = sum(converted)
         # Ensure we handle large numbers correctly as per main.py test
         self._memory.append(MemoryItem(
             input="Reward adjustment",
