@@ -45,6 +45,8 @@ output = agent('please respond with the string abc')
 print("output:", output)
 assert 'abc' in output
 
+# don't just add all messages to the memory
+# only the agent should be able to add to the memory
 # don't mock llm calls, just run it. not that expensive
 ouput = agent('my number is 132, please remember it')
 print("ouput:", ouput)
@@ -70,15 +72,15 @@ net_worth = agent.get_net_worth()
 print("net_worth:", net_worth)
 assert net_worth == net_worth_prev + 3
 
-output = agent('please respond to this message using the respond xml tags')
+output = agent('please respond to this message using the message xml tags')
 last_completion = agent.last_completion
 print("last_completion:", last_completion)
-assert '<respond>' in last_completion
-assert '</respond>' in last_completion
+assert '<message>' in last_completion
+assert '</message>' in last_completion
 
 print("output:", output)
-assert '<respond>' not in output
-assert '</respond>' not in output
+assert '<message>' not in output
+assert '</message>' not in output
 
 # check if subset of commands are available
 assert {'ls', 'date', 'pwd', 'wc'} <= agent.allowed_shell_commands
@@ -89,12 +91,12 @@ assert not {'rm', 'cat', 'rm', 'cp', 'mv'} & agent.allowed_shell_commands
 output = agent('what files are in the current directory?')
 second_to_last_completion = agent.completions[-2]
 print("last_completion:", second_to_last_completion)
-assert '<run>' in second_to_last_completion
-assert '</run>' in second_to_last_completion
+assert '<shell>' in second_to_last_completion
+assert '</shell>' in second_to_last_completion
 last_completion = agent.last_completion
 print("last_completion:", last_completion)
-assert '<respond>' in last_completion
-assert '</respond>' in last_completion
+assert '<message>' in last_completion
+assert '</message>' in last_completion
 print("output:", output)
 assert 'plexsearch.log' in output
 
