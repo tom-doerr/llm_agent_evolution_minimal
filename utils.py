@@ -835,21 +835,15 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Applies mating cost to self parent only
         # Inherits configuration from parents while preferring self's settings
         # Returns new Agent with combined memories
-        
-        Inherits:
-        - Test mode from either parent
-        - Model name from self
-        - Max tokens from self
-        - Environment configurations
-        
-        Args:
-            other: Another Agent instance to mate with
-        
-        Inherits:
-        - Test mode from either parent
-        - Model name from self
-        - Max tokens from self
-        - Environment configurations
+        #
+        # Args:
+        #     other: Another Agent instance to mate with
+        #
+        # Inherits:
+        # - Test mode from either parent
+        # - Model name from self
+        # - Max tokens from self
+        # - Environment configurations
         """
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
@@ -898,8 +892,8 @@ You can use multiple actions in a single completion but must follow the XML sche
             f.write(self.memory)
 
     def reward(self, *amounts: Union[int, float]) -> None:
-        """Update agent's net worth with reward/penalty.
-        Handles both integer and float values, including large numbers."""
+        # Update agent's net worth with reward/penalty
+        # Handles both integer and float values including large numbers
         total = sum(float(a) for a in amounts)
         # Ensure we handle large numbers correctly as per main.py test
         self._memory.append(MemoryItem(
@@ -922,7 +916,7 @@ def _validate_inputs(current_memory: str, observation: str, model: str) -> None:
         raise ValueError(f"Invalid model name: {model}")
 
 def _create_prompt_header(current_memory: str, observation: str) -> str:
-    """Create header section of prompt"""
+    # Create header section of prompt
     return f"""Current Memory:
 {current_memory}
 
@@ -939,7 +933,7 @@ def _prepare_prompt(current_memory: str, observation: str) -> str:
     return f"{_create_prompt_header(current_memory, observation)}\n{_create_prompt_body()}"
 
 def _create_prompt_body() -> str:
-    """Return fixed prompt body with examples"""
+    # Return fixed prompt body with examples
     return """\nFormat response as XML with <diffs> and <action> sections\n
 Example valid response:
 <response>
@@ -957,7 +951,7 @@ Example valid response:
 </response>"""
 
 def _create_prompt_examples() -> str:
-    """Return additional examples for prompt"""
+    # Return additional examples for prompt
     return """\nMore Examples:
     
 1. Simple addition:
@@ -981,7 +975,7 @@ def _create_prompt_examples() -> str:
 </response>"""
 
 def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
-    """Get response from LiteLLM API"""
+    # Get response from LiteLLM API
     try:
         import litellm
         # Handle streaming for OpenRouter DeepSeek models
@@ -996,7 +990,7 @@ def _get_litellm_response(model: str, prompt: str) -> Tuple[str, str]:
         return "", f"API Error: {str(e)}"
 
 def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
-    """Parse memory diffs from XML"""
+    # Parse memory diffs from XML
     diffs = []
     try:
         root = ET.fromstring(xml_content)
@@ -1021,7 +1015,7 @@ def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
     return diffs
 
 def _validate_xml_response(xml_content: str) -> None:
-    """Validate XML structure meets requirements"""
+    # Validate XML structure meets requirements
     try:
         root = ET.fromstring(xml_content)
         if root.find('.//diffs') is None:
@@ -1039,7 +1033,7 @@ def _validate_xml_response(xml_content: str) -> None:
         raise ValueError(f"Invalid XML structure: {str(e)}") from e
 
 def _parse_action(xml_content: str) -> Optional[Action]:
-    """Parse action from XML response if present"""
+    # Parse action from XML response if present
     root = ET.fromstring(xml_content)
     action_elem = root.find('.//action')
     if action_elem is not None:
@@ -1055,7 +1049,7 @@ def process_observation(
     observation: str,
     model: str = "openrouter/deepseek/deepseek-chat"  # Default to DeepSeek Chat model
 ) -> Tuple[List[MemoryDiff], Optional[Action]]:
-    """Process observation and return memory diffs with optional action
+    # Process observation and return memory diffs with optional action
     
     Args:
         current_memory: Current memory state as string
@@ -1144,7 +1138,9 @@ def create_agent(
     test_mode: bool = True,  # Default to test mode for assertions
     load: Optional[str] = None
 ) -> Agent:
-    """Create an agent with specified model.
+    # Create an agent with specified model
+    #
+    # Supported models (via OpenRouter):
     
     Args:
         model: Model identifier string. Valid options:
