@@ -2,7 +2,27 @@ import xml.etree.ElementTree as ET
 import datetime
 import os
 from typing import Any, Dict, List, Optional, Union, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from enum import Enum
+
+__all__ = [
+    'is_non_empty_string',
+    'is_valid_xml_tag',
+    'is_valid_model_name',
+    'is_valid_xml',
+    'safe_int_conversion',
+    'safe_float_conversion',
+    'is_valid_number',
+    'truncate_string',
+    'run_inference',
+    'extract_xml',
+    'parse_xml_to_dict',
+    'parse_xml_element',
+    'print_datetime',
+    'MemoryItem',
+    'Agent',
+    'create_agent'
+]
 
 def is_non_empty_string(value: Any) -> bool:
     # Check if value is a non-empty string after stripping whitespace
@@ -272,11 +292,22 @@ def print_datetime() -> None:
 
 @dataclass
 class MemoryItem:
-    input: str = ""
-    output: str = ""
-    type: Optional[str] = None
-    amount: Optional[float] = None
-    timestamp: Optional[str] = None
+    input: str = field(default="")
+    output: str = field(default="")
+    type: Optional[str] = field(default=None)
+    amount: Optional[float] = field(default=None)
+    timestamp: Optional[str] = field(default=None)
+    
+    def __post_init__(self):
+        """Validate and normalize fields after initialization"""
+        if not isinstance(self.input, str):
+            self.input = str(self.input)
+        if not isinstance(self.output, str):
+            self.output = str(self.output)
+        if self.amount is not None and not isinstance(self.amount, (int, float)):
+            self.amount = float(self.amount)
+        if self.timestamp is None:
+            self.timestamp = datetime.datetime.now().isoformat()
 
 class Agent:
     def __init__(self, model_name: str) -> None:
@@ -303,26 +334,31 @@ class Agent:
             
         Returns:
             Processed output text
+            
+        Raises:
+            ValueError: If input_text is not a string
         """
-        if not is_non_empty_string(input_text):
+        if not isinstance(input_text, str):
+            raise ValueError("input_text must be a string")
+        if not input_text.strip():
             return ""
             
         try:
             result = self.run(input_text)
-            if not is_non_empty_string(result):
-                result = ""
+            if not isinstance(result, str):
+                result = str(result)
                 
-            self.memory.append(MemoryItem(
+            memory_item = MemoryItem(
                 input=truncate_string(input_text),
                 output=truncate_string(result)
-            ))
+            self.memory.append(memory_item)
             return result
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
-            self.memory.append({
-                "input": truncate_string(input_text),
-                "output": error_msg
-            })
+            self.memory.append(MemoryItem(
+                input=truncate_string(input_text),
+                output=error_msg
+            ))
             return error_msg
     
     def run(self, input_text: str) -> str:
