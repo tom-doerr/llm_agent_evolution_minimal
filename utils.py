@@ -44,8 +44,7 @@ class MemoryDiff:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, MemoryDiff):
             return False
-        return (self.type == other.type and 
-                self.key == other.key)
+        return self.type == other.type and self.key == other.key
 
 @dataclass
 class Action:
@@ -874,9 +873,9 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
-        'deepseek': 'openrouter/deepseek/deepseek-reasoner',
+        'deepseek': 'openrouter/deepseek/deepseek-chat',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner',
+        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-v1',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
         'default': 'openrouter/deepseek/deepseek-reasoner',
         'deepseek': 'openrouter/deepseek/deepseek-reasoner'  # Alias for consistency
@@ -911,12 +910,12 @@ __all__ = [
     'base_env_manager',
     'create_agent',
     'DiffType',
-    'envs', 
+    'envs',
     'extract_xml',
-    'MemoryDiff',
+    'MemoryDiff', 
     'MemoryItem',
     'parse_xml_to_dict',
+    'parse_xml_element',
     'process_observation',
-    'run_inference',
-    'parse_xml_element'
+    'run_inference'
 ]
