@@ -1003,8 +1003,10 @@ def create_agent(model: str = 'deepseek-chat',
             - pro/gemini-pro: openrouter/google/gemini-2.0-pro
             - gpt-3.5: openrouter/openai/gpt-3.5-turbo
             - gpt-4: openrouter/openai/gpt-4
+            - llama-3: openrouter/meta-llama/llama-3-70b-instruct
             
         Requires OPENROUTER_API_KEY environment variable.
+        max_tokens: Maximum response length in tokens
         max_tokens: Maximum number of tokens for responses
         load: Path to load agent state from
         test_mode: Enable testing mode (skips real LLM calls)
