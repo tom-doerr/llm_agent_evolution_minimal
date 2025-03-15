@@ -48,12 +48,12 @@ def _prepare_prompt(current_memory: str, observation: str) -> str:
     examples = _create_prompt_examples()
     return header + body + examples
 
-def _process_chunk(chunk) -> Tuple[str, str]:
+def _process_chunk(stream_chunk) -> Tuple[str, str]:
     xml_content = ""
     reasoning_content = ""
     try:
-        if chunk.choices and chunk.choices[0].delta:
-            delta = chunk.choices[0].delta
+        if stream_chunk.choices and stream_chunk.choices[0].delta:
+            delta = stream_chunk.choices[0].delta
             xml_content = delta.content if hasattr(delta, 'content') and delta.content else ""
             reasoning_content = delta.reasoning_content if hasattr(delta, 'reasoning_content') and delta.reasoning_content else ""
     except Exception as e:
@@ -93,10 +93,10 @@ def _extract_file_diffs(section: str) -> List[MemoryDiff]:
     return file_diffs
 
 def _parse_memory_diffs(xml_content: str) -> List[MemoryDiff]:
-    memory_diffs = []
+    memory_diffs: List[MemoryDiff] = []
     diff_sections = re.findall(r'<memory_diff>(.*?)</memory_diff>', xml_content, re.DOTALL)
-    for section in diff_sections:
-        memory_diffs.extend(_extract_file_diffs(section))
+    for memory_diff_section in diff_sections:
+        memory_diffs.extend(_extract_file_diffs(memory_diff_section))
     return memory_diffs
 
 def _parse_action_params(action_content: str) -> Dict[str, str]:
