@@ -144,9 +144,15 @@ Code Quality Improvements Applied:
    - Fixed line spacing consistency
 # Critical Fixes Applied
 
-1. Fixed MemoryItem equality check to include type comparison
-   - Now properly compares all fields including `type` for accurate equality checks
-   - Ensures memory deduplication works correctly during agent mating
+1. Fixed MemoryItem equality check to include normalized type comparison
+   - Now properly normalizes and compares type (handling None/empty equivalence)
+   - Fixes hash/equality consistency for memory deduplication
+   - Ensures exact field matching during agent mating
+   
+2. Strengthened __all__ exports
+   - Explicitly included base_env_manager for proper import
+   - Verified all SimpleNamespace components are accessible
+   - Organized exports into logical groups with clear comments
 
 2. Updated model alias documentation in create_agent()
    - Added missing llama3 and llama-3-70b aliases

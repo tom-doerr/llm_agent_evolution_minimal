@@ -402,7 +402,7 @@ class MemoryItem:
         return (
             self._normalize_value(self.input) == self._normalize_value(other.input) and
             self._normalize_value(self.output) == self._normalize_value(other.output) and
-            self.type == other.type and  # Added type comparison
+            self._normalize_value(self.type or "") == self._normalize_value(other.type or "") and
             self.amount == other.amount and
             self.timestamp == other.timestamp and
             self.file_path == other.file_path and
@@ -1100,6 +1100,9 @@ __all__ = [
     'extract_xml', 'parse_xml_to_dict', 'parse_xml_element',
     
     # Utilities
-    'print_datetime'
+    'print_datetime',
+    
+    # Literal exports from SimpleNamespace
+    'base_env_manager'
 ]
 
