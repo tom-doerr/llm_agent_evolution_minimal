@@ -372,16 +372,14 @@ class Agent:
 
         self.model_name = model_name
         self._test_mode = test_mode
-        self.max_tokens = max_tokens  # Was missing initialization
+        self.max_tokens = max_tokens  # Single initialization
         self._memory = []
         self.last_response = ""
         self.completions = []
         self.total_num_completions = 0
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh'}
-        self._memory = []
         self._context_instructions = []
-        self.max_tokens = max_tokens
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -870,10 +868,9 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
     # Model name mapping with full OpenRouter paths
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
-        'pro': 'openrouter/google/gemini-2.0-pro',
+        'pro': 'openrouter/google/gemini-2.0-pro', 
         'deepseek': 'openrouter/deepseek/deepseek-chat',
         'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner-001',
-        'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'deepseek-chat': 'openrouter/deepseek/deepseek-chat',
         'default': 'openrouter/deepseek/deepseek-chat'
     }
@@ -911,6 +908,5 @@ __all__ = [
     'Action',
     'DiffType',
     'Agent',
-    'parse_xml_to_dict',
-    'parse_xml_element'
+    'parse_xml_to_dict'
 ]
