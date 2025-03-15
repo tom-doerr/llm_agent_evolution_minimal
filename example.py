@@ -2,9 +2,8 @@ from memdiff.memory import process_observation
 import litellm
 import os
 
-# Configure LiteLLM
-os.environ['DEEPSEEK_API_KEY'] = "your_api_key"
-litellm.set_verbose = True
+# Configure LiteLLM 
+os.environ['LITELLM_LOG'] = 'DEBUG'  # Replace deprecated set_verbose
 
 # Example usage
 current_memory = "<current_state></current_state>"
