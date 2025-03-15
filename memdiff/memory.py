@@ -51,10 +51,8 @@ def _process_chunk(chunk) -> Tuple[str, str]:
     try:
         if chunk.choices and chunk.choices[0].delta:
             delta = chunk.choices[0].delta
-            if hasattr(delta, 'content') and delta.content:
-                xml_content += delta.content
-            if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-                reasoning_content += delta.reasoning_content
+            xml_content = delta.content if hasattr(delta, 'content') and delta.content else ""
+            reasoning_content = delta.reasoning_content if hasattr(delta, 'reasoning_content') and delta.reasoning_content else ""
     except Exception as e:
         print(f"Error processing chunk: {e}")
     return xml_content, reasoning_content
