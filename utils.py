@@ -379,7 +379,6 @@ class Agent:
         self._memory = []
         self._context_instructions = []
         self.max_tokens = 50
-        self._test_mode = False  # Initialize test mode flag
         
         # Initialize context instructions (not stored in regular memory)
         self._add_core_context_instructions()
@@ -896,5 +895,7 @@ __all__ = [
     'MemoryDiff',
     'Action',
     'DiffType',
-    'Agent'
+    'Agent',
+    'base_env_manager',
+    'envs'
 ]

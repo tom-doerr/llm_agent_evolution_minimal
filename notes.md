@@ -13,3 +13,6 @@ Code Quality Improvements & Fixes:
 12. Fixed test mode initialization in Agent class
 13. Corrected shell command XML handling
 14. Removed redundant environment configs from exports
+15. Added missing environment config exports to __all__
+16. Removed duplicate _test_mode initialization
+17. Fixed base_env_manager accessibility
