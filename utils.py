@@ -1,7 +1,9 @@
 import xml.etree.ElementTree as ET
 import datetime
 import os
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Union, Tuple, TypeVar
+
+T = TypeVar('T')
 
 def is_non_empty_string(value: Any) -> bool:
     """Check if value is a non-empty string after stripping whitespace.
@@ -297,7 +299,7 @@ class Agent:
         self.model_name = model_name
         self.memory: List[Dict[str, str]] = []
         self._test_mode = model_name.startswith("flash")
-        self.lm = None  # Initialize lm attribute
+        self.lm: Optional[Any] = None  # Initialize lm attribute with type hint
     
     def __str__(self) -> str:
         return f"Agent with model: {self.model_name}"
@@ -344,14 +346,15 @@ class Agent:
             if input_text == 'please respond with the string abc':
                 return 'abc'
             
-        if self.lm and hasattr(self.lm, 'complete'):
+        if self.lm is not None:
             try:
-                response = self.lm.complete(input_text)
-                if hasattr(response, 'completion'):
-                    return response.completion
-                return str(response)
+                if hasattr(self.lm, 'complete'):
+                    response = self.lm.complete(input_text)
+                    if hasattr(response, 'completion'):
+                        return response.completion
+                    return str(response)
             except Exception as e:
-                return f"Error using DSPy LM: {str(e)}"
+                return f"Error using LM: {str(e)}"
         
         # Use streaming for DeepSeek models to properly handle reasoning content
         use_stream = self.model_name.startswith("deepseek/")
@@ -366,16 +369,21 @@ class Agent:
         # This is a mock implementation since we don't have real financial data
         return 1000.0  # Default mock value
 
-def create_agent(model_type: str = 'flash', max_tokens: int = 50) -> Agent:
+def create_agent(model_type: str = 'flash', max_tokens: int = 50, model: Optional[str] = None) -> Agent:
     """Create an agent with specified model type and token limit.
     
     Args:
         model_type: Type of model to use ('flash', 'pro', 'deepseek')
         max_tokens: Maximum number of tokens for responses
+        model: Alternate parameter name for model_type (backward compatibility)
         
     Returns:
         Initialized Agent instance
     """
+    # Handle both model and model_type parameters
+    if model is not None:
+        model_type = model
+        
     model_mapping = {
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro-001',
