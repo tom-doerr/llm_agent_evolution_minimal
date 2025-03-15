@@ -45,6 +45,8 @@ Code Quality Improvements & Fixes:
 15. Enforced boolean type casting for test_mode in mate()
 16. Fixed variable name inconsistency in mate() method
 17. Standardized __all__ exports list
+18. Added missing parse_xml_to_dict to __all__ exports
+19. Fixed XML function exports for star imports
 16. Simplified MemoryDiff equality checks
 17. Updated DeepSeek model paths to current format
 17. Fixed Action equality handling of None params
