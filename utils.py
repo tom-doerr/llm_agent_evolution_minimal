@@ -229,6 +229,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     """Extract valid XML content from a string that might contain other text.
     
     Handles common XML response tags like <respond>, <remember>, etc.
+    Removes XML namespaces during parsing.
     
     Args:
         xml_string: Input string potentially containing XML
@@ -240,8 +241,9 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     Raises:
         ValueError: If xml_string is not a string
     """
-    # Remove any XML declaration
+    # Remove any XML declaration and namespaces
     xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string or '', flags=re.DOTALL)
+    xml_string = re.sub(r'\sxmlns\s*=\s*"[^"]+"', '', xml_string, count=1)
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -431,12 +433,16 @@ class MemoryItem:
             self.amount == other.amount and
             self._normalize_value(self.timestamp) == self._normalize_value(other.timestamp) and
             self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
-            self._normalize_value(self.command) == self._normalize_value(other.command)
+            self._normalize_value(self.command) == self._normalize_value(other.command) and
+            self._normalize_value(self.type) == self._normalize_value(other.type)
         )
 
 class Agent:
     def __init__(self, model_name: str, max_tokens: int = 50, test_mode: bool = False) -> None:
         """Initialize agent with model configuration and memory"""
+        # Ensure context instructions are never stored in regular memory
+        self._context_instructions = []
+        self._add_core_context_instructions()
         if not isinstance(model_name, str):
             raise ValueError("model_name must be string")
         if not isinstance(max_tokens, int) or max_tokens <= 0:
@@ -579,10 +585,18 @@ You can use multiple actions in a single completion but must follow the XML sche
             
         # Validate and sanitize command
         cmd_text = command_elem.text.strip()
-        # Validate against prohibited characters
-        prohibited_chars = (';', '&', '|', '$', '`')
-        if any(c in cmd_text for c in prohibited_chars):
-            return f"<message>Error: Invalid characters in command: {prohibited_chars}</message>"
+        # Validate against prohibited characters and patterns
+        prohibited = {
+            'chars': (';', '&', '|', '$', '`', '>', '<'),
+            'patterns': [r'\brm\b', r'\bdel\b', r'\bdelete\b', r'\bmv\b', r'\bmove\b']
+        }
+            
+        if any(c in cmd_text for c in prohibited['chars']):
+            return f"<message>Error: Invalid characters in command: {prohibited['chars']}</message>"
+                
+        for pattern in prohibited['patterns']:
+            if re.search(pattern, cmd_text, re.IGNORECASE):
+                return f"<message>Error: Prohibited command pattern detected: {pattern}</message>"
                 
         cmd = cmd_text.split()[0]
         if cmd not in self.allowed_shell_commands:
