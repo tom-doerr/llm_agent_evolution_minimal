@@ -340,7 +340,7 @@ class Agent:
             raise ValueError("model_name must be a string")
             
         self.model_name = model_name
-        self.memory: List[MemoryItem] = [
+        self._memory: List[MemoryItem] = [
             MemoryItem(
                 input="",
                 output="You can edit your memory using the following xml action:",
@@ -356,6 +356,14 @@ class Agent:
     
     def __repr__(self) -> str:
         return f"Agent(model_name='{self.model_name}', memory_size={len(self.memory)})"
+
+    @property
+    def memory(self) -> str:
+        """Get memory as formatted string with timestamped entries"""
+        return "\n".join(
+            f"{item.timestamp} | {item.type}: {item.input} -> {item.output}"
+            for item in self._memory
+        )
     
     def __call__(self, input_text: str) -> str:
         """Handle agent calls with input text.
@@ -383,11 +391,11 @@ class Agent:
                 input=truncate_string(input_text),
                 output=truncate_string(result)
             )
-            self.memory.append(memory_item)
+            self._memory.append(memory_item)
             return result
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
-            self.memory.append(MemoryItem(
+            self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
                 output=error_msg
             ))
@@ -426,7 +434,7 @@ class Agent:
     
     def clear_memory(self) -> None:
         """Clear the agent's memory"""
-        self.memory = []
+        self._memory = []
 
     def get_net_worth(self) -> float:
         """Get the agent's net worth (mock implementation)."""
