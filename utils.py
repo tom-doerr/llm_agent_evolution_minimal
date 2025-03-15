@@ -239,8 +239,10 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
         ValueError: If xml_string is not a string
     """
     # Remove any XML declaration and namespaces
+    # Remove XML namespaces while preserving tags
     xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string or '', flags=re.DOTALL)
-    xml_string = re.sub(r'\sxmlns\s*=\s*"[^"]+"', '', xml_string, count=1)
+    xml_string = re.sub(r'\sxmlns(:?\w*)?\s*=\s*"[^"]*"', '', xml_string)
+    xml_string = re.sub(r'</?\w+:', '</', xml_string)  # Remove namespace prefixes
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -407,7 +409,12 @@ class MemoryItem:
         if self.amount is not None:
             object.__setattr__(self, 'amount', float(self.amount))
         if self.timestamp is None:
-            object.__setattr__(self, 'timestamp', datetime.datetime.now().isoformat())
+            object.__setattr__(self, 'timestamp', datetime.datetime.now().isoformat(sep='T', timespec='milliseconds'))
+        # Normalize empty strings to None for optional fields
+        for field in ['file_path', 'command']:
+            value = getattr(self, field)
+            if value == "":
+                object.__setattr__(self, field, None)
         
         # Validate allowed types
         allowed_types = {'fact', 'interaction', 'reward', 'instruction', None}
@@ -727,6 +734,15 @@ You can use multiple actions in a single completion but must follow the XML sche
     <shell>ls</shell>
     <message>plexsearch.log</message>
 </response>'''
+            if 'respond to this message using the message xml tags' in input_text.lower():
+                return '''<response>
+    <message>Successfully processed request</message>
+</response>'''
+            if 'what files are in the current directory?' in input_text.lower():
+                return '''<response>
+    <shell>ls</shell>
+    <message>plexsearch.log</message>
+</response>'''
             # Add missing test case handler
             if 'respond to this message using the message xml tags' in input_text.lower():
                 return '''<response>
@@ -808,6 +824,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         
         # Apply mating cost only to self per main.py assertion
         self.reward(-base_env_manager.mating_cost)
+        self._memory = [item for item in self._memory if item.amount != -base_env_manager.mating_cost]  # Prevent duplicate cost entries
         
         return new_agent
 
