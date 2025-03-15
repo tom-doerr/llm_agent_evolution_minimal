@@ -17,7 +17,7 @@ args = parser.parse_args()
 
 current_memory = "<current_state></current_state>"
 
-diffs, action = process_observation(current_memory, observation)
+diffs, action = process_observation(current_memory, args.observation, model=args.model)
 
 print("Memory Diffs:")
 for diff in diffs:

@@ -20,25 +20,60 @@ class Action:
     name: str
     params: Dict[str, str]
 
-def process_observation(current_memory: str, observation: str) -> tuple[List[MemoryDiff], Optional[Action]]:
-    # Prepare the prompt for the AI
-    prompt = f"""Current memory:
+def process_observation(
+    current_memory: str, 
+    observation: str,
+    model: str = "deepseek/deepseek-reasoner"
+) -> tuple[List[MemoryDiff], Optional[Action]]:
+    # Prepare the prompt for the AI with explicit formatting instructions
+    prompt = f"""Current memory state:
 {current_memory}
 
-Observation:
+New observation:
 {observation}
 
-Output format:
+Respond STRICTLY in this XML format:
 <response>
-<memory_diff>
-<!-- SEARCH/REPLACE blocks -->
-</memory_diff>
-<action name="..."><param1>value</param1></action>
+  <memory_diff>
+    <!-- 1+ SEARCH/REPLACE diffs -->
+    <file_path>filename.ext</file_path>
+    <search>EXACT existing code/text</search>
+    <replace>NEW code/text</replace>
+  </memory_diff>
+  <action name="action_name">
+    <!-- 0+ parameters -->
+    <param_name>value</param_name>
+  </action>
+</response>
+
+Examples:
+1. File edit with action:
+<response>
+  <memory_diff>
+    <file_path>config.py</file_path>
+    <search>DEFAULT_MODEL = 'deepseek/deepseek-reasoner'</search>
+    <replace>DEFAULT_MODEL = 'openrouter/google/gemini-2.0-flash-001'</replace>
+  </memory_diff>
+  <action name="reload_config">
+    <module>config</module>
+  </action>
+</response>
+
+2. Multiple files:
+<response>
+  <memory_diff>
+    <file_path>app.py</file_path>
+    <search>debug=True</search>
+    <replace>debug=False</replace>
+    <file_path>README.md</file_path>
+    <search>Old feature list</search>
+    <replace>New feature list</replace>
+  </memory_diff>
 </response>"""
 
     # Get completion from LiteLLM
     response = litellm.completion(
-        model="deepseek/deepseek-reasoner",
+        model=model,
         messages=[{"role": "user", "content": prompt}],
         stream=True
     )
