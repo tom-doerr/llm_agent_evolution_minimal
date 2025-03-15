@@ -360,9 +360,10 @@ class Agent:
         self.max_tokens = 50
         self._test_mode = "flash" in model_name.lower()
         # Initialize with core instructions
+        # Initialize context with core instructions (not stored in regular memory)
         self.remember(
             "Explanation of all the available XML actions. You can edit your memory using the following XML action:",
-            "instruction"
+            type_="instruction"
         )
         self.remember(
             """Available XML actions:
@@ -370,8 +371,8 @@ class Agent:
 <remember> - Store information in memory
 <recall> - Retrieve information from memory
 <request> - Ask for additional information""",
-            "instruction",
-            "XML Actions"
+            type_="instruction",
+            input_="XML Actions"
         )
 
     def remember(self, output: str, type_: str = "fact", input_: str = "") -> None:
