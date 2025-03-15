@@ -607,8 +607,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(other, Agent):
             raise ValueError("Can only mate with another Agent")
             
-        # Create new agent with same model
-        new_agent = create_agent(model=self.model_name, max_tokens=self.max_tokens)
+        # Create new agent with same model and test mode
+        new_agent = create_agent(
+            model=self.model_name, 
+            max_tokens=self.max_tokens,
+            test_mode=self._test_mode
+        )
         
         # Combine memories from both parents
         new_agent._memory.extend(self._memory)
@@ -862,7 +866,7 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'flash': 'openrouter/google/gemini-2.0-flash-001',
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek': 'openrouter/deepseek/deepseek-chat',
-        'deepseek-reasoner': 'openrouter/deepseek/deepseek-reasoner'
+        'deepseek-reasoner': 'deepseek/deepseek-reasoner'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -899,5 +903,6 @@ __all__ = [
     'DiffType',
     'Agent',
     'base_env_manager',
-    'envs'
+    'envs',
+    'parse_xml_to_dict'
 ]

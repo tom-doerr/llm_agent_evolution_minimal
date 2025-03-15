@@ -19,3 +19,7 @@ Code Quality Improvements & Fixes:
 18. Added explicit test_mode handling in Agent creation
 19. Fixed model name mapping in create_agent()
 20. Removed duplicate base_env_manager/envs exports
+21. Fixed model name mapping for deepseek-reasoner
+22. Added proper test_mode propagation in mate()
+23. Added missing parse_xml_to_dict to __all__ exports
+24. Fixed XML shell command validation edge cases
