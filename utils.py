@@ -721,22 +721,24 @@ You can use multiple actions in a single completion but must follow the XML sche
             else:
                 clean_output = raw_response
 
-            # Store raw XML in memory while maintaining clean output 
+            # Store raw XML response exactly as received
             self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
-                output=raw_response,
+                output=raw_response,  # Store original XML response
                 type="interaction"
             ))
+            # Store in completions list before any processing
+            self.completions.append(raw_response)
             # Store raw response and increment completion count
             self.completions.append(raw_response)
             # Update completion count after successful processing (matches main.py assertions)
             self.total_num_completions += 1
 
-            # Process shell commands and store output
+            # Process shell commands and store output separately
             shell_output = self._handle_shell_commands(raw_response)
             if shell_output:
+                # Append as new completion after main response
                 self.completions.append(shell_output)
-                self.total_num_completions += 1
 
             return clean_output
         except Exception as e:
@@ -864,8 +866,15 @@ You can use multiple actions in a single completion but must follow the XML sche
         
         # Add items from both parents preserving order and removing duplicates
         for item in self._memory + other._memory:
-            # Use tuple of core fields for duplicate detection
-            item_key = (item.input.strip(), item.output.strip(), item.type, item.amount)
+            # Use tuple of fields that matches MemoryItem's __eq__ method
+            item_key = (
+                MemoryItem._normalize_value(item.input),
+                MemoryItem._normalize_value(item.output),
+                item.type,
+                item.amount if item.amount is not None else 0.0,
+                MemoryItem._normalize_value(item.file_path or ""),
+                MemoryItem._normalize_value(item.command or "")
+            )
             if item_key not in seen:
                 seen.add(item_key)
                 combined_mem.append(item)
