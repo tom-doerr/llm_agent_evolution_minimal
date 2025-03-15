@@ -30,6 +30,9 @@ Code Quality Improvements & Fixes:
 26. Cleaned up environment configuration setup
 27. Added explicit boolean casting for test_mode
 28. Removed redundant a_env assignment
+29. Fixed run_inference return type annotation
+30. Removed duplicate envs docstring
+31. Standardized __all__ exports formatting
 
 Key Resolved Issues:
 - Removed all duplicate entries in __all__ exports

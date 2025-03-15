@@ -25,7 +25,6 @@ envs = {
 }
 """Collection of available environments with their reward functions and configurations.
 Includes both a_env (counting 'a's) and base_env (evolution settings)"""
-"""Collection of available environments with their reward functions and configurations"""
 
 class DiffType(Enum):
     ADD = auto()
@@ -127,7 +126,7 @@ def truncate_string(value: Any, max_length: int = 100) -> str:
         return value
     return value[:max_length] + "..."
 
-def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> Union[str, List[MemoryDiff]]:
+def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", stream: bool = False) -> str:
     """Run inference using the specified model.
     
     Args:
@@ -959,7 +958,7 @@ __all__ = [
     'Action',
     'Agent',
     'DiffType',
-    'MemoryDiff', 
+    'MemoryDiff',
     'MemoryItem',
     'a_env',
     'base_env_manager',
