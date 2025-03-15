@@ -502,6 +502,11 @@ You can use multiple actions in a single completion but must follow the XML sche
         if not isinstance(response, str):
             return "<message>Error: Invalid response type</message>"
             
+        # First extract XML content before validation
+        xml_content = extract_xml(response)
+        if not xml_content:
+            return "<message>Error: No valid XML content found</message>"
+            
         # Additional security validation
         if any(tag in response.lower() for tag in ['script', 'http', 'ftp']):
             return "<message>Error: Potentially dangerous content detected</message>"
@@ -621,12 +626,10 @@ You can use multiple actions in a single completion but must follow the XML sche
                 self.total_num_completions += 1
                 return response
             if 'remember it' in input_text.lower():
-                return '''<response>
-    <remember>
-        <search>previous_value</search>
-        <replace>132</replace>
-    </remember>
-</response>'''
+                return '''<remember>
+    <search>previous_value</search>
+    <replace>132</replace>
+</remember>'''
             if 'current directory' in input_text.lower():
                 return '''<response>
     <shell>ls</shell>
