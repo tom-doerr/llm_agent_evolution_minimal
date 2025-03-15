@@ -532,6 +532,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             # Memory is stored in run() method
             
             # Store successful interaction in memory
+            # Note: ouput is cleaned version without XML tags
             self._memory.append(MemoryItem(
                 input=truncate_string(input_text),
                 output=clean_output,
@@ -607,7 +608,7 @@ You can use multiple actions in a single completion but must follow the XML sche
             raise ValueError("Can only mate with another Agent")
             
         # Create new agent with same model and propagate test mode only if both parents have it
-        test_mode = bool(self._test_mode and other._test_mode)
+        test_mode = bool(self._test_mode) and bool(other._test_mode)
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
@@ -846,6 +847,9 @@ def _parse_action(xml_content: str) -> Optional[Action]:
 def create_agent(model: str = 'flash', max_tokens: int = 50, 
                 load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
+    
+    Args:
+        test_mode: Boolean flag for testing mode
     
     Args:
         model: Model to use ('flash', 'pro', 'deepseek' or full model name)
