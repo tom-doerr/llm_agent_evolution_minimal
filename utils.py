@@ -608,7 +608,7 @@ You can use multiple actions in a single completion but must follow the XML sche
         new_agent = create_agent(
             model=self.model_name,
             max_tokens=self.max_tokens,
-            test_mode=self._test_mode and other._test_mode  # Require both parents in test mode
+            test_mode=self._test_mode and other._test_mode
         )
         
         # Combine memories from both parents
@@ -840,7 +840,8 @@ def _parse_action(xml_content: str) -> Optional[Action]:
         )
     return None
 
-def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str] = None, test_mode: bool = False) -> Agent:
+def create_agent(model: str = 'flash', max_tokens: int = 50, 
+                load: Optional[str] = None, test_mode: bool = False) -> Agent:
     """Create an agent with specified model.
     
     Args:
@@ -864,8 +865,8 @@ def create_agent(model: str = 'flash', max_tokens: int = 50, load: Optional[str]
         'pro': 'openrouter/google/gemini-2.0-pro',
         'deepseek-reasoner': 'openrouter/deepseek/deepseek-chat',
         'deepseek-coder': 'openrouter/deepseek/deepseek-coder-33b-instruct',
-        'default': 'openrouter/deepseek/deepseek-chat',
-        'deepseek': 'openrouter/deepseek/deepseek-chat'
+        'deepseek': 'openrouter/deepseek/deepseek-chat',
+        'default': 'openrouter/deepseek/deepseek-chat'
     }
     model_name = model_mapping.get(model.lower(), model)
     
@@ -896,7 +897,7 @@ __all__ = [
     'Action',
     'base_env_manager',
     'create_agent',
-    'DiffType',
+    'DiffType', 
     'envs',
     'extract_xml',
     'MemoryDiff',
