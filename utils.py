@@ -467,9 +467,7 @@ class Agent:
         self.completions = []
         self.total_num_completions = 0  # Initialize counter
         # Initialize from base environment configuration
-        self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
-        self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
-        # Initialize from existing memory if provided
+        # Initialize from base environment configuration
         self.allowed_shell_commands = {'ls', 'date', 'pwd', 'wc'}
         self.prohibited_shell_commands = {'rm', 'cat', 'cp', 'mv', 'sh', 'bash', 'zsh', 'sudo', '>', '<', '&', '|', ';', '*'}
         # Initialize from base environment configuration
