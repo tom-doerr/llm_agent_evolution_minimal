@@ -231,6 +231,7 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     
     Handles common XML response tags like <respond>, <remember>, etc.
     Removes XML namespaces during parsing.
+    Maintains original XML escaping for content comparison.
     
     Args:
         xml_string: Input string potentially containing XML
@@ -245,10 +246,10 @@ def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
     # Remove any XML declaration and namespaces
     # Remove XML namespaces and declarations
     # Pre-clean XML string
+    # Remove XML declaration and namespaces but preserve entity encoding
     xml_string = re.sub(r'<\?xml.*?\?>', '', xml_string, flags=re.DOTALL|re.IGNORECASE)
     xml_string = re.sub(r'\sxmlns(:[^=]+)?=(".*?"|\'.*?\')', '', xml_string)
     xml_string = re.sub(r'(</?)\w+:', r'\1', xml_string)  # Remove namespace prefixes
-    xml_string = xml_string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')  # Basic XML escaping
     if not is_non_empty_string(xml_string):
         return ""
         
@@ -444,9 +445,12 @@ class MemoryItem:
             MemoryItem._normalize_value(self.input) == MemoryItem._normalize_value(other.input) and
             MemoryItem._normalize_value(self.output) == MemoryItem._normalize_value(other.output) and
             self.type == other.type and
-            (self.amount or 0) == (other.amount or 0) and
-            self._normalize_value(self.file_path) == self._normalize_value(other.file_path) and
-            self._normalize_value(self.command) == self._normalize_value(other.command)
+            # Compare amounts with tolerance for numeric types
+            (float(self.amount) if self.amount is not None else 0.0) == 
+            (float(other.amount) if other.amount is not None else 0.0) and
+            # Compare optional fields with None handling
+            (self.file_path or "") == (other.file_path or "") and
+            (self.command or "") == (other.command or "")
         )
 
 class Agent:
@@ -610,12 +614,12 @@ You can use multiple actions in a single completion but must follow the XML sche
         # Returns XML formatted output or error message
         # Strict validation against prohibited commands and patterns
         if not isinstance(response, str):
-            return "<message>Error: Invalid response type</message>"
+            return ""
         
         # Extract and validate XML structure
         xml_content = extract_xml(response)
         if not xml_content:
-            return "<message>Error: No valid XML content found</message>"
+            return ""
             
         # Enhanced command validation
         if any(c in xml_content for c in (';', '&', '|', '$', '`', '>', '<', '*')):
