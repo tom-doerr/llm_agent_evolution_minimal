@@ -3,11 +3,11 @@ import datetime
 from typing import Any, Dict, List, Optional, Union
 
 def is_non_empty_string(value: Any) -> bool:
-    """Check if value is a non-empty string after stripping whitespace"""
+    # Check if value is a non-empty string after stripping whitespace
     return isinstance(value, str) and bool(value.strip())
 
 def is_valid_xml(xml_string: str) -> bool:
-    """Check if string contains valid XML"""
+    # Check if string contains valid XML
     if not is_non_empty_string(xml_string):
         return False
     try:
@@ -91,15 +91,7 @@ def run_inference(input_string: str, model: str = "deepseek/deepseek-reasoner", 
         return f"Error during inference: {str(e)}"
 
 def extract_xml(xml_string: str, max_attempts: int = 3) -> str:
-    """Extract valid XML content from a string that might contain other text
-    
-    Args:
-        xml_string: Input string potentially containing XML
-        max_attempts: Maximum number of parsing attempts
-        
-    Returns:
-        Extracted XML string or empty string if no valid XML found
-    """
+    # Extract valid XML content from a string that might contain other text
     if not is_non_empty_string(xml_string):
         return ""
         
